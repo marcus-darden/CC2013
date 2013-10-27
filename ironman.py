@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''Web front end for Computing Curricula 2013 Learning Outcomes (Ironman version).
+'''Web front end for Computing Curricula 2013 Curriculum Exemplar (Ironman version).
 
 Preconditions:
     environment - python 2 >= 2.7.3, flask, flask-sqlalchemy, gunicorn
