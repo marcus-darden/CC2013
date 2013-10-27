@@ -102,17 +102,6 @@ class Outcome(db.Model):
         return '<Outcome: {0.text}>'.format(self)
 
 
-@app.route('/')
-def index():
-    kas = KA.query.all()
-    for ka in kas:
-        print ka
-    masteries = Mastery.query.all()
-    for mastery in masteries:
-        print mastery
-    return render_template('index.html')
-
-
 # Initialize the database
 @app.before_first_request
 def init_db():
@@ -132,6 +121,17 @@ def init_db():
         db.session.add(mastery)
 
     db.session.commit()
+
+
+@app.route('/')
+def index():
+    kas = KA.query.all()
+    for ka in kas:
+        print ka
+    masteries = Mastery.query.all()
+    for mastery in masteries:
+        print mastery
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
