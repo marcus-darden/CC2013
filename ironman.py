@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
+'''Web front end for Computing Curricula 2013 Learning Outcomes (Ironman version).
+
+Preconditions:
+    environment - python 2 >= 2.7.3, flask, flask-sqlalchemy, gunicorn
+'''
 import csv
 
-from flask import Flask
+from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -15,6 +20,9 @@ db = SQLAlchemy(app)
 
 
 class KA(db.Model):
+    '''A "Knowledge Area", as defined in CC2013.
+
+    These high-level areas divide the entire Body of Knowledge (BOK).'''
     __tablename__ = 'ka'
     id = db.Column(db.String(3), primary_key=True)
     text = db.Column(db.String(64))
@@ -30,6 +38,9 @@ class KA(db.Model):
 
 
 class KU(db.Model):
+    '''A "Knowledge Unit", as defined in CC2013.
+
+    These subdivisions represent key aspects of their related "Knowledge Areas".'''
     __tablename__ = 'ku'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(64))
@@ -50,6 +61,12 @@ class KU(db.Model):
 
 
 class Mastery(db.Model):
+    '''The level of mastery suggested for a "Learning Outcome".
+
+    From Bloom's Taxonomy:
+        Familiarity
+        Usage
+        Assessment'''
     id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     text = db.Column(db.String(16))
     outcomes = db.relationship('Outcome', backref='kus', lazy='dynamic')
@@ -63,6 +80,7 @@ class Mastery(db.Model):
 
 
 class Outcome(db.Model):
+    '''A "Learning Outcome", as defined in CC2013.'''
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(256))
     tier = db.Column(db.Integer)
@@ -92,7 +110,7 @@ def index():
     masteries = Mastery.query.all()
     for mastery in masteries:
         print mastery
-    return 'It works!'
+    return render_template('index.html')
 
 
 # Initialize the database
@@ -104,7 +122,7 @@ def init_db():
     with open('csv/ka.csv') as f:
         reader = csv.reader(f)
         for row in reader:
-            if row:
+            if len(row) == 2:
                 ka = KA(*row)
                 db.session.add(ka)
 
