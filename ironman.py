@@ -64,7 +64,7 @@ class Outcome(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(256))
     tier = db.Column(db.Integer)
-    mastery = db.Column(db.Enum('Familiarity', 'Usage', 'Assessment'), name='outcome_mastery')
+    mastery = db.Column(db.Enum('Familiarity', 'Usage', 'Assessment', name='outcome_mastery'))
     number = db.Column(db.Integer)
     ku_id = db.Column(db.Integer, db.ForeignKey('ku.id'))
 
