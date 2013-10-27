@@ -59,31 +59,12 @@ class KU(db.Model):
         return '<Knowledge Unit: {0.text} KA: {0.ka_id}>'.format(self)
 
 
-class Mastery(db.Model):
-    '''The level of mastery suggested for a "Learning Outcome".
-
-    From Bloom's Taxonomy:
-        Familiarity
-        Usage
-        Assessment'''
-    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
-    text = db.Column(db.String(16))
-    outcomes = db.relationship('Outcome', backref='masteries', lazy='dynamic')
-
-    def __init__(self, id, text):
-        self.id = id
-        self.text = text
-
-    def __str__(self):
-        return '<Mastery: {0.text}>'.format(self)
-
-
 class Outcome(db.Model):
     '''A "Learning Outcome", as defined in CC2013.'''
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(256))
     tier = db.Column(db.Integer)
-    mastery_id = db.Column(db.Integer, db.ForeignKey('mastery.id'))
+    mastery = db.Column(db.Enum('Familiarity', 'Usage', 'Assessment'), name='outcome_mastery')
     number = db.Column(db.Integer)
     ku_id = db.Column(db.Integer, db.ForeignKey('ku.id'))
 
@@ -93,20 +74,10 @@ class Outcome(db.Model):
         self.text = text.strip()
 
         self.mastery = mastery
-        self.ka_id = ka.strip().upper()
 
     def __repr__(self):
         return str(self.__dict__)
         return '<Outcome: {0.text}>'.format(self)
-
-    # mastery property
-    def set_mastery(self, text):
-        self.mastery_id = Mastery.query.filter_by(text=text).first().id
-
-    def get_mastery(self):
-        return Mastery.query.filter_by(id=self.mastery_id).first().text
-
-    mastery = property(get_mastery, set_mastery)
 
 
 # Initialize the database
@@ -122,11 +93,6 @@ def init_db():
                 ka = KA(*row)
                 db.session.add(ka)
 
-    # Initialize Masteries
-    for index, description in enumerate(['Familiarity', 'Usage', 'Assessment']):
-        mastery = Mastery(index + 1, description)
-        db.session.add(mastery)
-
     db.session.commit()
 
 
@@ -135,9 +101,6 @@ def index():
     kas = KA.query.all()
     for ka in kas:
         print ka
-    masteries = Mastery.query.all()
-    for mastery in masteries:
-        print mastery
     return render_template('index.html')
 
 
