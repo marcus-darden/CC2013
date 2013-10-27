@@ -48,7 +48,7 @@ class KU(db.Model):
     tier2 = db.Column(db.Float)
     elective = db.Column(db.Float)
     ka_id = db.Column(db.String, db.ForeignKey('ka.id'))
-    #outcomes = db.relationship('Outcome', backref='kus', lazy='dynamic')
+    outcomes = db.relationship('Outcome', backref='kus', lazy='dynamic')
 
     def __init__(self, ka, text, tier1, tier2):
         self.text = text.strip()
@@ -69,7 +69,7 @@ class Mastery(db.Model):
         Assessment'''
     id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     text = db.Column(db.String(16))
-    outcomes = db.relationship('Outcome', backref='kus', lazy='dynamic')
+    outcomes = db.relationship('Outcome', backref='masteries', lazy='dynamic')
 
     def __init__(self, id, text):
         self.id = id
@@ -94,12 +94,21 @@ class Outcome(db.Model):
         self.number = number
         self.text = text.strip()
 
-        mastery_id = Mastery.query.filter_by(master).first().id
+        self.mastery = mastery
         self.ka_id = ka.strip().upper()
 
     def __repr__(self):
         return str(self.__dict__)
         return '<Outcome: {0.text}>'.format(self)
+
+    # mastery property
+    def set_mastery(self, text):
+        self.mastery_id = Mastery.query.filter_by(text=text).first().id
+
+    def get_mastery(self):
+        return Mastery.query.filter_by(id=self.mastery_id).first().text
+
+    mastery = property(get_mastery, set_mastery)
 
 
 # Initialize the database
