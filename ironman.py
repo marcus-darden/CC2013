@@ -26,8 +26,7 @@ class KA(db.Model):
     __tablename__ = 'ka'
     id = db.Column(db.String(3), primary_key=True)
     text = db.Column(db.String(64))
-    kus = db.relationship('KU', backref='kas', lazy='dynamic')
-    outcomes = db.relationship('Outcome', backref='kas', lazy='dynamic')
+    kus = db.relationship('KU', backref='ka', lazy='dynamic')
 
     def __init__(self, id, text):
         self.id = id.strip().upper()
@@ -48,7 +47,7 @@ class KU(db.Model):
     tier2 = db.Column(db.Float)
     elective = db.Column(db.Float)
     ka_id = db.Column(db.String, db.ForeignKey('ka.id'))
-    outcomes = db.relationship('Outcome', backref='kus', lazy='dynamic')
+    outcomes = db.relationship('Outcome', backref='ku', lazy='dynamic')
 
     def __init__(self, ka, text, tier1, tier2):
         self.text = text.strip()
@@ -86,7 +85,6 @@ class Outcome(db.Model):
     tier = db.Column(db.Integer)
     mastery_id = db.Column(db.Integer, db.ForeignKey('mastery.id'))
     number = db.Column(db.Integer)
-    ka_id = db.Column(db.String, db.ForeignKey('ka.id'))
     ku_id = db.Column(db.Integer, db.ForeignKey('ku.id'))
 
     def __init__(self, ka, ku, tier, mastery, number, text):
