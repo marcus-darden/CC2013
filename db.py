@@ -1,6 +1,6 @@
 import csv
 
-with open('LearningOutcomes.csv') as f:
+with open('csv/LearningOutcomes.csv') as f:
     reader = csv.reader(f)
     count = 0
     counts = {1: 0, 2: 0, 3: 0}
