@@ -1,0 +1,8 @@
+<h1>Knowledge Areas</h1>
+
+<ul>
+{% for area in areas %}
+  <li><a href="/units/{{ area.id }}">{{ area.id }} - {{ area.text }}</a></li>
+{% endfor %}
+</ul>
+

@@ -19,44 +19,42 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 db = SQLAlchemy(app)
 
 
-class KA(db.Model):
+class Area(db.Model):
     '''A "Knowledge Area", as defined in CC2013.
 
     These high-level areas divide the entire Body of Knowledge (BOK).'''
-    __tablename__ = 'ka'
     id = db.Column(db.String(3), primary_key=True)
     text = db.Column(db.String(64))
-    kus = db.relationship('KU', backref='ka', lazy='dynamic')
+    units = db.relationship('Unit', backref='area', lazy='dynamic')
 
     def __init__(self, id, text):
         self.id = id.strip().upper()
         self.text = text.strip()
 
     def __repr__(self):
-        return '<Knowledge Area: {0.id}>'.format(self)
+        return '<Knowledge Area: {0.id:>3s}>'.format(self)
 
 
-class KU(db.Model):
+class Unit(db.Model):
     '''A "Knowledge Unit", as defined in CC2013.
 
     These subdivisions represent key aspects of their related "Knowledge Areas".'''
-    __tablename__ = 'ku'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(64))
     tier1 = db.Column(db.Float)
     tier2 = db.Column(db.Float)
     elective = db.Column(db.Float)
-    ka_id = db.Column(db.String, db.ForeignKey('ka.id'))
-    outcomes = db.relationship('Outcome', backref='ku', lazy='dynamic')
+    area_id = db.Column(db.String, db.ForeignKey('area.id'))
+    outcomes = db.relationship('Outcome', backref='unit', lazy='dynamic')
 
-    def __init__(self, ka, text, tier1, tier2):
+    def __init__(self, area, text, tier1, tier2):
+        self.area_id = area.id
         self.text = text.strip()
         self.tier1 = tier1
         self.tier2 = tier2
-        self.ka_id = ka.strip().upper()
 
     def __str__(self):
-        return '<Knowledge Unit: {0.text} KA: {0.ka_id}>'.format(self)
+        return '<KA: {0.area} Knowledge Unit: "{0.text}" Hours: ({0.tier1}, {0.tier2})>'.format(self)
 
 
 class Outcome(db.Model):
@@ -66,18 +64,18 @@ class Outcome(db.Model):
     tier = db.Column(db.Integer)
     mastery = db.Column(db.Enum('Familiarity', 'Usage', 'Assessment', name='outcome_mastery'))
     number = db.Column(db.Integer)
-    ku_id = db.Column(db.Integer, db.ForeignKey('ku.id'))
+    unit_id = db.Column(db.Integer, db.ForeignKey('unit.id'))
 
-    def __init__(self, ka, ku, tier, mastery, number, text):
+    def __init__(self, unit, tier, mastery, number, text):
+        self.unit_id = unit.id
         self.tier = tier
+        self.mastery = mastery
         self.number = number
         self.text = text.strip()
 
-        self.mastery = mastery
-
     def __repr__(self):
-        return str(self.__dict__)
-        return '<Outcome: {0.text}>'.format(self)
+        #return str(self.__dict__)
+        return '<Outcome: {0.number:2d}. {0.text} Tier: {0.tier} Mastery: {0.mastery} {0.unit}>'.format(self)
 
 
 # Initialize the database
@@ -85,24 +83,102 @@ class Outcome(db.Model):
 def init_db():
     db.create_all()
 
-    # Initialize Knowledge Areas (KA)
+    # Initialize Knowledge Areas (Area table)
     with open('csv/ka.csv') as f:
         reader = csv.reader(f)
         for row in reader:
             if len(row) == 2:
-                ka = KA(*row)
-                db.session.add(ka)
+                area = Area(*row)
+                db.session.add(area)
+    db.session.commit()
 
+    # Initialize Knowledge Units (Unit table)
+    with open('csv/LearningOutcomes.csv') as f:
+        reader = csv.reader(f)
+        next(reader)  # Skip the header row
+        area = None
+        for row in reader:
+            # Skip rows that can't hold a KU
+            if len(row) < 6:
+                continue
+            #print row
+            # Find the related KA from the database
+            area_id = row[0].strip().upper()
+            if area_id and (not area or area_id != area.id):
+                area = Area.query.filter_by(id=area_id).first()
+
+            # CSV match is 6 or more fields with area_id and row[4] blank
+            if area_id and not row[4].strip():
+                text = row[1].strip()
+                tier1 = float(row[2])
+                tier2 = float(row[3])
+                unit = Unit(area, text, tier1, tier2)
+                db.session.add(unit)
+    db.session.commit()
+
+    # Initialize Learning Outcomes (Outcome)
+    with open('csv/LearningOutcomes.csv') as f:
+        reader = csv.reader(f)
+        next(reader)  # Skip the header row
+        unit = None
+        for row in reader:
+            # CSV match is 6 or more fields with row[4] & row[5] non-blank
+            if len(row) >= 6 and row[4] and row[5]:
+                # Find the related KU from the database
+                unit_text = row[1].strip()
+                unit = Unit.query.filter_by(text=unit_text).first()
+                
+                tier = int(row[2])
+                mastery = row[3].strip()
+                number = int(row[4])
+                text = row[5].strip()
+                outcome = Outcome(unit, tier, mastery, number, text)
+                db.session.add(outcome)
+                print outcome
     db.session.commit()
 
 
-@app.route('/')
 def index():
-    kas = KA.query.all()
-    for ka in kas:
-        print ka
+    areas = Area.query.all()
+    for area in areas:
+        print area
+
+    units = Unit.query.all()
+    for unit in units:
+        print unit
+
     return render_template('index.html')
 
+
+@app.route('/')
+@app.route('/areas')
+def knowledge_areas():
+    areas = Area.query.all()
+    return render_template('areas.html', areas=areas)
+
+
+@app.route('/units/<area_id>')
+def knowledge_units(area_id):
+    area = Area.query.filter_by(id=area_id).first()
+    units = Unit.query.filter_by(area=area).all()
+    return render_template('units.html', area=area, units=units)
+
+
+@app.route('/outcomes/<int:unit_id>')
+@app.route('/outcomes')
+def learning_outcomes(unit_id=-1):
+    if unit_id < 0:
+        tier1 = Outcome.query.filter_by(tier=1).all()
+        tier2 = Outcome.query.filter_by(tier=2).all()
+        electives = Outcome.query.filter_by(tier=3).all()
+    else:
+        unit = Unit.query.filter_by(id=unit_id).first()
+        area = unit.area
+        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
+        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
+        electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
+        
+    return render_template('outcomes.html', **locals())
 
 if __name__ == '__main__':
     app.run()

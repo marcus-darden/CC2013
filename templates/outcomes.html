@@ -1,0 +1,35 @@
+<h1>Learning Outcomes</h1>
+
+
+{% if area is defined %}
+<h2><a href="/units/{{ area.id }}">{{ area.id }} - {{ area.text }}</a></h2>
+<h3>{{ unit.text }}</h3>
+{% endif %}
+
+{% if tier1|length > 0 %}
+<h4>Tier 1</h4>
+<ul>
+{% for outcome in tier1 %}
+  <li>{{ outcome.text }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if tier2|length > 0 %}
+<h4>Tier 2</h4>
+<ul>
+{% for outcome in tier2 %}
+  <li>{{ outcome.text }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if electives|length > 0 %}
+<h4>Electives</h4>
+<ul>
+{% for outcome in electives %}
+  <li>{{ outcome.text }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
