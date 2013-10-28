@@ -99,10 +99,11 @@ class Course(db.Model):
     description = db.Column(db.String)
     program_id = db.Column(db.Integer, db.ForeignKey('program.id'))
 
-    def __init__(self, program, abbr, title):
+    def __init__(self, program, title, abbr=None, description=None):
         self.program_id = program.id
-        self.abbr = abbr
         self.title = title
+        self.abbr = abbr
+        self.description = description
 
     def __repr__(self):
         return '<Course: {0.abbr} - {0.title} {0.program}>'.format(self)
@@ -176,10 +177,16 @@ def index():
 
 @app.route('/add_program', methods=['POST'])
 def add_program():
-    program = Program(request.form['title'])
+    title = request.form['title'].strip()
+    if not title:
+        return render_template('new_program.html',
+                               message='Required field(s) cannot be left blank.')
+
+    # Create new program object and store in the database
+    program = Program(title)
     db.session.add(program)
-    print 'New Program:', program
     db.session.commit()
+
     #flash('New entry was successfully posted')
     return redirect(url_for('new_course'))
 
@@ -187,6 +194,25 @@ def add_program():
 @app.route('/new_course')
 def new_course():
     return render_template('new_course.html')
+
+
+@app.route('/add_course', methods=['POST'])
+def add_course():
+    title = request.form['title'].strip()
+    if not title:
+        return render_template('new_course.html',
+                               message='Required field(s) cannot be left blank.')
+
+    # Create new course object and store in the database
+    program = None
+    abbr = request.form['abbr'].strip()
+    description = request.form['description'].strip()
+    course = Course(program, title, abbr, description)
+    db.session.add(course)
+    db.session.commit()
+
+    #flash('New entry was successfully posted')
+    return redirect(url_for('new_course'))
 
 
 @app.route('/areas')

@@ -6,10 +6,13 @@
       <div class="form_description">
         <h2>New Program</h2>
         <p>Create a program (major, minor, concentration, etc.) to design a new curriculum.</p>
+{% if message is defined %}
+        <p><strong>{{ message }}</strong></p>
+{% endif %}
       </div>            
       <ul>
         <li id="li_1" >
-          <label class="description" for="title">Program Title</label>
+          <label class="description" for="title">Program Title<span class=required>*</span></label>
           <div>
             <input id="element_1" name="title" class="element text large" type="text" maxlength="255" value=""/> 
           </div>
@@ -21,6 +24,7 @@
           <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
         </li>
       </ul>
+      <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
     </form> 
 {% endblock content %}
 

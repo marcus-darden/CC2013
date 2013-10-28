@@ -2,30 +2,33 @@
 {% block page_title %}New Course{% endblock page_title %}
 {% block content %}
     <h1><a>New Course</a></h1>
-    <form id="form_731120" class="appnitro"  method="post" action="">
+    <form id="form_731120" class="appnitro"  method="post" action="{{ url_for('add_course') }}">
       <div class="form_description">
         <h2>New Course</h2>
         <p>Add a new course to the current program.</p>
+{% if message is defined %}
+        <p><strong>{{ message }}</strong></p>
+{% endif %}
       </div>            
       <ul>
         <li id="li_1">
-          <label class="description" for="element_1">Course Name </label>
+          <label class="description" for="title">Course Title<span class="required">*</span></label>
           <div>
-            <input id="element_1" name="element_1" class="element text large" type="text" maxlength="255" value=""/> 
+            <input id="element_1" name="title" class="element text large" type="text" maxlength="255" value=""/> 
           </div>
           <p class="guidelines" id="guide_1"><small>The name of the course, as it might be printed in the course catalog.</small></p> 
         </li>
         <li id="li_2">
-          <label class="description" for="element_2">Course Abbreviation (optional) </label>
+          <label class="description" for="abbr">Course Abbreviation</label>
           <div>
-            <input id="element_2" name="element_2" class="element text small" type="text" maxlength="255" value=""/> 
+            <input id="element_2" name="abbr" class="element text small" type="text" maxlength="255" value=""/> 
           </div>
           <p class="guidelines" id="guide_2"><small>The course catalog number (eg. CS 101) or other short reference title.</small></p> 
         </li>
         <li id="li_3">
-          <label class="description" for="element_3">Course Description (optional) </label>
+          <label class="description" for="description">Course Description</label>
           <div>
-            <textarea id="element_3" name="element_3" class="element textarea medium"></textarea> 
+            <textarea id="element_3" name="description" class="element textarea medium"></textarea> 
           </div>
           <p class="guidelines" id="guide_3"><small>The public catalog description that should include topics covered and pedagogical structure.</small></p> 
         </li>
@@ -34,6 +37,7 @@
           <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
         </li>
       </ul>
+      <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
     </form> 
 {% endblock content %}
 
