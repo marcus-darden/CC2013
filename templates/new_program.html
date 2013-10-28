@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block page_title %}New Program{% endblock page_title %}
+{% block content %}
+    <h1><a>New Program</a></h1>
+    <form id="form_731120" class="appnitro"  method="post" action="{{ url_for('add_program') }}">
+      <div class="form_description">
+        <h2>New Program</h2>
+        <p>Create a program (major, minor, concentration, etc.) to design a new curriculum.</p>
+      </div>            
+      <ul>
+        <li id="li_1" >
+          <label class="description" for="title">Program Title</label>
+          <div>
+            <input id="element_1" name="title" class="element text large" type="text" maxlength="255" value=""/> 
+          </div>
+          <p class="guidelines" id="guide_1"><small>The name of your major, minor, concentration, etc.</small></p> 
+        </li>
+      
+        <li class="buttons">
+          <input type="hidden" name="form_id" value="731120" />
+          <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
+        </li>
+      </ul>
+    </form> 
+{% endblock content %}
+

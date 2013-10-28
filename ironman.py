@@ -7,7 +7,7 @@ Preconditions:
 '''
 import csv
 
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -78,6 +78,36 @@ class Outcome(db.Model):
         return '<Outcome: {0.number:2d}. {0.text} Tier: {0.tier} Mastery: {0.mastery} {0.unit}>'.format(self)
 
 
+class Program(db.Model):
+    '''A collection of courses built to cover "Learning Outcomes".'''
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128), unique=True)
+    courses = db.relationship('Course', backref='program', lazy='dynamic')
+
+    def __init__(self, title):
+        self.title = title
+
+    def __repr__(self):
+        return '<Program: {0.title}>'.format(self)
+
+
+class Course(db.Model):
+    '''A member of a program built to cover "Learning Outcomes".'''
+    id = db.Column(db.Integer, primary_key=True)
+    abbr = db.Column(db.String(8))
+    title = db.Column(db.String(128))
+    description = db.Column(db.String)
+    program_id = db.Column(db.Integer, db.ForeignKey('program.id'))
+
+    def __init__(self, program, abbr, title):
+        self.program_id = program.id
+        self.abbr = abbr
+        self.title = title
+
+    def __repr__(self):
+        return '<Course: {0.abbr} - {0.title} {0.program}>'.format(self)
+
+
 # Initialize the database
 @app.before_first_request
 def init_db():
@@ -138,19 +168,27 @@ def init_db():
     db.session.commit()
 
 
-def index():
-    areas = Area.query.all()
-    for area in areas:
-        print area
-
-    units = Unit.query.all()
-    for unit in units:
-        print unit
-
-    return render_template('index.html')
-
-
 @app.route('/')
+@app.route('/new_program')
+def index():
+    return render_template('new_program.html')
+
+
+@app.route('/add_program', methods=['POST'])
+def add_program():
+    program = Program(request.form['title'])
+    db.session.add(program)
+    print 'New Program:', program
+    db.session.commit()
+    #flash('New entry was successfully posted')
+    return redirect(url_for('new_course'))
+
+
+@app.route('/new_course')
+def new_course():
+    return render_template('new_course.html')
+
+
 @app.route('/areas')
 def knowledge_areas():
     areas = Area.query.all()
