@@ -6,7 +6,7 @@
 <h3>{{ unit.text }}</h3>
 {% endif %}
 
-{% if tier1|length > 0 %}
+{% if tier1|length %}
 <h4>Tier 1</h4>
 <ul>
 {% for outcome in tier1 %}
@@ -15,7 +15,7 @@
 </ul>
 {% endif %}
 
-{% if tier2|length > 0 %}
+{% if tier2|length %}
 <h4>Tier 2</h4>
 <ul>
 {% for outcome in tier2 %}
@@ -24,7 +24,7 @@
 </ul>
 {% endif %}
 
-{% if electives|length > 0 %}
+{% if electives|length %}
 <h4>Electives</h4>
 <ul>
 {% for outcome in electives %}
