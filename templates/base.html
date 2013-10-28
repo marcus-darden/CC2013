@@ -1,21 +1,24 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>{% block page_title %}CC2013{% endblock %}</title>
-<link rel="stylesheet" type="text/css" href="static/style.css" media="all">
-</head>
-<body id="main_body">
-  <img id="top" src="static/top.png" alt="">
-  <div id="form_container">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block page_title %}CC2013{% endblock %}</title>
+    <!-- link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" -->
+  </head>
+  <body>
+    <nav>
+{% block nav %}
+{% endblock nav %}
+    </nav>
+    <div id="content">
 {% block content %}
 {% endblock content %}
-{% block footer %}
-    <div id="footer">
-      Sampled from <a href="http://www.phpform.org">pForm</a>
     </div>
-{% endblock footer %}
-  </div>
-  <img id="bottom" src="static/bottom.png" alt="">
+    <footer>
+{%- block footer -%}
+{%- endblock footer -%}
+    </footer>
   </body>
 </html>
+
+

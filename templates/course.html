@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block page_title %}Course Information{% endblock page_title %}
+{% block nav %}
+    <ul>
+      <li><a href="{{ url_for('program', program_id=program.id) }}">Back to {{ program.title }}</a></li>
+      <li><a href="{{ url_for('new_course', program_id=program.id ) }}">Add new course</a></li>
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <h1>Course Information</h1>
+    <h2>{{ course.title }}</h2>
+{% if message is defined %}
+    <p class="message">{{ message }}</p>
+{% endif %}
+{% endblock content %}

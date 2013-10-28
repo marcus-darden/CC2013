@@ -158,7 +158,7 @@ def init_db():
                 # Find the related KU from the database
                 unit_text = row[1].strip()
                 unit = Unit.query.filter_by(text=unit_text).first()
-                
+
                 tier = int(row[2])
                 mastery = row[3].strip()
                 number = int(row[4])
@@ -170,8 +170,15 @@ def init_db():
 
 
 @app.route('/')
-@app.route('/new_program')
+@app.route('/programs')
 def index():
+    programs = Program.query.order_by(Program.title).all()
+    return render_template('programs.html', programs=programs)
+
+
+@app.route('/program')
+@app.route('/new_program')
+def new_program():
     return render_template('new_program.html')
 
 
@@ -188,23 +195,31 @@ def add_program():
     db.session.commit()
 
     #flash('New entry was successfully posted')
-    return redirect(url_for('new_course'))
+    return redirect('/program/{0}'.format(program.id))
 
 
-@app.route('/new_course')
-def new_course():
-    return render_template('new_course.html')
+@app.route('/program/<int:program_id>')
+def program(program_id):
+    program = Program.query.filter_by(id=program_id).first()
+    courses = Course.query.filter_by(program_id=program_id).all()
+    return render_template('program.html', program=program, courses=courses)
 
 
-@app.route('/add_course', methods=['POST'])
-def add_course():
+@app.route('/program/<int:program_id>/new_course')
+def new_course(program_id):
+    program = Program.query.filter_by(id=program_id).first()
+    return render_template('new_course.html', program=program)
+
+
+@app.route('/program/<int:program_id>/add_course', methods=['POST'])
+def add_course(program_id):
+    program = Program.query.filter_by(id=program_id).first()
     title = request.form['title'].strip()
     if not title:
         return render_template('new_course.html',
                                message='Required field(s) cannot be left blank.')
 
     # Create new course object and store in the database
-    program = None
     abbr = request.form['abbr'].strip()
     description = request.form['description'].strip()
     course = Course(program, title, abbr, description)
@@ -212,7 +227,14 @@ def add_course():
     db.session.commit()
 
     #flash('New entry was successfully posted')
-    return redirect(url_for('new_course'))
+    return redirect(url_for('course', program_id=program.id, course_id=course.id))
+
+
+@app.route('/program/<int:program_id>/course/<int:course_id>')
+def course(program_id, course_id):
+    program = Program.query.filter_by(id=program_id).first()
+    course = Course.query.filter_by(id=course_id).first()
+    return render_template('course.html', program=program, course=course)
 
 
 @app.route('/areas')
