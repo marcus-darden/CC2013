@@ -119,7 +119,9 @@ def init_db():
         reader = csv.reader(f)
         for row in reader:
             if len(row) == 2:
-                area = Area(*row)
+                id = row[0].strip().upper()
+                text = row[1].strip()
+                area = Area(id, text)
                 db.session.add(area)
     db.session.commit()
 
@@ -147,7 +149,7 @@ def init_db():
                 db.session.add(unit)
     db.session.commit()
 
-    # Initialize Learning Outcomes (Outcome)
+    # Initialize Learning Outcomes (Outcome table)
     with open('csv/LearningOutcomes.csv') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header row
@@ -263,9 +265,8 @@ def learning_outcomes(unit_id=-1):
         tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
         tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
         electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
-        
+
     return render_template('outcomes.html', **locals())
 
 if __name__ == '__main__':
     app.run()
-
