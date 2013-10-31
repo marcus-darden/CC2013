@@ -268,5 +268,7 @@ def learning_outcomes(unit_id=-1):
 
     return render_template('outcomes.html', **locals())
 
+
 if __name__ == '__main__':
     app.run()
+
