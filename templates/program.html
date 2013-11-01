@@ -9,14 +9,18 @@
 {% block content %}
     <h1>Program Summary</h1>
     <h2>{{ program.title }}</h2>
+    <p>{{ program.description }}</p>
 {% if message is defined %}
     <p class="message">{{ message }}</p>
 {% endif %}
-{% if courses|length %}
     <ul>
 {% for course in courses %}
       <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{{ course.title }}</a></li>
+{% else %}
+      <p>No courses have been created.</p>
 {% endfor %}
     </ul>
-{% endif %}
+    <div><a href="{{ url_for('program', program_id=program.id, action='edit') }}">Edit Program</a></div>
+    <div><a href="{{ url_for('program', program_id=program.id, action='delete') }}">Delete Program</a></div>
 {% endblock content %}
+

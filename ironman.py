@@ -7,7 +7,7 @@ Preconditions:
 '''
 import csv
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, abort, redirect, render_template, request, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -82,10 +82,12 @@ class Program(db.Model):
     '''A collection of courses built to cover "Learning Outcomes".'''
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), unique=True)
+    description = db.Column(db.String)
     courses = db.relationship('Course', backref='program', lazy='dynamic')
 
-    def __init__(self, title):
+    def __init__(self, title=None, description=None):
         self.title = title
+        self.description = description
 
     def __repr__(self):
         return '<Program: {0.title}>'.format(self)
@@ -167,7 +169,7 @@ def init_db():
                 text = row[5].strip()
                 outcome = Outcome(unit, tier, mastery, number, text)
                 db.session.add(outcome)
-                print outcome
+                #print outcome
     db.session.commit()
 
 
@@ -184,27 +186,73 @@ def new_program():
     return render_template('new_program.html')
 
 
+@app.route('/edit_program/<int:program_id>', methods=['POST'])
 @app.route('/add_program', methods=['POST'])
-def add_program():
+def modify_program(program_id=None):
     title = request.form['title'].strip()
-    if not title:
-        return render_template('new_program.html',
-                               message='Required field(s) cannot be left blank.')
+    description = request.form['description'].strip()
 
-    # Create new program object and store in the database
-    program = Program(title)
-    db.session.add(program)
+    # Query db if necessary
+    if program_id:
+        program = Program.query.filter_by(id=program_id).first_or_404()
+        if not title:
+            return render_template('new_program.html', program=program,
+                                   message='Required field(s) cannot be left blank.')
+        program.title = title
+        program.description = description
+    else:
+        if not title:
+            return render_template('new_program.html', description=description,
+                                   message='Required field(s) cannot be left blank.')
+        program = Program(title, description)
+        db.session.add(program)
+    db.session.commit()
+
+
+    #flash('New entry was successfully posted')
+    return redirect('/program/{0}'.format(program.id))
+
+
+@app.route('/edit_program/<int:program_id>', methods=['POST'])
+def edit_program(program_id):
+    # Query db
+    program = Program.query.filter_by(id=program_id).first_or_404()
+    title = request.form['title'].strip()
+    description = request.form['description'].strip()
+    #if not title:
+        #return render_template('new_program.html', description=description,
+                               #message='Required field(s) cannot be left blank.')
+    program.title = title
+    program.description = description
     db.session.commit()
 
     #flash('New entry was successfully posted')
     return redirect('/program/{0}'.format(program.id))
 
 
+@app.route('/program/<int:program_id>/<action>')
 @app.route('/program/<int:program_id>')
-def program(program_id):
-    program = Program.query.filter_by(id=program_id).first()
-    courses = Course.query.filter_by(program_id=program_id).all()
-    return render_template('program.html', program=program, courses=courses)
+def program(program_id, action=None):
+    # Query db
+    program = Program.query.filter_by(id=program_id).first_or_404()
+
+    if action:
+        if action == 'edit':
+            # Edit program level info
+            return render_template('new_program.html', program=program)
+        elif action == 'delete':
+            # Delete the given program
+            # TODO: Add a confirmation dialog here
+            db.session.delete(program)
+            db.session.commit()
+            return redirect(url_for('index'))
+        else:
+            # Nonexistant action
+            abort(404)
+    else:
+        # No action provided, display program summary
+        courses = Course.query.filter_by(program_id=program_id).all()
+        return render_template('program.html', program=program, courses=courses)
 
 
 @app.route('/program/<int:program_id>/new_course')
@@ -267,6 +315,11 @@ def learning_outcomes(unit_id=-1):
         electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
 
     return render_template('outcomes.html', **locals())
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return 'This page does not exist', 404
 
 
 if __name__ == '__main__':
