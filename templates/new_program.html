@@ -8,14 +8,12 @@
 {% block content %}
 {% if program is defined %}
     {% set title, description = program.title, program.description %}
-    {% set action = url_for('edit_program', program_id=program.id) %}
+    {% set action = url_for('modify_program', program_id=program.id) %}
     <h1>Edit Program</h1>
     <p>Modify program details.</p>
 {% else %}
     {% set title = "" %}
-    {% if description is not defined %}
-    {% set description = "" %}
-    {% endif %}
+    {% if description is not defined %}{% set description = "" %}{% endif %}
     {% set action = url_for('modify_program') %}
     <h1>New Program</h1>
     <p>Create a program (major, minor, concentration, etc.) to design a new curriculum.</p>
@@ -34,4 +32,3 @@
       <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
     </form> 
 {% endblock content %}
-

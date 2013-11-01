@@ -6,22 +6,31 @@
     </ul>
 {% endblock nav %}
 {% block content %}
+{% if course is defined %}
+    {% set title, abbr, description = course.title, course.abbr, course.description %}
+    {% set action = url_for('modify_course', program_id=program.id, course_id=course.id) %}
+    <h1>Edit Course</h1>
+{% else %}
+    {% set title = "" %}
+    {% if abbr is not defined %}{% set abbr = "" %}{% endif %}
+    {% if description is not defined %}{% set description = "" %}{% endif %}
+    {% set action = url_for('modify_course', program_id=program.id) %}
     <h1>New Course</h1>
-    <form method="post" action="{{ url_for('add_course', program_id=program.id) }}">
-      <p>Add a new course to the "{{ program.title }}" program.</p>
+{% endif %}
+    <form method="post" action="{{ action }}">
 {% if message is defined %}
       <p><strong>{{ message }}</strong></p>
 {% endif %}
       <label for="title">Course Title<span class="required">*</span></label>
-      <input name="title" type="text" value="" /> 
+      <input name="title" type="text" value="{{ title }}" /> 
       <p class="guidelines">The name of the course, as it might be printed in the course catalog.</p> 
       <label for="abbr">Course Abbreviation</label>
-      <input name="abbr" type="text" value="" /> 
+      <input name="abbr" type="text" value="{{ abbr }}" /> 
       <p class="guidelines">The course catalog number (eg. CS 101) or other short reference title.</p> 
       <label for="description">Course Description</label>
-      <textarea name="description"></textarea> 
-      <p class="guidelines">The public catalog description that should include topics covered and pedagogical structure.</p> 
-      <div class="knowledge_areas">
+      <textarea name="description">{{ description }}</textarea> 
+      <p class="guidelines">The public catalog description that should include topics covered and pedagogical approach.</p> 
+      <!-- div class="knowledge_areas">
         <select name="drop1" id="Select1" size="4" multiple="multiple">
           <option value="1">item 1</option>
           <option value="2">item 2</option>
@@ -29,9 +38,8 @@
           <option value="4">item 4</option>
           <option value="0">All</option>
         </select>
-      </div>
+      </div -->
       <input type="submit" name="submit" value="Submit" />
       <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
     </form> 
 {% endblock content %}
-

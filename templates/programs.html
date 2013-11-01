@@ -14,6 +14,8 @@
     <ul>
 {% for program in programs %}
       <li><a href="{{ url_for('program', program_id=program.id) }}">{{ program.title }}</a></li>
+{% else %}
+      <p>No programs have been created.</p>
 {% endfor %}
     </ul>
 {% endif %}
