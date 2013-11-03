@@ -194,6 +194,7 @@ def modify_program(program_id=None):
 
     # Query db if necessary
     if program_id:
+        # Program exists, so update properties
         program = Program.query.filter_by(id=program_id).first_or_404()
         if not title:
             return render_template('new_program.html', program=program,
@@ -201,13 +202,13 @@ def modify_program(program_id=None):
         program.title = title
         program.description = description
     else:
+        # Create new program object and store in the database
         if not title:
             return render_template('new_program.html', description=description,
                                    message='Required field(s) cannot be left blank.')
         program = Program(title, description)
         db.session.add(program)
     db.session.commit()
-
 
     #flash('New entry was successfully posted')
     return redirect('/program/{0}'.format(program.id))
@@ -226,6 +227,9 @@ def program(program_id, action=None):
         elif action == 'delete':
             # Delete the given program
             # TODO: Add a confirmation dialog here
+            courses = Course.query.filter_by(program_id=program.id).all()
+            for course in courses:
+                db.session.delete(course)
             db.session.delete(program)
             db.session.commit()
             return redirect(url_for('index'))
@@ -240,34 +244,71 @@ def program(program_id, action=None):
 
 @app.route('/program/<int:program_id>/new_course')
 def new_course(program_id):
-    program = Program.query.filter_by(id=program_id).first()
+    program = Program.query.filter_by(id=program_id).first_or_404()
     return render_template('new_course.html', program=program)
 
 
+@app.route('/program/<int:program_id>/edit_course/<int:course_id>/', methods=['POST'])
 @app.route('/program/<int:program_id>/add_course', methods=['POST'])
-def add_course(program_id):
-    program = Program.query.filter_by(id=program_id).first()
+def modify_course(program_id, course_id=None):
     title = request.form['title'].strip()
-    if not title:
-        return render_template('new_course.html',
-                               message='Required field(s) cannot be left blank.')
-
-    # Create new course object and store in the database
     abbr = request.form['abbr'].strip()
     description = request.form['description'].strip()
-    course = Course(program, title, abbr, description)
-    db.session.add(course)
+
+    # Query db
+    program = Program.query.filter_by(id=program_id).first_or_404()
+    if course_id:
+        # Course exists, so update properties
+        course = Course.query.filter_by(program_id=program_id).first_or_404()
+        if not title:
+            return render_template('new_course.html',
+                                   program=program, course=course,
+                                   message='Required field(s) cannot be left blank.')
+        course.title = title
+        course.abbr = abbr
+        course.description = description
+    else:
+        # Create new course object and store in the database
+        if not title:
+            return render_template('new_course.html', program=program,
+                                   abbr=abbr, description=description,
+                                   message='Required field(s) cannot be left blank.')
+        course = Course(program, title, abbr, description)
+        db.session.add(course)
     db.session.commit()
 
     #flash('New entry was successfully posted')
     return redirect(url_for('course', program_id=program.id, course_id=course.id))
 
 
+@app.route('/program/<int:program_id>/course/<int:course_id>/<action>')
 @app.route('/program/<int:program_id>/course/<int:course_id>')
-def course(program_id, course_id):
-    program = Program.query.filter_by(id=program_id).first()
-    course = Course.query.filter_by(id=course_id).first()
-    return render_template('course.html', program=program, course=course)
+def course(program_id, course_id, action=None):
+    program = Program.query.filter_by(id=program_id).first_or_404()
+    course = Course.query.filter_by(id=course_id).first_or_404()
+
+    if action:
+        if action == 'edit':
+            # Edit program level info
+            return render_template('new_course.html', program=program, course=course)
+        elif action == 'delete':
+            # Delete the given course
+            # TODO: Add a confirmation dialog here
+            db.session.delete(course)
+            db.session.commit()
+            return redirect(url_for('program', program_id=program.id))
+        else:
+            # Nonexistant action
+            abort(404)
+    else:
+        # No action provided, display course information
+        course_outcomes = [['Tier 1 sample'], ['Tier 2 sample'], ['Elective sample']]
+        areas = Area.query.order_by(Area.id).all()
+        units = Unit.query.filter_by(area_id='AL').order_by(Unit.id).all()
+        outcomes = Outcome.query.filter_by(unit_id=units[0].id).order_by(Outcome.number).all()
+        return render_template('course.html', program=program, course=course,
+                               course_outcomes=course_outcomes, areas=areas,
+                               units=units, outcomes=outcomes)
 
 
 @app.route('/areas')
@@ -307,4 +348,3 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run()
-

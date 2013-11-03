@@ -8,8 +8,44 @@
 {% endblock nav %}
 {% block content %}
     <h1>Course Information</h1>
-    <h2>{{ course.title }}</h2>
+    <h2>{% if course.abbr %}{{ course.abbr }} - {% endif %}{{ course.title }}</h2>
+{% if course.description %}
+    <p>{{ course.description }}</p>
+{% else %}
+    <p>No course description available.</p>
+{% endif %}
 {% if message is defined %}
     <p class="message">{{ message }}</p>
 {% endif %}
+    <h3>Learning Outcomes</h3>
+{% if outcomes is defined %}
+  {% if outcomes[0]|length %}
+      <h4>Tier 1</h4>
+      <ul>
+    {% for outcome in outcomes[0] %}
+        <li>{{ outcome.text }}</li>
+    {% endfor %}
+      </ul>
+  {% endif %}
+  {% if outcomes[1]|length %}
+      <h4>Tier 2</h4>
+      <ul>
+    {% for outcome in outcomes[1] %}
+        <li>{{ outcome.text }}</li>
+    {% endfor %}
+      </ul>
+  {% endif %}
+  {% if outcomes[2]|length %}
+      <h4>Elective</h4>
+      <ul>
+    {% for outcome in outcomes[2] %}
+        <li>{{ outcome.text }}</li>
+    {% endfor %}
+      </ul>
+  {% endif %}
+{% else %}
+      <p>No outcomes have been assigned.</p>
+{% endif %}
+    <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='edit') }}">Edit Course</a></div>
+    <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='delete') }}">Delete Course</a></div>
 {% endblock content %}
