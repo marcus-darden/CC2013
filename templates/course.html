@@ -8,7 +8,7 @@
 {% endblock nav %}
 {% block content %}
     <h1>Course Information</h1>
-    <h2>{% if course.abbr %}{{ course.abbr }} - {% endif %}{{ course.title }}</h2>
+    <h2>{% if course.abbr %}{{ course.abbr }}: {% endif %}{{ course.title }}</h2>
 {% if course.description %}
     <p>{{ course.description }}</p>
 {% else %}
@@ -18,27 +18,27 @@
     <p class="message">{{ message }}</p>
 {% endif %}
     <h3>Learning Outcomes</h3>
-{% if outcomes is defined %}
-  {% if outcomes[0]|length %}
+{% if course_outcomes is defined %}
+  {% if course_outcomes[0]|length %}
       <h4>Tier 1</h4>
       <ul>
-    {% for outcome in outcomes[0] %}
+    {% for outcome in course_outcomes[0] %}
         <li>{{ outcome.text }}</li>
     {% endfor %}
       </ul>
   {% endif %}
-  {% if outcomes[1]|length %}
+  {% if course_outcomes[1]|length %}
       <h4>Tier 2</h4>
       <ul>
-    {% for outcome in outcomes[1] %}
+    {% for outcome in course_outcomes[1] %}
         <li>{{ outcome.text }}</li>
     {% endfor %}
       </ul>
   {% endif %}
-  {% if outcomes[2]|length %}
+  {% if course_outcomes[2]|length %}
       <h4>Elective</h4>
       <ul>
-    {% for outcome in outcomes[2] %}
+    {% for outcome in course_outcomes[2] %}
         <li>{{ outcome.text }}</li>
     {% endfor %}
       </ul>
@@ -48,4 +48,31 @@
 {% endif %}
     <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='edit') }}">Edit Course</a></div>
     <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='delete') }}">Delete Course</a></div>
+    <h2>Add Course Content</h2>
+    <div>
+      <p>Knowledge Areas</p>
+      <select name="knowledge_areas" id="knowledge_areas" size="{{ areas|length }}">
+{% for area in areas %}
+        <option value="{{ area.id }}">{{ area.id }} - {{ area.text }}</option>
+{% endfor %}
+      </select>
+    </div>
+    <div>
+      <p>Knowledge Units</p>
+      <select name="knowledge_units" id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
+{% for unit in units %}
+        <option value="{{ unit.id }}">{{ unit.text }}</option>
+{% endfor %}
+      </select>
+      <input type="button" value="Add Unit(s)" />
+    </div>
+    <div>
+      <p>Learning Outcomes</p>
+      <select name="learning_outcomes" id="learning_outcomes" size="{{ outcomes|length }}" multiple="multiple">
+{% for outcome in outcomes %}
+        <option value="{{ outcome.id }}">{{ outcome.text }}</option>
+{% endfor %}
+      </select>
+      <input type="button" value="Add Outcome(s)" />
+    </div>
 {% endblock content %}
