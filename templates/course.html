@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block page_title %}Course Information{% endblock page_title %}
+{% block page_js %}<script src="{{ url_for('static', filename='course.js') }}"></script>{% endblock %}
 {% block nav %}
     <ul>
       <li><a href="{{ url_for('program', program_id=program.id) }}">Back to {{ program.title }}</a></li>
@@ -51,7 +52,7 @@
     <h2>Add Course Content</h2>
     <div>
       <p>Knowledge Areas</p>
-      <select name="knowledge_areas" id="knowledge_areas" size="{{ areas|length }}">
+      <select id="knowledge_areas" size="{{ areas|length }}">
 {% for area in areas %}
         <option value="{{ area.id }}">{{ area.id }} - {{ area.text }}</option>
 {% endfor %}
@@ -59,19 +60,13 @@
     </div>
     <div>
       <p>Knowledge Units</p>
-      <select name="knowledge_units" id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
-{% for unit in units %}
-        <option value="{{ unit.id }}">{{ unit.text }}</option>
-{% endfor %}
+      <select id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
       </select>
       <input type="button" value="Add Unit(s)" />
     </div>
     <div>
       <p>Learning Outcomes</p>
       <select name="learning_outcomes" id="learning_outcomes" size="{{ outcomes|length }}" multiple="multiple">
-{% for outcome in outcomes %}
-        <option value="{{ outcome.id }}">{{ outcome.text }}</option>
-{% endfor %}
       </select>
       <input type="button" value="Add Outcome(s)" />
     </div>

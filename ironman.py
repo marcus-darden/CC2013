@@ -304,11 +304,11 @@ def course(program_id, course_id, action=None):
         # No action provided, display course information
         course_outcomes = [['Tier 1 sample'], ['Tier 2 sample'], ['Elective sample']]
         areas = Area.query.order_by(Area.id).all()
-        units = Unit.query.filter_by(area_id='AL').order_by(Unit.id).all()
-        outcomes = Outcome.query.filter_by(unit_id=units[0].id).order_by(Outcome.number).all()
+        #units = Unit.query.filter_by(area_id='AL').order_by(Unit.id).all()
+        #outcomes = Outcome.query.filter_by(unit_id=units[0].id).order_by(Outcome.number).all()
         return render_template('course.html', program=program, course=course,
-                               course_outcomes=course_outcomes, areas=areas,
-                               units=units, outcomes=outcomes)
+                               course_outcomes=course_outcomes, areas=areas)
+                               #units=units, outcomes=outcomes)
 
 
 @app.route('/areas')
