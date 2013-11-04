@@ -6,8 +6,9 @@ Preconditions:
     environment - python 2 >= 2.7.3, flask, flask-sqlalchemy, gunicorn
 '''
 import csv
+import json
 
-from flask import Flask, abort, redirect, render_template, request, url_for
+from flask import Flask, abort, jsonify, redirect, render_template, request, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -53,7 +54,7 @@ class Unit(db.Model):
         self.tier1 = tier1
         self.tier2 = tier2
 
-    def __str__(self):
+    def __repr__(self):
         return '<KA: {0.area} Knowledge Unit: "{0.text}" Hours: ({0.tier1}, {0.tier2})>'.format(self)
 
 
@@ -304,24 +305,36 @@ def course(program_id, course_id, action=None):
         # No action provided, display course information
         course_outcomes = [['Tier 1 sample'], ['Tier 2 sample'], ['Elective sample']]
         areas = Area.query.order_by(Area.id).all()
-        #units = Unit.query.filter_by(area_id='AL').order_by(Unit.id).all()
-        #outcomes = Outcome.query.filter_by(unit_id=units[0].id).order_by(Outcome.number).all()
         return render_template('course.html', program=program, course=course,
                                course_outcomes=course_outcomes, areas=areas)
-                               #units=units, outcomes=outcomes)
 
 
-@app.route('/areas')
+@app.route('/area')
 def knowledge_areas():
     areas = Area.query.all()
     return render_template('areas.html', areas=areas)
 
 
-@app.route('/units/<area_id>')
+@app.route('/area/<area_id>')
 def knowledge_units(area_id):
     area = Area.query.filter_by(id=area_id).first()
     units = Unit.query.filter_by(area=area).all()
     return render_template('units.html', area=area, units=units)
+
+
+@app.route('/json')
+def get_json():
+    area_id = request.args.get('area_id', '')
+    if area_id:
+        units = Unit.query.filter_by(area_id=area_id).all()
+        junits = [{'id': u.id, 'text': u.text} for u in units]
+        return json.dumps(junits)
+    else:
+        unit_id = request.args.get('unit_id', 0, type=int)
+        outcomes = Outcome.query.filter_by(unit_id=unit_id).order_by(Outcome.number).all()
+        joutcomes = [{'id': o.id, 'text': o.text} for o in outcomes]
+        return json.dumps(joutcomes)
+    abort(404)
 
 
 @app.route('/outcomes/<int:unit_id>')

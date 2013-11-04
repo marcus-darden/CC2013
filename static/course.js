@@ -1,22 +1,29 @@
 $(function() {
+    // Knowledge Area listbox handler
     $('#knowledge_areas').change(function() {
-        var val = $('#knowledge_areas').val();
+        var area_id = $('#knowledge_areas').val();
 
-        // Get Knowledge Units, based on val
-
-        // Fill Knowledge Units listbox
+        // Get Knowledge Units, based on val and fill Knowledge Units listbox
         $('#knowledge_units').empty();
-        $('#knowledge_units').append($('<option></option>').text(val));
+        $.getJSON('/json', {'area_id': area_id}, function(units) {
+            $.each(units, function(i, unit) {
+                $('#knowledge_units').append($('<option/>').text(unit.text).val(unit.id));
+            });
+        });
     });
+
+    // Knowledge Unit listbox handler
     $('#knowledge_units').change(function() {
-        var vals = $('#knowledge_units').val();
+        var unit_ids = $('#knowledge_units').val();
 
-        // Get Learning Outcomes, based on vals
-
-        // Fill Learning Outcomes listbox
+        // Get Learning Outcomes, based on vals and fill Learning Outcomes listbox
         $('#learning_outcomes').empty();
-        $.each(vals, function(i, val) {
-            $('#learning_outcomes').append($('<option></option>').text(val));
+        $.each(unit_ids, function(i, unit_id) {
+            $.getJSON('/json', {'unit_id': unit_id}, function(outcomes) {
+                $.each(outcomes, function(j, outcome) {
+                    $('#learning_outcomes').append($('<option/>').text(outcome.text).val(outcome.id));
+                });
+            });
         });
     });
 });

@@ -3,6 +3,7 @@
 {% block page_js %}<script src="{{ url_for('static', filename='course.js') }}"></script>{% endblock %}
 {% block nav %}
     <ul>
+      <li><a href="{{ url_for('index') }}">Back to homepage</a></li>
       <li><a href="{{ url_for('program', program_id=program.id) }}">Back to {{ program.title }}</a></li>
       <li><a href="{{ url_for('new_course', program_id=program.id ) }}">Add new course</a></li>
     </ul>
