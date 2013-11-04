@@ -63,12 +63,12 @@
       <p>Knowledge Units</p>
       <select id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
       </select>
-      <input type="button" value="Add Unit(s)" />
+      <input type="button" id="add_units" value="Add Unit(s)" />
     </div>
     <div>
       <p>Learning Outcomes</p>
       <select name="learning_outcomes" id="learning_outcomes" size="{{ outcomes|length }}" multiple="multiple">
       </select>
-      <input type="button" value="Add Outcome(s)" />
+      <input type="button" id="add_outcomes" value="Add Outcome(s)" />
     </div>
 {% endblock content %}

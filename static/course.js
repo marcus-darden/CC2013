@@ -16,6 +16,12 @@ $(function() {
     $('#knowledge_units').change(function() {
         var unit_ids = $('#knowledge_units').val();
 
+        // Add Unit(s) button enable/disable
+        //if(unit_ids.length > 0)
+            //$('#add_units').enable()
+        //else
+            //$('#add_units').disable()
+
         // Get Learning Outcomes, based on vals and fill Learning Outcomes listbox
         $('#learning_outcomes').empty();
         $.each(unit_ids, function(i, unit_id) {
@@ -26,4 +32,32 @@ $(function() {
             });
         });
     });
+
+    // Knowledge Unit button handler
+    $('#add_units').click(function() {
+        var unit_ids = $('#knowledge_units').val();
+        var action = {'action': 'add', 'unit_ids': unit_ids.join(',')};
+        // Send 'em!!
+        console.log(action);
+    });
+
+    // Learning Outcome listbox handler
+    $('#learning_outcomes').change(function() {
+        var outcome_ids = $('#learning_outcomes').val();
+
+        // Add Outcome(s) button enable/disable
+        //if(outcome_ids.length > 0)
+            //$('#add_outcomes').enable();
+        //else
+            //$('#add_outcomes').disable();
+    });
+
+    // Learning Outcome button handler
+    $('#add_outcomes').click(function() {
+        var outcome_ids = $('#learning_outcomes').val();
+        var action = {'action': 'add', 'outcome_ids': outcome_ids.join(',')};
+        // Send 'em!!
+        console.log(action);
+    });
+
 });
