@@ -33,14 +33,6 @@ $(function() {
         });
     });
 
-    // Knowledge Unit button handler
-    $('#add_units').click(function() {
-        var unit_ids = $('#knowledge_units').val();
-        var action = {'action': 'add', 'unit_ids': unit_ids.join(',')};
-        // Send 'em!!
-        console.log(action);
-    });
-
     // Learning Outcome listbox handler
     $('#learning_outcomes').change(function() {
         var outcome_ids = $('#learning_outcomes').val();
@@ -51,13 +43,4 @@ $(function() {
         //else
             //$('#add_outcomes').disable();
     });
-
-    // Learning Outcome button handler
-    $('#add_outcomes').click(function() {
-        var outcome_ids = $('#learning_outcomes').val();
-        var action = {'action': 'add', 'outcome_ids': outcome_ids.join(',')};
-        // Send 'em!!
-        console.log(action);
-    });
-
 });

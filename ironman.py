@@ -94,6 +94,11 @@ class Program(db.Model):
         return '<Program: {0.title}>'.format(self)
 
 
+course_outcomes = db.Table('course_outcomes',
+                           db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
+                           db.Column('outcome_id', db.Integer, db.ForeignKey('outcome.id')))
+
+
 class Course(db.Model):
     '''A member of a program built to cover "Learning Outcomes".'''
     id = db.Column(db.Integer, primary_key=True)
@@ -101,6 +106,8 @@ class Course(db.Model):
     title = db.Column(db.String(128))
     description = db.Column(db.String)
     program_id = db.Column(db.Integer, db.ForeignKey('program.id'))
+    outcomes = db.relationship('Outcome', secondary=course_outcomes,
+                               backref=db.backref('courses', lazy='dynamic'))
 
     def __init__(self, program, title, abbr=None, description=None):
         self.program_id = program.id
@@ -282,6 +289,36 @@ def modify_course(program_id, course_id=None):
     return redirect(url_for('course', program_id=program.id, course_id=course.id))
 
 
+@app.route('/program/<int:program_id>/course/<int:course_id>/add_<source>', methods=['POST'])
+def add_outcomes(program_id, course_id, source):
+    program = Program.query.filter_by(id=program_id).first_or_404()
+    course = Course.query.filter_by(id=course_id).first_or_404()
+
+    # Lookup outcomes selected on the page, in the database
+    if source == 'unit':
+        getlist = request.form.getlist('knowledge_units')
+        unit_ids = [int(item) for item in getlist]
+        outcomes = Outcome.query.filter(Outcome.unit_id.in_(unit_ids)).all()
+    else:
+        getlist = request.form.getlist('learning_outcomes')
+        outcome_ids = [int(item) for item in getlist]
+        outcomes = Outcome.query.filter(Outcome.id.in_(outcome_ids)).all()
+
+    # Add the outcomes to the course and redisplay course information
+    course.outcomes.extend(outcomes)
+    db.session.commit()
+    return redirect(url_for('course', program_id=program_id, course_id=course_id))
+
+
+@app.route('/program/<int:program_id>/course/<int:course_id>/outcome/<int:outcome_id>/delete')
+def delete_outcome(program_id, course_id, outcome_id):
+    course = Course.query.filter_by(id=course_id).first_or_404()
+    outcome = Outcome.query.filter_by(id=outcome_id).first_or_404()
+    course.outcomes.remove(outcome)
+    db.session.commit()
+    return redirect(url_for('course', program_id=program_id, course_id=course_id))
+
+
 @app.route('/program/<int:program_id>/course/<int:course_id>/<action>')
 @app.route('/program/<int:program_id>/course/<int:course_id>')
 def course(program_id, course_id, action=None):
@@ -303,7 +340,7 @@ def course(program_id, course_id, action=None):
             abort(404)
     else:
         # No action provided, display course information
-        course_outcomes = [['Tier 1 sample'], ['Tier 2 sample'], ['Elective sample']]
+        course_outcomes = [course.outcomes, course.outcomes, course.outcomes]
         areas = Area.query.order_by(Area.id).all()
         return render_template('course.html', program=program, course=course,
                                course_outcomes=course_outcomes, areas=areas)
