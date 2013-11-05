@@ -182,13 +182,11 @@ def init_db():
 
 
 @app.route('/')
-@app.route('/programs')
 def index():
     programs = Program.query.order_by(Program.title).all()
     return render_template('programs.html', programs=programs)
 
 
-@app.route('/program')
 @app.route('/new_program')
 def new_program():
     return render_template('new_program.html')

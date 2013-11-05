@@ -23,7 +23,7 @@
 {% endif %}
     <form method="post" action="{{ action }}">
       <label for="title">Program Title<span class=required>*</span></label>
-      <input name="title" type="text" value="{{ title|e }}" /> 
+      <input name="title" type="text" value="{{ title|e }}" placeholder="Program Title" required autofocus /> 
       <p class="guidelines">The name of your major, minor, concentration, etc.</p> 
       <label for="description">Description</label>
       <p class="guidelines">A description of the program.</p> 

@@ -22,10 +22,10 @@
       <p><strong>{{ message }}</strong></p>
 {% endif %}
       <label for="title">Course Title<span class="required">*</span></label>
-      <input name="title" type="text" value="{{ title }}" /> 
+      <input name="title" type="text" value="{{ title }}" placeholder="Course Title" required autofocus /> 
       <p class="guidelines">The name of the course, as it might be printed in the course catalog.</p> 
       <label for="abbr">Course Abbreviation</label>
-      <input name="abbr" type="text" value="{{ abbr }}" /> 
+      <input name="abbr" type="text" value="{{ abbr }}" placeholder="Course number or abbreviation" /> 
       <p class="guidelines">The course catalog number (eg. CS 101) or other short reference title.</p> 
       <label for="description">Course Description</label>
       <textarea name="description">{{ description }}</textarea> 
