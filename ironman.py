@@ -340,7 +340,10 @@ def course(program_id, course_id, action=None):
             abort(404)
     else:
         # No action provided, display course information
-        course_outcomes = [course.outcomes, course.outcomes, course.outcomes]
+        t1 = [outcome for outcome in course.outcomes if outcome.tier == 1]
+        t2 = [outcome for outcome in course.outcomes if outcome.tier == 2]
+        elec = [outcome for outcome in course.outcomes if outcome.tier == 3]
+        course_outcomes = [t1, t2, elec]
         areas = Area.query.order_by(Area.id).all()
         return render_template('course.html', program=program, course=course,
                                course_outcomes=course_outcomes, areas=areas)
