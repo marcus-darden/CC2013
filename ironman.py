@@ -189,7 +189,7 @@ def index():
 
 @app.route('/new_program')
 def new_program():
-    return render_template('new_program.html')
+    return render_template('edit_program.html')
 
 
 @app.route('/edit_program/<int:program_id>', methods=['POST'])
@@ -203,14 +203,14 @@ def modify_program(program_id=None):
         # Program exists, so update properties
         program = Program.query.filter_by(id=program_id).first_or_404()
         if not title:
-            return render_template('new_program.html', program=program,
+            return render_template('edit_program.html', program=program,
                                    message='Required field(s) cannot be left blank.')
         program.title = title
         program.description = description
     else:
         # Create new program object and store in the database
         if not title:
-            return render_template('new_program.html', description=description,
+            return render_template('edit_program.html', description=description,
                                    message='Required field(s) cannot be left blank.')
         program = Program(title, description)
         db.session.add(program)
@@ -229,7 +229,7 @@ def program(program_id, action=None):
     if action:
         if action == 'edit':
             # Edit program level info
-            return render_template('new_program.html', program=program)
+            return render_template('edit_program.html', program=program)
         elif action == 'delete':
             # Delete the given program
             # TODO: Add a confirmation dialog here
@@ -251,7 +251,7 @@ def program(program_id, action=None):
 @app.route('/program/<int:program_id>/new_course')
 def new_course(program_id):
     program = Program.query.filter_by(id=program_id).first_or_404()
-    return render_template('new_course.html', program=program)
+    return render_template('edit_course.html', program=program)
 
 
 @app.route('/program/<int:program_id>/edit_course/<int:course_id>/', methods=['POST'])
@@ -267,7 +267,7 @@ def modify_course(program_id, course_id=None):
         # Course exists, so update properties
         course = Course.query.filter_by(program_id=program_id).first_or_404()
         if not title:
-            return render_template('new_course.html',
+            return render_template('edit_course.html',
                                    program=program, course=course,
                                    message='Required field(s) cannot be left blank.')
         course.title = title
@@ -276,7 +276,7 @@ def modify_course(program_id, course_id=None):
     else:
         # Create new course object and store in the database
         if not title:
-            return render_template('new_course.html', program=program,
+            return render_template('edit_course.html', program=program,
                                    abbr=abbr, description=description,
                                    message='Required field(s) cannot be left blank.')
         course = Course(program, title, abbr, description)
@@ -326,7 +326,7 @@ def course(program_id, course_id, action=None):
     if action:
         if action == 'edit':
             # Edit program level info
-            return render_template('new_course.html', program=program, course=course)
+            return render_template('edit_course.html', program=program, course=course)
         elif action == 'delete':
             # Delete the given course
             # TODO: Add a confirmation dialog here
