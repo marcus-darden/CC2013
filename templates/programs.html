@@ -10,7 +10,6 @@
 {% if message is defined %}
     <p class="message">{{ message }}</p>
 {% endif %}
-{% if programs is defined %}
     <ul>
 {% for program in programs %}
       <li><a href="{{ url_for('program', program_id=program.id) }}">{{ program.title }}</a></li>
@@ -18,5 +17,4 @@
       <p>No programs have been created.</p>
 {% endfor %}
     </ul>
-{% endif %}
 {% endblock content %}

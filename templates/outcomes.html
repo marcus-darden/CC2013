@@ -1,34 +1,34 @@
 <h1>Learning Outcomes</h1>
 
 {% if area is defined %}
-<h2><a href="/units/{{ area.id }}">{{ area.id }} - {{ area.text }}</a></h2>
+<h2><a href="{{ url_for('knowledge_units', area_id=area.id) }}">{{ area.id }} - {{ area.text }}</a></h2>
 <h3>{{ unit.text }}</h3>
 {% endif %}
 
 {% if tier1|length %}
-<h4>Tier 1</h4>
-<ul>
+<h4>Tier 1 ({{ hours[0] }} hours)</h4>
+<ol>
 {% for outcome in tier1 %}
   <li>{{ outcome.text }}</li>
 {% endfor %}
-</ul>
+</ol>
 {% endif %}
 
 {% if tier2|length %}
-<h4>Tier 2</h4>
-<ul>
+<h4>Tier 2 ({{ hours[1] }} hours)</h4>
+<ol>
 {% for outcome in tier2 %}
   <li>{{ outcome.text }}</li>
 {% endfor %}
-</ul>
+</ol>
 {% endif %}
 
 {% if electives|length %}
 <h4>Electives</h4>
-<ul>
+<ol>
 {% for outcome in electives %}
   <li>{{ outcome.text }}</li>
 {% endfor %}
-</ul>
+</ol>
 {% endif %}
 

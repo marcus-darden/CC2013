@@ -94,6 +94,10 @@ class Program(db.Model):
         return '<Program: {0.title}>'.format(self)
 
 
+course_units = db.Table('course_units',
+                        db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
+                        db.Column('unit_id', db.Integer, db.ForeignKey('unit.id')))
+
 course_outcomes = db.Table('course_outcomes',
                            db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
                            db.Column('outcome_id', db.Integer, db.ForeignKey('outcome.id')))
@@ -106,6 +110,8 @@ class Course(db.Model):
     title = db.Column(db.String(128))
     description = db.Column(db.String)
     program_id = db.Column(db.Integer, db.ForeignKey('program.id'))
+    units = db.relationship('Unit', secondary=course_units,
+                            backref=db.backref('units', lazy='dynamic'))
     outcomes = db.relationship('Outcome', secondary=course_outcomes,
                                backref=db.backref('courses', lazy='dynamic'))
 
@@ -296,6 +302,8 @@ def add_outcomes(program_id, course_id, source):
     if source == 'unit':
         getlist = request.form.getlist('knowledge_units')
         unit_ids = [int(item) for item in getlist]
+        units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
+        course.units.extend(units)
         outcomes = Outcome.query.filter(Outcome.unit_id.in_(unit_ids)).all()
     else:
         getlist = request.form.getlist('learning_outcomes')
@@ -347,17 +355,40 @@ def course(program_id, course_id, action=None):
                                course_outcomes=course_outcomes, areas=areas)
 
 
-@app.route('/area')
+@app.route('/areas')
 def knowledge_areas():
     areas = Area.query.all()
-    return render_template('areas.html', areas=areas)
+    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.area_id == area.id).first() for area in areas]
+    return render_template('areas.html', areas=areas, hours=hours)
 
 
 @app.route('/area/<area_id>')
 def knowledge_units(area_id):
     area = Area.query.filter_by(id=area_id).first()
     units = Unit.query.filter_by(area=area).all()
-    return render_template('units.html', area=area, units=units)
+    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit.id).first() for unit in units]
+    return render_template('units.html', area=area, units=units, hours=hours)
+
+
+@app.route('/outcomes')
+@app.route('/area/<area_id>/unit/<int:unit_id>')
+def learning_outcomes(area_id=None, unit_id=-1):
+    if unit_id < 0:
+        tier1 = Outcome.query.filter_by(tier=1).all()
+        tier2 = Outcome.query.filter_by(tier=2).all()
+        electives = Outcome.query.filter_by(tier=3).all()
+    else:
+        unit = Unit.query.filter_by(id=unit_id).first()
+        area = unit.area
+        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
+        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
+        electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
+        hours = db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                                 db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit_id).first()
+
+    return render_template('outcomes.html', **locals())
 
 
 @app.route('/json')
@@ -373,23 +404,6 @@ def get_json():
         joutcomes = [{'id': o.id, 'text': o.text} for o in outcomes]
         return json.dumps(joutcomes)
     abort(404)
-
-
-@app.route('/outcomes/<int:unit_id>')
-@app.route('/outcomes')
-def learning_outcomes(unit_id=-1):
-    if unit_id < 0:
-        tier1 = Outcome.query.filter_by(tier=1).all()
-        tier2 = Outcome.query.filter_by(tier=2).all()
-        electives = Outcome.query.filter_by(tier=3).all()
-    else:
-        unit = Unit.query.filter_by(id=unit_id).first()
-        area = unit.area
-        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
-        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
-        electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
-
-    return render_template('outcomes.html', **locals())
 
 
 @app.errorhandler(404)
