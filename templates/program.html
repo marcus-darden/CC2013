@@ -8,16 +8,21 @@
 {% endblock nav %}
 {% block content %}
     <h1>Program Summary</h1>
-    <h2>{{ program.title }}</h2>
-    <p>{{ program.description }}</p>
 {% if message is defined %}
     <p class="message">{{ message }}</p>
 {% endif %}
+    <dl>
+      <dt>Program Title</dt>
+      <dd>{{ program.title }}</dd>
+      <dt>Description</dt>
+      <dd>{{ program.description or "No description provided." }}</dd>
+    </dl>
+    <h2>Courses</h2>
     <ul>
 {% for course in courses %}
-      <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{{ course.title }}</a></li>
+      <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{% if course.abbr %}{{ course.abbr }}: {% endif %}{{ course.title }}</a></li>
 {% else %}
-      <p>No courses have been created.</p>
+      <p>No courses have been added to this program.</p>
 {% endfor %}
     </ul>
     <div><a href="{{ url_for('program', program_id=program.id, action='edit') }}">Edit Program</a></div>

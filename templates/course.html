@@ -10,23 +10,33 @@
 {% endblock nav %}
 {% block content %}
     <h1>Course Information</h1>
-    <h2>{% if course.abbr %}{{ course.abbr }}: {% endif %}{{ course.title }}</h2>
-{% if course.description %}
-    <p>{{ course.description }}</p>
-{% else %}
-    <p>No course description available.</p>
-{% endif %}
 {% if message is defined %}
     <p class="message">{{ message }}</p>
 {% endif %}
-    <h3>Course Outcomes</h3>
+    <dl>
+      <dt>Course Title</dt>
+      <dd>{{ course.title }}</dd>
+      <dt>Course Abbreviation</dt>
+      <dd>{{ course.abbr or "No abbreviation provided." }}</dd>
+      <dt>Description</dt>
+      <dd>{{ course.description or "No description provided." }}</dd>
+    </dl>
+    <h2>Course Outcomes</h2>
 {% for tier in ['Tier 1', 'Tier 2', 'Elective'] %}
     <h4>{{ tier }}</h4>
   {% if course_outcomes[loop.index0]|length %}
     <table>
-      <tr><th>Mastery</th><th>Learning Outcome</th><th>&nbsp;</th></tr>
+      <tr>
+        <th>Mastery</th>
+        <th>Learning Outcome</th>
+        <th>&nbsp;</th>
+      </tr>
     {% for outcome in course_outcomes[loop.index0] %}
-        <tr><td>{{ outcome.mastery }}</td><td>{{ outcome.text }}</td><td><a href="{{ url_for('delete_outcome', program_id=program.id, course_id=course.id, outcome_id=outcome.id) }}">delete</a></td></tr>
+        <tr>
+          <td>{{ outcome.mastery }}</td>
+          <td>{{ outcome.text }}</td>
+          <td><a href="{{ url_for('delete_outcome', program_id=program.id, course_id=course.id, outcome_id=outcome.id) }}">delete</a></td>
+        </tr>
     {% endfor %}
     </table>
   {% else %}
