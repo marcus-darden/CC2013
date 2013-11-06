@@ -12,8 +12,6 @@
     <h1>Edit Program</h1>
     <p>Modify program details.</p>
 {% else %}
-    {% set title = "" %}
-    {% if description is not defined %}{% set description = "" %}{% endif %}
     {% set action = url_for('modify_program') %}
     <h1>New Program</h1>
     <p>Create a program (major, minor, concentration, etc.) to design a new curriculum.</p>
@@ -23,11 +21,9 @@
 {% endif %}
     <form method="post" action="{{ action }}">
       <label for="title">Program Title<span class=required>*</span></label>
-      <input name="title" type="text" value="{{ title|e }}" placeholder="Program Title" required autofocus /> 
-      <p class="guidelines">The name of your major, minor, concentration, etc.</p> 
+      <input name="title" type="text" value="{{ title|e }}" placeholder="eg. Computer Science Major" required autofocus /> 
       <label for="description">Description</label>
-      <p class="guidelines">A description of the program.</p> 
-      <textarea name="description" rows="8" cols="40">{{ description|e }}</textarea>
+      <textarea name="description" placeholder="The catalog description including high-level outcomes and administrativia.">{{ description|e }}</textarea>
       <input type="submit" name="submit" value="Submit" />
       <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
     </form> 

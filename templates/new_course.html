@@ -11,9 +11,6 @@
     {% set action = url_for('modify_course', program_id=program.id, course_id=course.id) %}
     <h1>Edit Course</h1>
 {% else %}
-    {% set title = "" %}
-    {% if abbr is not defined %}{% set abbr = "" %}{% endif %}
-    {% if description is not defined %}{% set description = "" %}{% endif %}
     {% set action = url_for('modify_course', program_id=program.id) %}
     <h1>New Course</h1>
 {% endif %}
@@ -22,14 +19,11 @@
       <p><strong>{{ message }}</strong></p>
 {% endif %}
       <label for="title">Course Title<span class="required">*</span></label>
-      <input name="title" type="text" value="{{ title }}" placeholder="Course Title" required autofocus /> 
-      <p class="guidelines">The name of the course, as it might be printed in the course catalog.</p> 
+      <input name="title" type="text" value="{{ title|e }}" placeholder="eg. Computer Science I" required autofocus /> 
       <label for="abbr">Course Abbreviation</label>
-      <input name="abbr" type="text" value="{{ abbr }}" placeholder="Course number or abbreviation" /> 
-      <p class="guidelines">The course catalog number (eg. CS 101) or other short reference title.</p> 
+      <input name="abbr" type="text" value="{{ abbr|e }}" placeholder="eg. CS 100" /> 
       <label for="description">Course Description</label>
-      <textarea name="description">{{ description }}</textarea> 
-      <p class="guidelines">The public catalog description that should include topics covered and pedagogical approach.</p> 
+      <textarea name="description" placeholder="The catalog description including high-level outcomes, topics covered, and pedagogical approach.">{{ description|e }}</textarea>
       <input type="submit" name="submit" value="Submit" />
       <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
     </form> 
