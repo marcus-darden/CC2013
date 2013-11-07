@@ -6,17 +6,20 @@ from CC2013 import app
 from CC2013.models import *
 
 
+# Homepage
 @app.route('/')
 def index():
     programs = Program.query.order_by(Program.title).all()
     return render_template('programs.html', programs=programs)
 
 
+# Program creation
 @app.route('/new_program')
 def new_program():
     return render_template('edit_program.html')
 
 
+# Execute program modification
 @app.route('/edit_program/<int:program_id>', methods=['POST'])
 @app.route('/add_program', methods=['POST'])
 def modify_program(program_id=None):
@@ -45,6 +48,7 @@ def modify_program(program_id=None):
     return redirect('/program/{0}'.format(program.id))
 
 
+# Program Summary, and Program Edit/Delete
 @app.route('/program/<int:program_id>/<action>')
 @app.route('/program/<int:program_id>')
 def program(program_id, action=None):
@@ -73,12 +77,14 @@ def program(program_id, action=None):
         return render_template('program.html', program=program, courses=courses)
 
 
+# Course creation
 @app.route('/program/<int:program_id>/new_course')
 def new_course(program_id):
     program = Program.query.filter_by(id=program_id).first_or_404()
     return render_template('edit_course.html', program=program)
 
 
+# Execute course modification
 @app.route('/program/<int:program_id>/edit_course/<int:course_id>/', methods=['POST'])
 @app.route('/program/<int:program_id>/add_course', methods=['POST'])
 def modify_course(program_id, course_id=None):
@@ -112,6 +118,7 @@ def modify_course(program_id, course_id=None):
     return redirect(url_for('course', program_id=program.id, course_id=course.id))
 
 
+# Add Knowledge Units and/or Learning Outcomes to a course
 @app.route('/program/<int:program_id>/course/<int:course_id>/add_<source>', methods=['POST'])
 def add_outcomes(program_id, course_id, source):
     program = Program.query.filter_by(id=program_id).first_or_404()
@@ -135,6 +142,7 @@ def add_outcomes(program_id, course_id, source):
     return redirect(url_for('course', program_id=program_id, course_id=course_id))
 
 
+# Execute outcome deletion
 @app.route('/program/<int:program_id>/course/<int:course_id>/outcome/<int:outcome_id>/delete')
 def delete_outcome(program_id, course_id, outcome_id):
     course = Course.query.filter_by(id=course_id).first_or_404()
@@ -144,6 +152,7 @@ def delete_outcome(program_id, course_id, outcome_id):
     return redirect(url_for('course', program_id=program_id, course_id=course_id))
 
 
+# Course Information, and Course Edit/Delete
 @app.route('/program/<int:program_id>/course/<int:course_id>/<action>')
 @app.route('/program/<int:program_id>/course/<int:course_id>')
 def course(program_id, course_id, action=None):
@@ -174,42 +183,7 @@ def course(program_id, course_id, action=None):
                                course_outcomes=course_outcomes, areas=areas)
 
 
-@app.route('/areas')
-def knowledge_areas():
-    areas = Area.query.all()
-    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
-                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.area_id == area.id).first() for area in areas]
-    return render_template('areas.html', areas=areas, hours=hours)
-
-
-@app.route('/area/<area_id>')
-def knowledge_units(area_id):
-    area = Area.query.filter_by(id=area_id).first()
-    units = Unit.query.filter_by(area=area).all()
-    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
-                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit.id).first() for unit in units]
-    return render_template('units.html', area=area, units=units, hours=hours)
-
-
-@app.route('/outcomes')
-@app.route('/area/<area_id>/unit/<int:unit_id>')
-def learning_outcomes(area_id=None, unit_id=-1):
-    if unit_id < 0:
-        tier1 = Outcome.query.filter_by(tier=1).all()
-        tier2 = Outcome.query.filter_by(tier=2).all()
-        electives = Outcome.query.filter_by(tier=3).all()
-    else:
-        unit = Unit.query.filter_by(id=unit_id).first()
-        area = unit.area
-        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
-        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
-        electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
-        hours = db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
-                                 db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit_id).first()
-
-    return render_template('outcomes.html', **locals())
-
-
+# AJAX here...
 @app.route('/json')
 def get_json():
     area_id = request.args.get('area_id', '')
@@ -225,8 +199,51 @@ def get_json():
     abort(404)
 
 
+# General curriculum exemplar browser
+@app.route('/areas')
+def knowledge_areas():
+    areas = Area.query.all()
+    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.area_id == area.id).first() for area in areas]
+    return render_template('areas.html', areas=areas, hours=hours)
+
+
+@app.route('/units')
+@app.route('/area/<area_id>')
+def knowledge_units(area_id=None):
+    if not area_id:
+        area = None
+        units = Unit.query.order_by(Unit.id).all()
+    else:
+        area = Area.query.filter_by(id=area_id).first()
+        units = Unit.query.filter_by(area=area).all()
+    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit.id).first() for unit in units]
+
+    return render_template('units.html', area=area, units=units, hours=hours)
+
+
+@app.route('/outcomes')
+@app.route('/area/<area_id>/unit/<int:unit_id>')
+def learning_outcomes(area_id=None, unit_id=-1):
+    if unit_id < 0:
+        tier1 = Outcome.query.filter_by(tier=1).all()
+        tier2 = Outcome.query.filter_by(tier=2).all()
+        electives = Outcome.query.filter_by(tier=3).all()
+        hours = None
+    else:
+        unit = Unit.query.filter_by(id=unit_id).first()
+        area = unit.area
+        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
+        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
+        electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
+        hours = db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                                 db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit_id).first()
+
+    return render_template('outcomes.html', **locals())
+
+
+# Not found...
 @app.errorhandler(404)
 def page_not_found(error):
     return 'This page does not exist', 404
-
-
