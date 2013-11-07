@@ -90,7 +90,7 @@ def modify_course(program_id, course_id=None):
     program = Program.query.filter_by(id=program_id).first_or_404()
     if course_id:
         # Course exists, so update properties
-        course = Course.query.filter_by(program_id=program_id).first_or_404()
+        course = Course.query.filter_by(id=course_id).first_or_404()
         course.title = title
         course.abbr = abbr
         course.description = description
@@ -117,10 +117,12 @@ def add_outcomes(program_id, course_id, source):
         units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
         course.units.extend(units)
         outcomes = Outcome.query.filter(Outcome.unit_id.in_(unit_ids)).all()
-    else:
+    elif source == 'outcome':
         getlist = request.form.getlist('learning_outcomes')
         outcome_ids = [int(item) for item in getlist]
         outcomes = Outcome.query.filter(Outcome.id.in_(outcome_ids)).all()
+    else:
+        abort(404)
 
     # Add the outcomes to the course and redisplay course information
     course.outcomes.extend(outcomes)
@@ -200,7 +202,7 @@ def knowledge_units(area_id=None):
         area = None
         units = Unit.query.order_by(Unit.id).all()
     else:
-        area = Area.query.filter_by(id=area_id).first()
+        area = Area.query.filter_by(id=area_id).first_or_404()
         units = Unit.query.filter_by(area=area).all()
     hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
                               db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit.id).first() for unit in units]
@@ -217,7 +219,7 @@ def learning_outcomes(area_id=None, unit_id=-1):
         electives = Outcome.query.filter_by(tier=3).all()
         hours = None
     else:
-        unit = Unit.query.filter_by(id=unit_id).first()
+        unit = Unit.query.filter_by(id=unit_id).first_or_404()
         area = unit.area
         tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
         tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
