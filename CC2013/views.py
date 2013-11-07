@@ -220,6 +220,8 @@ def learning_outcomes(area_id=None, unit_id=-1):
         hours = None
     else:
         unit = Unit.query.filter_by(id=unit_id).first_or_404()
+        if unit.area.id != area_id:
+            abort(404)
         area = unit.area
         tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
         tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
