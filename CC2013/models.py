@@ -119,7 +119,7 @@ def init_db():
     db.create_all()
 
     # Initialize Knowledge Areas (Area table)
-    with open('CC2013/csv/ka.csv') as f:
+    with open('csv/ka.csv') as f:
         reader = csv.reader(f)
         for row in reader:
             if len(row) == 2:
@@ -130,7 +130,7 @@ def init_db():
     db.session.commit()
 
     # Initialize Knowledge Units (Unit table)
-    with open('CC2013/csv/LearningOutcomes.csv') as f:
+    with open('csv/LearningOutcomes.csv') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header row
         area = None
@@ -154,7 +154,7 @@ def init_db():
     db.session.commit()
 
     # Initialize Learning Outcomes (Outcome table)
-    with open('CC2013/csv/LearningOutcomes.csv') as f:
+    with open('csv/LearningOutcomes.csv') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header row
         unit = None

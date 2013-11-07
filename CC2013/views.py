@@ -1,8 +1,10 @@
 import json
 
 from flask import abort, redirect, render_template, request, url_for
+
 from CC2013 import app
 from CC2013.models import *
+
 
 @app.route('/')
 def index():
