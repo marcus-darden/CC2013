@@ -1,0 +1,9 @@
+<h1>Knowledge Areas</h1>
+
+<table>
+  <tr><th>Tier 1</th><th>Tier 2</th><th>Knowledge Area</th></tr>
+{% for area in areas %}
+  <tr><td>{{ hours[loop.index0][0] }}</td><td>{{ hours[loop.index0][1] }}</td><td><a href="{{ url_for('knowledge_units', area_id=area.id) }}">{{ area.id }} - {{ area.text }}</a></li>
+{% endfor %}
+</table>
+

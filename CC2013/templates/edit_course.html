@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block page_title %}New Course{% endblock page_title %}
+{% block nav %}
+    <ul>
+      <li><a href="{{ url_for('program', program_id=program.id) }}">Back to {{ program.title }}</a></li>
+    </ul>
+{% endblock nav %}
+{% block content %}
+{% if course is defined %}
+    {% set title, abbr, description = course.title, course.abbr, course.description %}
+    {% set action = url_for('modify_course', program_id=program.id, course_id=course.id) %}
+    <h1>Edit Course</h1>
+{% else %}
+    {% set action = url_for('modify_course', program_id=program.id) %}
+    <h1>New Course</h1>
+{% endif %}
+    <form method="post" action="{{ action }}">
+{% if message is defined %}
+      <p><strong>{{ message }}</strong></p>
+{% endif %}
+      <label for="title">Course Title<span class="required">*</span></label>
+      <input name="title" type="text" value="{{ title|e }}" placeholder="eg. Computer Science I" required autofocus /> 
+      <label for="abbr">Course Abbreviation</label>
+      <input name="abbr" type="text" value="{{ abbr|e }}" placeholder="eg. CS 100" /> 
+      <label for="description">Course Description</label>
+      <textarea name="description" placeholder="The catalog description including high-level outcomes, topics covered, and pedagogical approach.">{{ description|e }}</textarea>
+      <input type="submit" name="submit" value="Submit" />
+      <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
+    </form> 
+{% endblock content %}

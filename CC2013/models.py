@@ -1,19 +1,8 @@
-#!/usr/bin/env python
-
-'''Web front end for Computing Curricula 2013 Curriculum Exemplar (Ironman version).
-
-Preconditions:
-    environment - python 2 >= 2.7.3, flask, flask-sqlalchemy, gunicorn
-'''
 import csv
 
-from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
+from CC2013 import app
 
-
-app = Flask(__name__)
-app.config['DEBUG'] = True
-app.config['SECRET_KEY'] = 'Computing Curricula 2013'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 db = SQLAlchemy(app)
@@ -53,7 +42,7 @@ class Unit(db.Model):
         self.tier1 = tier1
         self.tier2 = tier2
 
-    def __str__(self):
+    def __repr__(self):
         return '<KA: {0.area} Knowledge Unit: "{0.text}" Hours: ({0.tier1}, {0.tier2})>'.format(self)
 
 
@@ -78,22 +67,70 @@ class Outcome(db.Model):
         return '<Outcome: {0.number:2d}. {0.text} Tier: {0.tier} Mastery: {0.mastery} {0.unit}>'.format(self)
 
 
+class Program(db.Model):
+    '''A collection of courses built to cover "Learning Outcomes".'''
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128), unique=True)
+    description = db.Column(db.String)
+    courses = db.relationship('Course', backref='program', lazy='dynamic')
+
+    def __init__(self, title=None, description=None):
+        self.title = title
+        self.description = description
+
+    def __repr__(self):
+        return '<Program: {0.title}>'.format(self)
+
+
+course_units = db.Table('course_units',
+                        db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
+                        db.Column('unit_id', db.Integer, db.ForeignKey('unit.id')))
+
+course_outcomes = db.Table('course_outcomes',
+                           db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
+                           db.Column('outcome_id', db.Integer, db.ForeignKey('outcome.id')))
+
+
+class Course(db.Model):
+    '''A member of a program built to cover "Learning Outcomes".'''
+    id = db.Column(db.Integer, primary_key=True)
+    abbr = db.Column(db.String(8))
+    title = db.Column(db.String(128))
+    description = db.Column(db.String)
+    program_id = db.Column(db.Integer, db.ForeignKey('program.id'))
+    units = db.relationship('Unit', secondary=course_units,
+                            backref=db.backref('units', lazy='dynamic'))
+    outcomes = db.relationship('Outcome', secondary=course_outcomes,
+                               backref=db.backref('courses', lazy='dynamic'))
+
+    def __init__(self, program, title, abbr=None, description=None):
+        self.program_id = program.id
+        self.title = title
+        self.abbr = abbr
+        self.description = description
+
+    def __repr__(self):
+        return '<Course: {0.abbr} - {0.title} {0.program}>'.format(self)
+
+
 # Initialize the database
 @app.before_first_request
 def init_db():
     db.create_all()
 
     # Initialize Knowledge Areas (Area table)
-    with open('csv/ka.csv') as f:
+    with open('CC2013/csv/ka.csv') as f:
         reader = csv.reader(f)
         for row in reader:
             if len(row) == 2:
-                area = Area(*row)
+                id = row[0].strip().upper()
+                text = row[1].strip()
+                area = Area(id, text)
                 db.session.add(area)
     db.session.commit()
 
     # Initialize Knowledge Units (Unit table)
-    with open('csv/LearningOutcomes.csv') as f:
+    with open('CC2013/csv/LearningOutcomes.csv') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header row
         area = None
@@ -116,8 +153,8 @@ def init_db():
                 db.session.add(unit)
     db.session.commit()
 
-    # Initialize Learning Outcomes (Outcome)
-    with open('csv/LearningOutcomes.csv') as f:
+    # Initialize Learning Outcomes (Outcome table)
+    with open('CC2013/csv/LearningOutcomes.csv') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header row
         unit = None
@@ -127,59 +164,12 @@ def init_db():
                 # Find the related KU from the database
                 unit_text = row[1].strip()
                 unit = Unit.query.filter_by(text=unit_text).first()
-                
+
                 tier = int(row[2])
                 mastery = row[3].strip()
                 number = int(row[4])
                 text = row[5].strip()
                 outcome = Outcome(unit, tier, mastery, number, text)
                 db.session.add(outcome)
-                print outcome
+                #print outcome
     db.session.commit()
-
-
-def index():
-    areas = Area.query.all()
-    for area in areas:
-        print area
-
-    units = Unit.query.all()
-    for unit in units:
-        print unit
-
-    return render_template('index.html')
-
-
-@app.route('/')
-@app.route('/areas')
-def knowledge_areas():
-    areas = Area.query.all()
-    return render_template('areas.html', areas=areas)
-
-
-@app.route('/units/<area_id>')
-def knowledge_units(area_id):
-    area = Area.query.filter_by(id=area_id).first()
-    units = Unit.query.filter_by(area=area).all()
-    return render_template('units.html', area=area, units=units)
-
-
-@app.route('/outcomes/<int:unit_id>')
-@app.route('/outcomes')
-def learning_outcomes(unit_id=-1):
-    if unit_id < 0:
-        tier1 = Outcome.query.filter_by(tier=1).all()
-        tier2 = Outcome.query.filter_by(tier=2).all()
-        electives = Outcome.query.filter_by(tier=3).all()
-    else:
-        unit = Unit.query.filter_by(id=unit_id).first()
-        area = unit.area
-        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
-        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
-        electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
-        
-    return render_template('outcomes.html', **locals())
-
-if __name__ == '__main__':
-    app.run()
-

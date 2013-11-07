@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block page_title %}Course Information{% endblock page_title %}
+{% block page_js %}<script src="{{ url_for('static', filename='course.js') }}"></script>{% endblock %}
+{% block nav %}
+    <ul>
+      <li><a href="{{ url_for('index') }}">Back to homepage</a></li>
+      <li><a href="{{ url_for('program', program_id=program.id) }}">Back to {{ program.title }}</a></li>
+      <li><a href="{{ url_for('new_course', program_id=program.id ) }}">Add new course</a></li>
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <h1>Course Information</h1>
+{% if message is defined %}
+    <p class="message">{{ message }}</p>
+{% endif %}
+    <dl>
+      <dt>Course Title</dt>
+      <dd>{{ course.title }}</dd>
+      <dt>Course Abbreviation</dt>
+      <dd>{{ course.abbr or "No abbreviation provided." }}</dd>
+      <dt>Description</dt>
+      <dd>{{ course.description or "No description provided." }}</dd>
+    </dl>
+    <h2>Course Outcomes</h2>
+{% for tier in ['Tier 1', 'Tier 2', 'Elective'] %}
+    <h4>{{ tier }}</h4>
+  {% if course_outcomes[loop.index0]|length %}
+    <table>
+      <tr>
+        <th>Mastery</th>
+        <th>Learning Outcome</th>
+        <th>&nbsp;</th>
+      </tr>
+    {% for outcome in course_outcomes[loop.index0] %}
+        <tr>
+          <td>{{ outcome.mastery }}</td>
+          <td>{{ outcome.text }}</td>
+          <td><a href="{{ url_for('delete_outcome', program_id=program.id, course_id=course.id, outcome_id=outcome.id) }}">delete</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+  {% else %}
+    <p>No {{ tier }} outcomes associated with this course.</p>
+  {% endif %}
+{% endfor %}
+    <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='edit') }}">Edit Course</a></div>
+    <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='delete') }}">Delete Course</a></div>
+    <h2>Add Course Content</h2>
+    <div>
+      <label for="knowledge_areas">Knowledge Areas</label>
+      <select id="knowledge_areas" size="{{ areas|length }}">
+{% for area in areas %}
+        <option value="{{ area.id }}">{{ area.id }} - {{ area.text }}</option>
+{% endfor %}
+      </select>
+    </div>
+    <div>
+      <form method="post" action="{{ url_for('add_outcomes', program_id=program.id, course_id=course.id, source='unit') }}">
+        <label for"knowledge_units">Knowledge Units</label>
+        <select name="knowledge_units" id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
+        </select>
+        <input type="submit" id="add_units" value="Add Unit(s)" />
+      </form>
+    </div>
+    <div>
+      <form method="post" action="{{ url_for('add_outcomes', program_id=program.id, course_id=course.id, source='outcomes') }}">
+        <label for="learning_outcomes">Learning Outcomes</label>
+        <select name="learning_outcomes" id="learning_outcomes" size="{{ areas|length }}" multiple="multiple">
+        </select>
+        <input type="submit" id="add_outcomes" value="Add Outcome(s)" />
+      </form>
+    </div>
+{% endblock content %}

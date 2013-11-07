@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block page_title %}Degree Programs{% endblock page_title %}
+{% block nav %}
+    <ul>
+      <li><a href="{{ url_for('new_program') }}">Add new program</a></li>
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <h1>Degree Programs</h1>
+{% if message is defined %}
+    <p class="message">{{ message }}</p>
+{% endif %}
+    <ul>
+{% for program in programs %}
+      <li><a href="{{ url_for('program', program_id=program.id) }}">{{ program.title }}</a></li>
+{% else %}
+      <p>No programs have been created.</p>
+{% endfor %}
+    </ul>
+{% endblock content %}

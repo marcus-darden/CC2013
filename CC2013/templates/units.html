@@ -1,0 +1,10 @@
+<a href="{{ url_for('knowledge_areas') }}"><h1>Knowledge Units</h1></a>
+
+<h2>{{ area.id }} - {{ area.text }}</h2>
+<table>
+  <tr><th>Tier 1</th><th>Tier 2</th><th>Knowledge Unit</th></tr>
+{% for unit in units %}
+  <tr><td>{{ hours[loop.index0][0] }}</td><td>{{ hours[loop.index0][1] }}</td><td><a href="{{ url_for('learning_outcomes', area_id=area.id, unit_id=unit.id) }}">{{ unit.text }}</a></li>
+{% endfor %}
+</table>
+

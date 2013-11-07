@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block page_title %}CC2013{% endblock %}</title>
+    <!-- link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='curriculum.js') }}"></script>
+    {% block page_js %}{% endblock %}
+  </head>
+  <body>
+    <nav>
+{% block nav %}
+{% endblock nav %}
+    </nav>
+    <div id="content">
+{% block content %}
+{% endblock content %}
+    </div>
+    <footer>
+{%- block footer -%}
+{%- endblock footer -%}
+    </footer>
+  </body>
+</html>
+
