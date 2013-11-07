@@ -23,23 +23,17 @@ def new_program():
 @app.route('/edit_program/<int:program_id>', methods=['POST'])
 @app.route('/add_program', methods=['POST'])
 def modify_program(program_id=None):
-    title = request.form['title'].strip()
-    description = request.form['description'].strip()
+    title = request.form['program_title'].strip()
+    description = request.form['program_description'].strip()
 
     # Query db if necessary
     if program_id:
         # Program exists, so update properties
         program = Program.query.filter_by(id=program_id).first_or_404()
-        if not title:
-            return render_template('edit_program.html', program=program,
-                                   message='Required field(s) cannot be left blank.')
         program.title = title
         program.description = description
     else:
         # Create new program object and store in the database
-        if not title:
-            return render_template('edit_program.html', description=description,
-                                   message='Required field(s) cannot be left blank.')
         program = Program(title, description)
         db.session.add(program)
     db.session.commit()
@@ -88,28 +82,20 @@ def new_course(program_id):
 @app.route('/program/<int:program_id>/edit_course/<int:course_id>/', methods=['POST'])
 @app.route('/program/<int:program_id>/add_course', methods=['POST'])
 def modify_course(program_id, course_id=None):
-    title = request.form['title'].strip()
-    abbr = request.form['abbr'].strip()
-    description = request.form['description'].strip()
+    title = request.form['course_title'].strip()
+    abbr = request.form['course_abbr'].strip()
+    description = request.form['course_description'].strip()
 
     # Query db
     program = Program.query.filter_by(id=program_id).first_or_404()
     if course_id:
         # Course exists, so update properties
         course = Course.query.filter_by(program_id=program_id).first_or_404()
-        if not title:
-            return render_template('edit_course.html',
-                                   program=program, course=course,
-                                   message='Required field(s) cannot be left blank.')
         course.title = title
         course.abbr = abbr
         course.description = description
     else:
         # Create new course object and store in the database
-        if not title:
-            return render_template('edit_course.html', program=program,
-                                   abbr=abbr, description=description,
-                                   message='Required field(s) cannot be left blank.')
         course = Course(program, title, abbr, description)
         db.session.add(course)
     db.session.commit()
@@ -189,14 +175,13 @@ def get_json():
     area_id = request.args.get('area_id', '')
     if area_id:
         units = Unit.query.filter_by(area_id=area_id).all()
-        junits = [{'id': u.id, 'text': u.text} for u in units]
+        junits = [{'id': u.id, 'text': u.text, 'tier1': u.tier1, 'tier2': u.tier2} for u in units]
         return json.dumps(junits)
     else:
         unit_id = request.args.get('unit_id', 0, type=int)
         outcomes = Outcome.query.filter_by(unit_id=unit_id).order_by(Outcome.number).all()
-        joutcomes = [{'id': o.id, 'text': o.text} for o in outcomes]
+        joutcomes = [{'id': o.id, 'text': o.text, 'tier': ['', 'Tier 1', 'Tier 2', 'Elective'][o.tier], 'mastery': o.mastery} for o in outcomes]
         return json.dumps(joutcomes)
-    abort(404)
 
 
 # General curriculum exemplar browser

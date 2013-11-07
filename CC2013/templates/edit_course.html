@@ -18,12 +18,12 @@
 {% if message is defined %}
       <p><strong>{{ message }}</strong></p>
 {% endif %}
-      <label for="title">Course Title<span class="required">*</span></label>
-      <input name="title" type="text" value="{{ title|e }}" placeholder="eg. Computer Science I" required autofocus /> 
-      <label for="abbr">Course Abbreviation</label>
-      <input name="abbr" type="text" value="{{ abbr|e }}" placeholder="eg. CS 100" /> 
-      <label for="description">Course Description</label>
-      <textarea name="description" placeholder="The catalog description including high-level outcomes, topics covered, and pedagogical approach.">{{ description|e }}</textarea>
+      <label for="course_title">Course Title<span class="required">*</span></label>
+      <input name="course_title" type="text" value="{{ title|e }}" placeholder="eg. Computer Science I" required autofocus /> 
+      <label for="course_abbr">Course Abbreviation</label>
+      <input name="course_abbr" type="text" value="{{ abbr|e }}" placeholder="eg. CS 100" /> 
+      <label for="course_description">Course Description</label>
+      <textarea name="course_description" placeholder="The catalog description including high-level outcomes, topics covered, and pedagogical approach.">{{ description|e }}</textarea>
       <input type="submit" name="submit" value="Submit" />
       <p>Fields marked with an asterisk (<span class="required">*</span>) are required.</p>
     </form> 

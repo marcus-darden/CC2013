@@ -7,7 +7,7 @@ $(function() {
         $('#knowledge_units').empty();
         $.getJSON('/json', {'area_id': area_id}, function(units) {
             $.each(units, function(i, unit) {
-                $('#knowledge_units').append($('<option/>').text(unit.text).val(unit.id));
+                $('#knowledge_units').append($('<option/>').text('(' + unit.tier1 + ', ' + unit.tier2 + ') ' + unit.text).val(unit.id));
             });
         });
     });
@@ -27,7 +27,7 @@ $(function() {
         $.each(unit_ids, function(i, unit_id) {
             $.getJSON('/json', {'unit_id': unit_id}, function(outcomes) {
                 $.each(outcomes, function(j, outcome) {
-                    $('#learning_outcomes').append($('<option/>').text(outcome.text).val(outcome.id));
+                    $('#learning_outcomes').append($('<option/>').text(outcome.tier + ' (' + outcome.mastery + '): ' + outcome.text).val(outcome.id));
                 });
             });
         });
