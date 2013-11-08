@@ -68,7 +68,26 @@ def program(program_id, action=None):
     else:
         # No action provided, display program summary
         courses = Course.query.filter_by(program_id=program_id).all()
-        return render_template('program.html', program=program, courses=courses)
+        units = []
+        for course in courses:
+            units.extend(course.units)
+        unit_ids = [unit.id for unit in units]
+        print 'courses', courses
+        print 'units', units
+        print 'unit_ids', unit_ids
+
+        if unit_ids:
+            tier1, tier2 = db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                                            db.func.sum(Unit.tier2).label('Tier2')).filter(
+                                                Unit.id.in_(unit_ids)).first()
+        else:
+            tier1, tier2 = 0, 0
+        tier1_total, tier2_total = db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
+                                                    db.func.sum(Unit.tier2).label('Tier2')).first()
+        return render_template('program.html', program=program, courses=courses,
+                               tier1=tier1, tier2=tier2,
+                               tier1_total=tier1_total,
+                               tier2_total=tier2_total)
 
 
 # Course creation

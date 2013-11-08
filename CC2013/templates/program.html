@@ -16,6 +16,12 @@
       <dd>{{ program.title }}</dd>
       <dt>Description</dt>
       <dd>{{ program.description or "No description provided." }}</dd>
+      <dt>Number of courses</dt>
+      <dd>{{ courses|length }}
+      <dt>Tier 1 Hours</dt>
+      <dd>{{ tier1 }}/{{ tier1_total }} ({{ "%0.0f"|format(tier1 / tier1_total * 100) }}%)</dd>
+      <dt>Tier 2 Hours</dt>
+      <dd>{{ tier2 }}/{{ tier2_total }} ({{ "%0.0f"|format(tier2 / tier2_total * 100) }}%)</dd>
     </dl>
     <h2>Courses</h2>
     <ul>
