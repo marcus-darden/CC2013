@@ -324,13 +324,13 @@ HCI,"Mixed, Augmented and Virtual Reality",3,Familiarity,3,Describe the differen
 HCI,"Mixed, Augmented and Virtual Reality",3,Familiarity,4,Describe the issues of user action synchronization and data consistency in a networked environment.,,
 HCI,"Mixed, Augmented and Virtual Reality",3,Usage,5,"Determine the basic requirements on interface, hardware, and software configurations of a VR system for a specified application.",,
 HCI,"Mixed, Augmented and Virtual Reality",3,Familiarity,6,"Describe several possible uses for games engines, including their potential and their limitations.",8/19/2013,changed level
-IAS,Foundational Concepts in Security,1,2,,,5/2/2013,Renamed KU
+IAS,Foundational Concepts in Security,1,0,,,5/2/2013,Renamed KU
 IAS,Foundational Concepts in Security,1,Usage,1,"Analyze the tradeoffs of balancing key security properties (Confidentiality, Integrity, Availability).",5/2/2013,
 IAS,Foundational Concepts in Security,1,Familiarity,2,"Describe the concepts of risk, threats, vulnerabilities and attack vectors (including the fact that there is no such thing as perfect security).",5/2/2013,
 IAS,Foundational Concepts in Security,1,Familiarity,3,"Explain the concepts of authentication, authorization, access control.",5/2/2013,
 IAS,Foundational Concepts in Security,1,Familiarity,4,Explain the concept of trust and trustworthiness.,5/2/2013,
 IAS,Foundational Concepts in Security,1,Familiarity,5,"Recognize that there are important ethical issues to consider in computer security, including ethical issues associated with fixing or not fixing vulnerabilities and disclosing or not disclosing vulnerabilities.",5/2/2013,
-IAS,Principles of Secure Design,1,2,,,5/2/2013,
+IAS,Principles of Secure Design,1,1,,,5/2/2013,
 IAS,Principles of Secure Design,1,Familiarity,1,Describe the principle of least privilege and isolation as applied to system design.,5/2/2013,
 IAS,Principles of Secure Design,1,Familiarity,2,Summarize the principle of fail-safe and deny-by-default.,5/2/2013,
 IAS,Principles of Secure Design,1,Familiarity,3,Discuss the implications of relying on open design or the secrecy of design for security. ,5/2/2013,
@@ -344,7 +344,7 @@ IAS,Principles of Secure Design,2,Familiarity,10,Explain the concept of trusted 
 IAS,Principles of Secure Design,2,Familiarity,11,Discuss the importance of usability in security mechanism design.,5/2/2013,
 IAS,Principles of Secure Design,2,Familiarity,12,Describe security issues that arise at boundaries between multiple components. ,5/2/2013,
 IAS,Principles of Secure Design,2,Familiarity,13,Identify the different roles of prevention mechanisms and detection/deterrence mechanisms.,5/2/2013,
-IAS,Defensive Programming,1,2,,,5/2/2013,
+IAS,Defensive Programming,1,1,,,5/2/2013,
 IAS,Defensive Programming,1,Familiarity,1,Explain why input validation and data sanitization is necessary in the face of adversarial control of the input channel. ,5/2/2013,
 IAS,Defensive Programming,1,Familiarity,2,"Explain why you might choose to develop a program in a type-safe language like Java, in contrast to an unsafe programming language like C/C++.",5/2/2013,
 IAS,Defensive Programming,1,Usage,3,"Classify common input validation errors, and write correct input validation code.",5/2/2013,
@@ -1082,7 +1082,7 @@ SE,Software Construction,2,Familiarity,6,Describe the process of analyzing and i
 SE,Software Construction,2,Familiarity,7,Describe the process of analyzing and implementing changes to a large existing code base.,,
 SE,Software Construction,3,Usage,8,"Rewrite a simple program to remove common vulnerabilities, such as buffer overflows, integer overflows and race conditions.",8/19/2013,Outcome removed
 SE,Software Construction,3,Usage,9,Write a software component that performs some non-trivial task and is resilient to input and run-time errors.,8/19/2013,New
-SE,Software Verification Validation,0,3,,,,
+SE,Software Verification Validation,0,4,,,,
 SE,Software Verification Validation,2,Familiarity,1,Distinguish between program validation and verification.,,
 SE,Software Verification Validation,2,Familiarity,2,Describe the role that tools can play in the validation of software.,,
 SE,Software Verification Validation,2,Usage,3,"Undertake, as part of a team activity, an inspection of a medium-size code segment.",,
@@ -1143,7 +1143,7 @@ SF,State and State Machines,1,Familiarity,3,Describe a computer as a state machi
 SF,State and State Machines,1,Familiarity,4,"Explain how a program or network protocol can also be expressed as a state machine, and that alternative representations for the same computation can exist.",,
 SF,State and State Machines,1,Usage,5,"Develop state machine descriptions for simple problem statement solutions (eg, traffic light sequencing, pattern recognizers).",,
 SF,State and State Machines,1,Assessment,6,Derive time-series behavior of a state machine from its state machine representation.,,
-SF,Parallelism,1,0,,,,
+SF,Parallelism,3,0,,,,
 SF,Parallelism,1,Familiarity,1,"For a given program, distinguish between its sequential and parallel execution, and the performance implications thereof.",,
 SF,Parallelism,1,Familiarity,2,"Demonstrate on an execution time line that parallelism events and operations can take place simultaneously (ie, at the same time) Explain how work can be performed in less elapsed time if this can be exploited.",,
 SF,Parallelism,1,Familiarity,3,"Explain other uses of parallelism, such as for reliability/redundancy of execution.",,
