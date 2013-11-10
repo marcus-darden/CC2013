@@ -2,10 +2,11 @@ $(function() {
     // Knowledge Area listbox handler
     $('#knowledge_areas').change(function() {
         var area_id = $('#knowledge_areas').val();
+        var course_id = $('#__course_id').val();
 
         // Get Knowledge Units, based on val and fill Knowledge Units listbox
         $('#knowledge_units').empty();
-        $.getJSON('/json', {'area_id': area_id}, function(units) {
+        $.getJSON('/json', {'area_id': area_id, 'course_id': course_id}, function(units) {
             $.each(units, function(i, unit) {
                 $('#knowledge_units').append($('<option/>').text('(' + unit.tier1 + ', ' + unit.tier2 + ') ' + unit.text).val(unit.id));
             });

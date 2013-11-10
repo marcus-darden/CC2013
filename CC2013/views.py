@@ -149,6 +149,22 @@ def add_outcomes(program_id, course_id, source):
     return redirect(url_for('course', program_id=program_id, course_id=course_id))
 
 
+# Execute unit deletion
+@app.route('/program/<int:program_id>/course/<int:course_id>/unit/<int:unit_id>/delete')
+def delete_unit(program_id, course_id, unit_id):
+    # TODO: Verify that program_id, course_id, and unit_id are related
+    course = Course.query.filter_by(id=course_id).first_or_404()
+    if course.program.id != program_id:
+        abort(404)
+    unit = Unit.query.filter_by(id=unit_id).first_or_404()
+    if unit in course.units:
+        course.units.remove(unit)
+        db.session.commit()
+    else:
+        abort(404)
+    return redirect(url_for('course', program_id=program_id, course_id=course_id))
+
+
 # Execute outcome deletion
 @app.route('/program/<int:program_id>/course/<int:course_id>/outcome/<int:outcome_id>/delete')
 def delete_outcome(program_id, course_id, outcome_id):
@@ -186,16 +202,25 @@ def course(program_id, course_id, action=None):
         elec = [outcome for outcome in course.outcomes if outcome.tier == 3]
         course_outcomes = [t1, t2, elec]
         areas = Area.query.order_by(Area.id).all()
+        tier1 = sum([unit.tier1 for unit in course.units])
+        tier2 = sum([unit.tier2 for unit in course.units])
         return render_template('course.html', program=program, course=course,
-                               course_outcomes=course_outcomes, areas=areas)
+                               course_outcomes=course_outcomes, areas=areas,
+                               tier1=tier1, tier2=tier2)
 
 
 # AJAX here...
 @app.route('/json')
 def get_json():
     area_id = request.args.get('area_id', '')
+    course_id = int(request.args.get('course_id', '0'))
     if area_id:
-        units = Unit.query.filter_by(area_id=area_id).all()
+        course = Course.query.filter_by(id=course_id).first()
+        print course
+        if course.units:
+            units = Unit.query.filter_by(area_id=area_id).filter(~Unit.id.in_([u.id for u in course.units])).all()
+        else:
+            units = Unit.query.filter_by(area_id=area_id).all()
         junits = [{'id': u.id, 'text': u.text, 'tier1': u.tier1, 'tier2': u.tier2} for u in units]
         return json.dumps(junits)
     else:
