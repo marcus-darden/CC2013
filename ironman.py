@@ -11,4 +11,4 @@ from CC2013 import app
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'Computing Curricula 2013'
 
-app.run()
+app.run(host='0.0.0.0')
