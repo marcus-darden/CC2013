@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from CC2013 import app
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cc2013.db'
 db = SQLAlchemy(app)
 
 
@@ -117,6 +117,8 @@ class Course(db.Model):
 @app.before_first_request
 def init_db():
     db.create_all()
+    if Area.query.all():
+        return
 
     # Initialize Knowledge Areas (Area table)
     with open('csv/ka.csv') as f:
