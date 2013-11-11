@@ -4,8 +4,8 @@
 {% block nav %}
     <ul>
       <li><a href="{{ url_for('index') }}">Back to homepage</a></li>
-      <li><a href="{{ url_for('program', program_id=program.id) }}">Back to {{ program.title }}</a></li>
-      <li><a href="{{ url_for('new_course', program_id=program.id ) }}">Add new course</a></li>
+      <li><a href="{{ url_for('program', program_id=course.program.id) }}">Back to {{ course.program.title }}</a></li>
+      <li><a href="{{ url_for('new_course', program_id=course.program.id ) }}">Add new course</a></li>
     </ul>
 {% endblock nav %}
 {% block content %}
@@ -38,7 +38,7 @@
         <td>{{ unit.tier2 }}</td>
         <td>{{ unit.area.text }}</td>
         <td>{{ unit.text }}</td>
-        <td><a href="{{ url_for('delete_unit', program_id=program.id, course_id=course.id, unit_id=unit.id) }}">delete</a></td>
+        <td><a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">delete</a></td>
       </tr>
   {% endfor %}
       <tr><td>{{ tier1 }}</td><td>{{ tier2 }}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -60,7 +60,7 @@
       <tr>
         <td>{{ outcome.mastery }}</td>
         <td>{{ outcome.text }}</td>
-        <td><a href="{{ url_for('delete_outcome', program_id=program.id, course_id=course.id, outcome_id=outcome.id) }}">delete</a></td>
+        <td><a href="{{ url_for('delete_outcome', program_id=course.program.id, course_id=course.id, outcome_id=outcome.id) }}">delete</a></td>
       </tr>
     {% endfor %}
     </table>
@@ -69,8 +69,8 @@
   {% endif %}
 {% endfor %}
     <input type="hidden" id="__course_id" value="{{ course.id }}" />
-    <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='edit') }}">Edit Course</a></div>
-    <div><a href="{{ url_for('course', program_id=program.id, course_id=course.id, action='delete') }}">Delete Course</a></div>
+    <div><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id, action='edit') }}">Edit Course</a></div>
+    <div><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id, action='delete') }}">Delete Course</a></div>
     <h2>Add Course Content</h2>
     <div>
       <label for="knowledge_areas">Knowledge Areas</label>
@@ -81,7 +81,7 @@
       </select>
     </div>
     <div>
-      <form method="post" action="{{ url_for('add_outcomes', program_id=program.id, course_id=course.id, source='unit') }}">
+      <form method="post" action="{{ url_for('add_outcomes', program_id=course.program.id, course_id=course.id, source='unit') }}">
         <label for"knowledge_units">Knowledge Units</label>
         <select name="knowledge_units" id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
         </select>
@@ -89,7 +89,7 @@
       </form>
     </div>
     <div>
-      <form method="post" action="{{ url_for('add_outcomes', program_id=program.id, course_id=course.id, source='outcomes') }}">
+      <form method="post" action="{{ url_for('add_outcomes', program_id=course.program.id, course_id=course.id, source='outcomes') }}">
         <label for="learning_outcomes">Learning Outcomes</label>
         <select name="learning_outcomes" id="learning_outcomes" size="{{ areas|length }}" multiple="multiple">
         </select>

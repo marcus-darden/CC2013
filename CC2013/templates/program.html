@@ -25,7 +25,7 @@
     </dl>
     <h2>Courses</h2>
     <ul>
-{% for course in courses %}
+{% for course in program.courses %}
       <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{% if course.abbr %}{{ course.abbr }}: {% endif %}{{ course.title }}</a></li>
 {% else %}
       <p>No courses have been added to this program.</p>
