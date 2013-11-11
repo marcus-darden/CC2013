@@ -1,1 +1,1 @@
-web: gunicorn ironman:app
+web: bin/web
