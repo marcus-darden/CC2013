@@ -46,28 +46,23 @@
 {% else %}
     <p>No Knowledge Units have been added to this course.</p>
 {% endif %}
+{% if course.units|length %}
     <h3>Learning Outcomes</h3>
-{% for tier in ['Tier 1', 'Tier 2', 'Elective'] %}
-    <h4>{{ tier }}</h4>
-  {% if course_outcomes[loop.index0]|length %}
     <table>
       <tr>
+        <th>Tier</th>
         <th>Mastery</th>
         <th>Learning Outcome</th>
-        <th>&nbsp;</th>
       </tr>
-    {% for outcome in course_outcomes[loop.index0] %}
+  {% for outcome in course_outcomes %}
       <tr>
+        <td>{{ outcome.tier }}</td>
         <td>{{ outcome.mastery }}</td>
         <td>{{ outcome.text }}</td>
-        <td><a href="{{ url_for('delete_outcome', program_id=course.program.id, course_id=course.id, outcome_id=outcome.id) }}">delete</a></td>
       </tr>
-    {% endfor %}
+  {% endfor %}
     </table>
-  {% else %}
-    <p>No {{ tier }} outcomes associated with this course.</p>
-  {% endif %}
-{% endfor %}
+{% endif %}
     <input type="hidden" id="__course_id" value="{{ course.id }}" />
     <div><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id, action='edit') }}">Edit Course</a></div>
     <div><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id, action='delete') }}">Delete Course</a></div>
@@ -89,11 +84,8 @@
       </form>
     </div>
     <div>
-      <form method="post" action="{{ url_for('add_outcomes', program_id=course.program.id, course_id=course.id, source='outcomes') }}">
-        <label for="learning_outcomes">Learning Outcomes</label>
-        <select name="learning_outcomes" id="learning_outcomes" size="{{ areas|length }}" multiple="multiple">
-        </select>
-        <input type="submit" id="add_outcomes" value="Add Outcome(s)" />
-      </form>
+      <h3>Learning Outcomes</h3>
+      <table name="learning_outcomes">
+      </table>
     </div>
 {% endblock content %}

@@ -5,6 +5,7 @@ from CC2013 import app
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cc2013.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 db = SQLAlchemy(app)
 
 
@@ -50,7 +51,7 @@ class Outcome(db.Model):
     '''A "Learning Outcome", as defined in CC2013.'''
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(256))
-    tier = db.Column(db.Integer)
+    tier = db.Column(db.Enum('Tier 1', 'Tier 2', 'Elective', name='outcome_tier'))
     mastery = db.Column(db.Enum('Familiarity', 'Usage', 'Assessment', name='outcome_mastery'))
     number = db.Column(db.Integer)
     unit_id = db.Column(db.Integer, db.ForeignKey('unit.id'))
@@ -86,10 +87,6 @@ course_units = db.Table('course_units',
                         db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
                         db.Column('unit_id', db.Integer, db.ForeignKey('unit.id')))
 
-course_outcomes = db.Table('course_outcomes',
-                           db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
-                           db.Column('outcome_id', db.Integer, db.ForeignKey('outcome.id')))
-
 
 class Course(db.Model):
     '''A member of a program built to cover "Learning Outcomes".'''
@@ -99,9 +96,7 @@ class Course(db.Model):
     description = db.Column(db.String)
     program_id = db.Column(db.Integer, db.ForeignKey('program.id'))
     units = db.relationship('Unit', secondary=course_units,
-                            backref=db.backref('units', lazy='dynamic'))
-    outcomes = db.relationship('Outcome', secondary=course_outcomes,
-                               backref=db.backref('courses', lazy='dynamic'))
+                            backref=db.backref('courses', lazy='dynamic'))
 
     def __init__(self, program, title, abbr=None, description=None):
         self.program_id = program.id
@@ -167,7 +162,7 @@ def init_db():
                 unit_text = row[1].strip()
                 unit = Unit.query.filter_by(text=unit_text).first()
 
-                tier = int(row[2])
+                tier = ['Tier 1', 'Tier 2', 'Elective'][int(row[2]) - 1]
                 mastery = row[3].strip()
                 number = int(row[4])
                 text = row[5].strip()

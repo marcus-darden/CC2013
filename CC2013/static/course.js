@@ -25,13 +25,15 @@ $(function() {
 
         // Get Learning Outcomes, based on vals and fill Learning Outcomes listbox
         $('#learning_outcomes').empty();
-        $.each(unit_ids, function(i, unit_id) {
-            $.getJSON('/json', {'unit_id': unit_id}, function(outcomes) {
-                $.each(outcomes, function(j, outcome) {
-                    $('#learning_outcomes').append($('<option/>').text(outcome.tier + ' (' + outcome.mastery + '): ' + outcome.text).val(outcome.id));
-                });
-            });
-        });
+        var row = $('<tr/>').append($('<td/>').text('Tier')).append($('<td/>').text('Mastery')).append($('<td/>').text('Learning Outcome'));
+        $('#learning_outcomes').append(row);
+        //$.each(unit_ids, function(i, unit_id) {
+            //$.getJSON('/json', {'unit_id': unit_id}, function(outcomes) {
+                //$.each(outcomes, function(j, outcome) {
+                    //$('#learning_outcomes').append($('<option/>').text(outcome.tier + ' (' + outcome.mastery + '): ' + outcome.text).val(outcome.id));
+                //});
+            //});
+        //});
     });
 
     // Learning Outcome listbox handler

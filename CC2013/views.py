@@ -1,6 +1,6 @@
 import json
 
-from flask import abort, redirect, render_template, request, url_for
+from flask import abort, jsonify, redirect, render_template, request, url_for
 
 from CC2013 import app
 from CC2013.models import *
@@ -70,9 +70,6 @@ def program(program_id, action=None):
         for course in program.courses:
             units.extend(course.units)
         unit_ids = [unit.id for unit in units]
-        print 'courses', program.courses
-        print 'units', units
-        print 'unit_ids', unit_ids
 
         # Calculate the core hours for the courses in this program
         if unit_ids:
@@ -150,7 +147,7 @@ def add_outcomes(program_id, course_id, source):
 
     # Add the outcomes to the course and redisplay course information
     course.units.extend(units)
-    course.outcomes.extend(outcomes)
+    #course.outcomes.extend(outcomes)
     db.session.commit()
     return redirect(url_for('course', program_id=program_id, course_id=course_id))
 
@@ -167,8 +164,8 @@ def delete_unit(program_id, course_id, unit_id):
         abort(404)
 
     # Delete!
-    for outcome in unit.outcomes:
-        course.outcomes.remove(outcome)
+    #for outcome in unit.outcomes:
+        #course.outcomes.remove(outcome)
     course.units.remove(unit)
     db.session.commit()
 
@@ -183,11 +180,11 @@ def delete_outcome(program_id, course_id, outcome_id):
     if course.program.id != program_id:
         abort(404)
     outcome = Outcome.query.filter_by(id=outcome_id).first_or_404()
-    if outcome not in course.outcomes:
-        abort(404)
+    #if outcome not in course.outcomes:
+        #abort(404)
 
     # Delete!
-    course.outcomes.remove(outcome)
+    #course.outcomes.remove(outcome)
     db.session.commit()
 
     return redirect(url_for('course', program_id=program_id, course_id=course_id))
@@ -217,10 +214,11 @@ def course(program_id, course_id, action=None):
             abort(404)
     else:
         # No action provided, display course information
-        course_outcomes = [filter(lambda o: o.tier == 1, course.outcomes),
-                           filter(lambda o: o.tier == 2, course.outcomes),
-                           filter(lambda o: o.tier == 3, course.outcomes)]
+        course_outcomes = (Outcome.query.join(Outcome.unit, Unit.courses)
+                           .filter(Course.id == course_id)
+                           .order_by(Outcome.tier, Outcome.id).all())
         areas = Area.query.order_by(Area.id).all()
+        # TODO: Query for these numbers
         tier1 = sum([unit.tier1 for unit in course.units])
         tier2 = sum([unit.tier2 for unit in course.units])
         return render_template('course.html', course=course,
@@ -239,7 +237,7 @@ def get_json():
     if area_id:
         # A KA was selected, get all relevent KUs
         course = Course.query.filter_by(id=course_id).first()
-        print course
+        # TODO: Add join to these queries
         if course.units:
             units = Unit.query.filter_by(area_id=area_id).filter(~Unit.id.in_([u.id for u in course.units])).all()
         else:
@@ -253,10 +251,9 @@ def get_json():
         # A KU was selected, get all relevent LOs
         unit_id = request.args.get('unit_id', 0, type=int)
         outcomes = Outcome.query.filter_by(unit_id=unit_id).order_by(Outcome.number).all()
-        tiers = ['', 'Tier 1', 'Tier 2', 'Elective']
         joutcomes = [{'id': o.id,
                       'text': o.text,
-                      'tier': tiers[o.tier],
+                      'tier': o.tier,
                       'mastery': o.mastery} for o in outcomes]
         return json.dumps(joutcomes)
 
@@ -289,18 +286,18 @@ def knowledge_units(area_id=None):
 @app.route('/area/<area_id>/unit/<int:unit_id>')
 def learning_outcomes(area_id=None, unit_id=-1):
     if unit_id < 0:
-        tier1 = Outcome.query.filter_by(tier=1).all()
-        tier2 = Outcome.query.filter_by(tier=2).all()
-        electives = Outcome.query.filter_by(tier=3).all()
+        tier1 = Outcome.query.filter_by(tier='Tier 1').all()
+        tier2 = Outcome.query.filter_by(tier='Tier 2').all()
+        electives = Outcome.query.filter_by(tier='Elective').all()
         hours = None
     else:
         unit = Unit.query.filter_by(id=unit_id).first_or_404()
         if unit.area.id != area_id:
             abort(404)
         area = unit.area
-        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier=1).all()
-        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier=2).all()
-        electives = Outcome.query.filter_by(unit_id=unit_id, tier=3).all()
+        tier1 = Outcome.query.filter_by(unit_id=unit_id, tier='Tier 1').all()
+        tier2 = Outcome.query.filter_by(unit_id=unit_id, tier='Tier 2').all()
+        electives = Outcome.query.filter_by(unit_id=unit_id, tier='Elective').all()
         hours = db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
                                  db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit_id).first()
 
