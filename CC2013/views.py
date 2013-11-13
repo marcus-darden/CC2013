@@ -218,9 +218,11 @@ def course(program_id, course_id, action=None):
                            .filter(Course.id == course_id)
                            .order_by(Outcome.tier, Outcome.id).all())
         areas = Area.query.order_by(Area.id).all()
-        # TODO: Query for these numbers
-        tier1 = sum([unit.tier1 for unit in course.units])
-        tier2 = sum([unit.tier2 for unit in course.units])
+        tier1, tier2 = (db.session.query(db.func.sum(Unit.tier1),
+                                         db.func.sum(Unit.tier2))
+                                  .join(Unit.courses)
+                                  .filter(Course.id == course_id).first())
+
         return render_template('course.html', course=course,
                                course_outcomes=course_outcomes, areas=areas,
                                tier1=tier1, tier2=tier2)
@@ -262,8 +264,12 @@ def get_json():
 @app.route('/areas')
 def knowledge_areas():
     areas = Area.query.all()
-    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
-                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.area_id == area.id).first() for area in areas]
+    hours = (db.session.query(db.func.sum(Unit.tier1),
+                              db.func.sum(Unit.tier2))
+                       .group_by(Unit.area_id)
+                       .order_by(Unit.area_id)
+                       .all())
+
     return render_template('areas.html', areas=areas, hours=hours)
 
 
