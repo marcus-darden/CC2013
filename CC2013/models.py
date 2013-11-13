@@ -112,7 +112,10 @@ class Course(db.Model):
 @app.before_first_request
 def init_db():
     db.create_all()
+    logging = app.config['DEBUG'] and app.config['_LOGGING']
     if Area.query.all():
+        if logging:
+            logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
         return
 
     # Initialize Knowledge Areas (Area table)
@@ -168,5 +171,13 @@ def init_db():
                 text = row[5].strip()
                 outcome = Outcome(unit, tier, mastery, number, text)
                 db.session.add(outcome)
-                #print outcome
     db.session.commit()
+
+    if logging:
+        program = Program('CS Major [2014]', 'The Computer Science Major from the 2014-15 Academic Catalog')
+        db.session.add(program)
+        db.session.commit()
+        course = Course(program, 'Discrete Mathematics', 'MTH 242', 'Sets, logic, proofs, etc.')
+        db.session.add(course)
+        db.session.commit()
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
