@@ -237,27 +237,35 @@ def get_json():
 
     # Get listbox data
     if area_id:
-        # A KA was selected, get all relevent KUs
+        # A KA was selected, get all relevent KUs, not assigned to this course
         course = Course.query.filter_by(id=course_id).first()
-        # TODO: Add join to these queries
-        if course.units:
-            units = Unit.query.filter_by(area_id=area_id).filter(~Unit.id.in_([u.id for u in course.units])).all()
-        else:
-            units = Unit.query.filter_by(area_id=area_id).all()
-        junits = [{'id': u.id,
-                   'text': u.text,
-                   'tier1': u.tier1,
-                   'tier2': u.tier2} for u in units]
-        return json.dumps(junits)
+        unwanted = (Unit.query
+                        .filter_by(area_id=area_id)
+                        .join(Unit.courses)
+                        .filter_by(id=course_id)
+                        .subquery())
+        units = (Unit.query
+                     .filter_by(area_id=area_id)
+                     .outerjoin(unwanted, Unit.id == unwanted.c.id)
+                     .filter(unwanted.c.id == None)
+                     .all())
+        items = [{'id': u.id,
+                  'text': u.text,
+                  'tier1': u.tier1,
+                  'tier2': u.tier2} for u in units]
     else:
         # A KU was selected, get all relevent LOs
         unit_id = request.args.get('unit_id', 0, type=int)
-        outcomes = Outcome.query.filter_by(unit_id=unit_id).order_by(Outcome.number).all()
-        joutcomes = [{'id': o.id,
-                      'text': o.text,
-                      'tier': o.tier,
-                      'mastery': o.mastery} for o in outcomes]
-        return json.dumps(joutcomes)
+        outcomes = (Outcome.query
+                           .filter_by(unit_id=unit_id)
+                           .order_by(Outcome.number)
+                           .all())
+        items = [{'id': o.id,
+                  'text': o.text,
+                  'tier': o.tier,
+                  'mastery': o.mastery} for o in outcomes]
+
+    return json.dumps(items)
 
 
 # General curriculum exemplar browser
