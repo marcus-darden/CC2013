@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "$FLASK_ENV" == "development" ]; then
-	echo "Development Launch"
-        python ironman.py
+    echo "Development Launch"
+    python ironman.py
 else
-        gunicorn ironman:app
+    gunicorn ironman:app
 fi
