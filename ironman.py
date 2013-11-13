@@ -16,5 +16,5 @@ app.config['SECRET_KEY'] = 'Computing Curricula 2013 Webapp'
 if __name__ == '__main__':
     import logging
     logging.basicConfig()
-    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    app.config['_LOGGING'] = logging
     app.run(host='0.0.0.0')
