@@ -10,7 +10,7 @@ import os
 from CC2013 import app
 
 
-app.config['DEBUG'] = os.environ.get('DEBUG', False)
+app.config['DEBUG'] = bool(os.environ.get('DEBUG', False))
 app.config['SECRET_KEY'] = 'Computing Curricula 2013 Webapp'
 
 if __name__ == '__main__':
