@@ -44,7 +44,7 @@ class Unit(db.Model):
         self.tier2 = tier2
 
     def __repr__(self):
-        return '<KA: {0.area} Knowledge Unit: "{0.text}" Hours: ({0.tier1}, {0.tier2})>'.format(self)
+        return '<Knowledge Unit: "{0.text}" KA: {0.area} Hours: ({0.tier1}, {0.tier2})>'.format(self)
 
 
 class Outcome(db.Model):
