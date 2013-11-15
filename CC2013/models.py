@@ -64,7 +64,6 @@ class Outcome(db.Model):
         self.text = text.strip()
 
     def __repr__(self):
-        #return str(self.__dict__)
         return '<Outcome: {0.number:2d}. {0.text} Tier: {0.tier} Mastery: {0.mastery} {0.unit}>'.format(self)
 
 

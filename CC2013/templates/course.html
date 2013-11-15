@@ -80,12 +80,12 @@
         <label for"knowledge_units">Knowledge Units</label>
         <select name="knowledge_units" id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
         </select>
-        <input type="submit" id="add_units" value="Add Unit(s)" />
+        <input type="submit" id="add_units" value="Add Unit(s)" disabled="disabled"/>
       </form>
     </div>
     <div>
       <h3>Learning Outcomes</h3>
-      <table name="learning_outcomes">
+      <table name="learning_outcomes" id="learning_outcomes">
       </table>
     </div>
 {% endblock content %}
