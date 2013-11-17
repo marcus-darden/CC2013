@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block page_title %}CC2013 - Site Login{% endblock page_title %}
+{% block page_js %}<script src="{{ url_for('static', filename='login.js') }}"></script>{% endblock %}
+{% block nav %}
+    <ul>
+      <li><a href="{{ url_for('index') }}">Homepage</a></li>
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <h1>Login</h1>
+    <form name="login" method="POST" action="{{ url_for('do_login') }}">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" />
+      <input type="submit" value="Sign In" />
+      |
+{% for p in providers %}
+      <a href="javascript:set_openid('{{ p.url }}', '{{ p.name }}');">{{ p.name }}</a> |
+{% endfor %}
+    </form>
+{% endblock content %}

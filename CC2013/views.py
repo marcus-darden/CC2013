@@ -6,6 +6,18 @@ from CC2013 import app
 from CC2013.models import *
 
 
+# OpenID Login
+@app.route('/login')
+def login():
+    return render_template('login.html', providers=app.config['OPENID_PROVIDERS'])
+
+
+@app.route('/do_login', methods=['GET', 'POST'])
+def do_login():
+    print request.form
+    return redirect(url_for('index'))
+
+
 # Homepage
 @app.route('/')
 def index():
