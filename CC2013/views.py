@@ -214,10 +214,10 @@ def course(program_id, course_id, action=None):
             abort(404)
     else:
         # No action provided, display course information
-        course_outcomes = (Outcome.query.join(Outcome.unit, Unit.courses)
-                           .filter(Course.id == course_id)
-                           .order_by(Outcome.tier, Outcome.id).all())
         areas = Area.query.order_by(Area.id).all()
+        course_outcomes = (Outcome.query.join(Outcome.unit, Unit.courses)
+                                  .filter(Course.id == course_id)
+                                  .order_by(Outcome.tier, Outcome.id).all())
         tier1, tier2 = (db.session.query(db.func.sum(Unit.tier1),
                                          db.func.sum(Unit.tier2))
                                   .join(Unit.courses)
