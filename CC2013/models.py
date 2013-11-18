@@ -4,8 +4,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from CC2013 import app
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cc2013.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+basedir = app.config['_basedir']
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
+app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(basedir, 'db_repository')
 db = SQLAlchemy(app)
 
 
