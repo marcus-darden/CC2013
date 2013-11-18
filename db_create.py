@@ -4,6 +4,7 @@ import csv
 import os.path
 
 from migrate.versioning import api
+
 from config import SQLALCHEMY_DATABASE_URI
 from config import SQLALCHEMY_MIGRATE_REPO
 from CC2013 import app, db
@@ -11,7 +12,7 @@ from CC2013.models import *
 
 
 def populate_from_csv():
-    logging = app.config['DEBUG'] and app.config['_LOGGING']
+    logging = app.config['DEBUG'] and app.config['CC2013_LOGGING']
     if Area.query.all():
         if logging:
             logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)

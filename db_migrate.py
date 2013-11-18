@@ -25,6 +25,6 @@ with open(migration, 'wt') as f:
 api.upgrade(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 
 # Report the results
-print 'New migration saved as ' + migration
+print 'New migration saved as {}'.format(migration)
 version = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 print 'Current database version: {}'.format(version)
