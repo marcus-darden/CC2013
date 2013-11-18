@@ -1,13 +1,24 @@
 import csv
+import os.path
 
-from flask.ext.sqlalchemy import SQLAlchemy
-from CC2013 import app
+from CC2013 import app, db
 
 
-basedir = app.config['_basedir']
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
-app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(basedir, 'db_repository')
-db = SQLAlchemy(app)
+__all__ = ['User', 'Area', 'Unit', 'Outcome', 'Program', 'Course', 'ROLE_USER', 'ROLE_ADMIN']
+
+
+ROLE_USER = 0
+ROLE_ADMIN = 1
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nickname = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    role = db.Column(db.SmallInteger, default=ROLE_USER)
+
+    def __repr__(self):
+        return '<User {0.nickname}>'.format(self)
 
 
 class Area(db.Model):
@@ -109,7 +120,7 @@ class Course(db.Model):
 
 
 # Initialize the database
-@app.before_first_request
+#@app.before_first_request
 def init_db():
     db.create_all()
     logging = app.config['DEBUG'] and app.config['_LOGGING']
