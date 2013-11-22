@@ -1,15 +1,29 @@
 import json
 
-from flask import abort, jsonify, redirect, render_template, request, url_for
+from flask import abort, jsonify, g, redirect, render_template, request, session, url_for
+from flask.ext.login import login_user, logout_user, current_user, login_required
+#from forms import LoginForm
 
-from CC2013 import app
-from CC2013.models import *
+from CC2013 import app, db, lm, oid
+from models import *
 
 
 # OpenID Login
-@app.route('/login')
+@app.route('/login', methods = ['GET', 'POST'])
+@oid.loginhandler
 def login():
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('index'))
+    session['remember_me'] = request.form['remember_me'].val()
+    return oid.try_login(request.form['openid'].val(), ask_for=['nickname', 'email'])
     return render_template('login.html', providers=app.config['OPENID_PROVIDERS'])
+
+    #form = LoginForm()
+    #if form.validate_on_submit():
+        #session['remember_me'] = form.remember_me.data
+        #return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+    #return render_template('login.html', title='Sign In', form=form,
+                           #providers=app.config['OPENID_PROVIDERS'])
 
 
 @app.route('/do_login', methods=['GET', 'POST'])
@@ -328,6 +342,13 @@ def learning_outcomes(area_id=None, unit_id=-1):
                                  db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit_id).first()
 
     return render_template('outcomes.html', **locals())
+
+
+# Other decorated functions
+# LoginManager
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 
 # Not found...

@@ -7,20 +7,6 @@ from CC2013 import app, db
 __all__ = ['User', 'Area', 'Unit', 'Outcome', 'Program', 'Course', 'ROLE_USER', 'ROLE_ADMIN']
 
 
-ROLE_USER = 0
-ROLE_ADMIN = 1
-
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    role = db.Column(db.SmallInteger, default=ROLE_USER)
-
-    def __repr__(self):
-        return '<User {0.nickname}>'.format(self)
-
-
 class Area(db.Model):
     '''A "Knowledge Area", as defined in CC2013.
 
@@ -79,12 +65,40 @@ class Outcome(db.Model):
         return '<Outcome: {0.number:2d}. {0.text} Tier: {0.tier} Mastery: {0.mastery} {0.unit}>'.format(self)
 
 
+ROLE_USER = 0
+ROLE_ADMIN = 1
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nickname = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    role = db.Column(db.SmallInteger, default=ROLE_USER)
+    programs = db.relationship('Program', backref='user', lazy='dynamic')
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def __repr__(self):
+        return '<User {0.nickname}>'.format(self)
+
+
 class Program(db.Model):
     '''A collection of courses built to cover "Learning Outcomes".'''
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), unique=True)
     description = db.Column(db.String)
     courses = db.relationship('Course', backref='program', lazy='dynamic')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title=None, description=None):
         self.title = title
