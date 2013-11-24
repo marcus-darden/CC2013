@@ -55,7 +55,7 @@ def modify_program(program_id=None):
     # Query db if necessary
     if program_id:
         # Program exists, so update properties
-        program = Program.query.filter_by(id=program_id).first_or_404()
+        program = Program.query.get_or_404(program_id)
         program.title = title
         program.description = description
     else:
@@ -73,7 +73,7 @@ def modify_program(program_id=None):
 @app.route('/program/<int:program_id>')
 def program(program_id, action=None):
     # Query db
-    program = Program.query.filter_by(id=program_id).first_or_404()
+    program = Program.query.get_or_404(program_id)
 
     if action:
         if action == 'edit':
@@ -117,7 +117,7 @@ def program(program_id, action=None):
 # Course creation
 @app.route('/program/<int:program_id>/new_course')
 def new_course(program_id):
-    program = Program.query.filter_by(id=program_id).first_or_404()
+    program = Program.query.get_or_404(program_id)
     return render_template('edit_course.html', program=program)
 
 
@@ -133,7 +133,7 @@ def modify_course(program_id, course_id=None):
     # Modify the course
     if course_id:
         # Course exists, so update properties
-        course = Course.query.filter_by(id=course_id).first_or_404()
+        course = Course.query.get_or_404(course_id)
         if course.program.id != program_id:
             abort(404)
         course.title = title
@@ -141,7 +141,7 @@ def modify_course(program_id, course_id=None):
         course.description = description
     else:
         # Create new course object and store in the database
-        program = Program.query.filter_by(id=program_id).first_or_404()
+        program = Program.query.get_or_404(program_id)
         course = Course(program, title, abbr, description)
         db.session.add(course)
     db.session.commit()
@@ -153,7 +153,7 @@ def modify_course(program_id, course_id=None):
 # Add Knowledge Units and/or Learning Outcomes to a course
 @app.route('/program/<int:program_id>/course/<int:course_id>/add_<source>', methods=['POST'])
 def add_outcomes(program_id, course_id, source):
-    course = Course.query.filter_by(id=course_id).first_or_404()
+    course = Course.query.get_or_404(course_id)
     if course.program.id != program_id:
         abort(404)
 
@@ -182,10 +182,10 @@ def add_outcomes(program_id, course_id, source):
 @app.route('/program/<int:program_id>/course/<int:course_id>/unit/<int:unit_id>/delete')
 def delete_unit(program_id, course_id, unit_id):
     # Query db and verify that program_id, course_id, and unit_id are related
-    course = Course.query.filter_by(id=course_id).first_or_404()
+    course = Course.query.get_or_404(course_id)
     if course.program.id != program_id:
         abort(404)
-    unit = Unit.query.filter_by(id=unit_id).first_or_404()
+    unit = Unit.query.get_or_404(unit_id)
     if unit not in course.units:
         abort(404)
 
@@ -202,10 +202,10 @@ def delete_unit(program_id, course_id, unit_id):
 @app.route('/program/<int:program_id>/course/<int:course_id>/outcome/<int:outcome_id>/delete')
 def delete_outcome(program_id, course_id, outcome_id):
     # Query db and verify that program_id, course_id, and outcome_id are related
-    course = Course.query.filter_by(id=course_id).first_or_404()
+    course = Course.query.get_or_404(course_id)
     if course.program.id != program_id:
         abort(404)
-    outcome = Outcome.query.filter_by(id=outcome_id).first_or_404()
+    outcome = Outcome.query.get_or_404(outcome_id)
     #if outcome not in course.outcomes:
         #abort(404)
 
@@ -220,7 +220,7 @@ def delete_outcome(program_id, course_id, outcome_id):
 @app.route('/program/<int:program_id>/course/<int:course_id>/<action>')
 @app.route('/program/<int:program_id>/course/<int:course_id>')
 def course(program_id, course_id, action=None):
-    course = Course.query.filter_by(id=course_id).first_or_404()
+    course = Course.query.get_or_404(course_id)
     if course.program.id != program_id:
         abort(404)
 
@@ -264,7 +264,7 @@ def get_json():
     # Get listbox data
     if area_id:
         # A KA was selected, get all relevent KUs, not assigned to this course
-        course = Course.query.filter_by(id=course_id).first()
+        course = Course.query.get(course_id)
         unwanted = (Unit.query
                         .filter_by(area_id=area_id)
                         .join(Unit.courses)
@@ -310,14 +310,17 @@ def knowledge_areas():
 @app.route('/units')
 @app.route('/area/<area_id>')
 def knowledge_units(area_id=None):
-    if not area_id:
+    if area_id:
+        area = Area.query.get_or_404(area_id)
+        units = area.units.all()
+    else:
         area = None
         units = Unit.query.order_by(Unit.id).all()
-    else:
-        area = Area.query.filter_by(id=area_id).first_or_404()
-        units = Unit.query.filter_by(area=area).all()
-    hours = [db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
-                              db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit.id).first() for unit in units]
+    hours = [(db.session.query(db.func.sum(Unit.tier1),
+                               db.func.sum(Unit.tier2))
+                        .filter(Unit.id == unit.id)
+                        .first())
+             for unit in units]
 
     return render_template('units.html', area=area, units=units, hours=hours)
 
@@ -331,15 +334,17 @@ def learning_outcomes(area_id=None, unit_id=-1):
         electives = Outcome.query.filter_by(tier='Elective').all()
         hours = None
     else:
-        unit = Unit.query.filter_by(id=unit_id).first_or_404()
+        unit = Unit.query.get_or_404(unit_id)
         if unit.area.id != area_id:
             abort(404)
         area = unit.area
         tier1 = Outcome.query.filter_by(unit_id=unit_id, tier='Tier 1').all()
         tier2 = Outcome.query.filter_by(unit_id=unit_id, tier='Tier 2').all()
         electives = Outcome.query.filter_by(unit_id=unit_id, tier='Elective').all()
-        hours = db.session.query(db.func.sum(Unit.tier1).label('Tier1'),
-                                 db.func.sum(Unit.tier2).label('Tier2')).filter(Unit.id == unit_id).first()
+        hours = (db.session.query(db.func.sum(Unit.tier1),
+                                  db.func.sum(Unit.tier2))
+                           .filter(Unit.id == unit_id)
+                           .first())
 
     return render_template('outcomes.html', **locals())
 
