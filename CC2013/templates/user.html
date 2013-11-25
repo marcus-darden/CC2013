@@ -1,25 +1,26 @@
 {% extends "base.html" %}
-{% block page_title %}Degree Programs{% endblock page_title %}
+{% block page_title %}User Information{% endblock page_title %}
 {% block nav %}
     <ul>
       <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
       <li><a href="{{ url_for('new_program') }}">Add new program</a></li>
 {% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('user', nickname=g.user.nickname) }}">User Profile</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
 {% endif %}
     </ul>
 {% endblock nav %}
 {% block content %}
-    <h1>Degree Programs</h1>
-{% if message is defined %}
-    <p class="message">{{ message }}</p>
-{% endif %}
-    <ul>
+    <table>
+      <tr valign="top">
+        <td><img src="{{ user.avatar(128) }}"></td>
+        <td><h1>User: {{ user.nickname }}</h1></td>
+      </tr>
+    </table>
+    <hr>
+    <h2>Programs</h2>
 {% for program in programs %}
-      <li><a href="{{ url_for('program', program_id=program.id) }}">{{ program.title }}</a></li>
+    <p><b>{{ program.title }}</b></p>
 {% else %}
-      <p>No programs have been created.</p>
+    <p>No programs have been defined.</p>
 {% endfor %}
-    </ul>
 {% endblock content %}

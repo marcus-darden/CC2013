@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 lm = LoginManager(app)
+lm.login_view = 'login'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
 import CC2013.views

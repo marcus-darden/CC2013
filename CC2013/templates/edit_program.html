@@ -3,6 +3,10 @@
 {% block nav %}
     <ul>
       <li><a href="{{ url_for('index') }}">Back to homepage</a></li>
+{% if g.user.is_authenticated() %}
+      <li><a href="{{ url_for('user', nickname=g.user.nickname) }}">User Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+{% endif %}
     </ul>
 {% endblock nav %}
 {% block content %}

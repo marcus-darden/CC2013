@@ -5,6 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # General app config
 DEBUG = bool(os.environ.get('DEBUG', False))
+CSRF_ENABLED = True
 SECRET_KEY = 'Computing Curricula 2013 Webapp'
 
 # Database config

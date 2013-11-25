@@ -1,4 +1,5 @@
 import csv
+from hashlib import md5
 import os.path
 
 from CC2013 import app, db
@@ -76,8 +77,12 @@ class User(db.Model):
     role = db.Column(db.SmallInteger, default=ROLE_USER)
     programs = db.relationship('Program', backref='user', lazy='dynamic')
 
-    def is_authenticated(self):
-        return True
+    def avatar(self, size):
+        hash = md5(self.email).hexdigest()
+        return 'http://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(hash, size)
+
+    def get_id(self):
+        return unicode(self.id)
 
     def is_active(self):
         return True
@@ -85,8 +90,8 @@ class User(db.Model):
     def is_anonymous(self):
         return False
 
-    def get_id(self):
-        return unicode(self.id)
+    def is_authenticated(self):
+        return True
 
     def __repr__(self):
         return '<User {0.nickname}>'.format(self)
@@ -100,7 +105,8 @@ class Program(db.Model):
     courses = db.relationship('Course', backref='program', lazy='dynamic')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title=None, description=None):
+    def __init__(self, user, title, description=None):
+        self.user_id = user.id
         self.title = title
         self.description = description
 

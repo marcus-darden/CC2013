@@ -6,6 +6,6 @@ function set_openid(openid, provider)
         user = prompt('Enter your ' + provider + ' username:')
         openid = openid.substr(0, u) + user
     }
-    $('#username').val(openid);
+    $('#openid').val(openid);
 }
 

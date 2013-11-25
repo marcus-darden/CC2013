@@ -8,13 +8,15 @@
 {% endblock nav %}
 {% block content %}
     <h1>Login</h1>
-    <form name="login" method="POST" action="{{ url_for('do_login') }}">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" />
+    <form name="login" method="POST" action="">
+      {{ form.hidden_tag() }}
+      <label for="openid">OpenID:</label>
+      {{ form.openid(size=80) }}
+      {{ form.remember_me }} Remember Me
       <input type="submit" value="Sign In" />
       |
-{% for p in providers %}
+{%- for p in providers %}
       <a href="javascript:set_openid('{{ p.url }}', '{{ p.name }}');">{{ p.name }}</a> |
-{% endfor %}
+{%- endfor %}
     </form>
 {% endblock content %}
