@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block page_title %}Edit User Information{% endblock page_title %}
+{% block nav %}
+    <ul>
+      <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
+      <li><a href="{{ url_for('program_new') }}">Add new program</a></li>
+{% if g.user.is_authenticated() %}
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+{% endif %}
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <h1>Edit Your Profile</h1>
+    <form action="" method="post" name="edit">
+      {{ form.hidden_tag() }}
+      {{ form.nickname.label }}
+      {{ form.nickname(size=24) }}
+      {{ form.about_me.label }}
+      {{ form.about_me(cols=32, rows=4) }}
+      <input type="submit" value="Save Changes" />
+    </form>
+{% endblock content %}

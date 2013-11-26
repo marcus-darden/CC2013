@@ -1,12 +1,11 @@
 import csv
+from hashlib import md5
+import os.path
 
-from flask.ext.sqlalchemy import SQLAlchemy
-from CC2013 import app
+from CC2013 import app, db
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cc2013.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-db = SQLAlchemy(app)
+__all__ = ['User', 'Area', 'Unit', 'Outcome', 'Program', 'Course', 'ROLE_USER', 'ROLE_ADMIN']
 
 
 class Area(db.Model):
@@ -67,14 +66,49 @@ class Outcome(db.Model):
         return '<Outcome: {0.number:2d}. {0.text} Tier: {0.tier} Mastery: {0.mastery} {0.unit}>'.format(self)
 
 
+ROLE_USER = 0
+ROLE_ADMIN = 1
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nickname = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    role = db.Column(db.SmallInteger, default=ROLE_USER)
+    programs = db.relationship('Program', backref='user', lazy='dynamic')
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime)
+
+    def avatar(self, size):
+        hash = md5(self.email).hexdigest()
+        return 'http://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(hash, size)
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def is_authenticated(self):
+        return True
+
+    def __repr__(self):
+        return '<User {0.nickname}>'.format(self)
+
+
 class Program(db.Model):
     '''A collection of courses built to cover "Learning Outcomes".'''
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), unique=True)
     description = db.Column(db.String)
     courses = db.relationship('Course', backref='program', lazy='dynamic')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title=None, description=None):
+    def __init__(self, user, title, description=None):
+        self.user_id = user.id
         self.title = title
         self.description = description
 
@@ -108,7 +142,7 @@ class Course(db.Model):
 
 
 # Initialize the database
-@app.before_first_request
+#@app.before_first_request
 def init_db():
     db.create_all()
     logging = app.config['DEBUG'] and app.config['_LOGGING']

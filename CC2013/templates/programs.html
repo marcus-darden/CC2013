@@ -3,7 +3,11 @@
 {% block nav %}
     <ul>
       <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
-      <li><a href="{{ url_for('new_program') }}">Add new program</a></li>
+      <li><a href="{{ url_for('program_new') }}">Add new program</a></li>
+{% if g.user.is_authenticated() %}
+      <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">User Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+{% endif %}
     </ul>
 {% endblock nav %}
 {% block content %}
