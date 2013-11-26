@@ -5,9 +5,9 @@
     <ul>
       <li><a href="{{ url_for('index') }}">Back to homepage</a></li>
       <li><a href="{{ url_for('program', program_id=course.program.id) }}">Back to {{ course.program.title }}</a></li>
-      <li><a href="{{ url_for('new_course', program_id=course.program.id ) }}">Add new course</a></li>
+      <li><a href="{{ url_for('course_new', program_id=course.program.id ) }}">Add new course</a></li>
 {% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('user', nickname=g.user.nickname) }}">User Profile</a></li>
+      <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">User Profile</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
 {% endif %}
     </ul>
@@ -42,7 +42,7 @@
         <td>{{ unit.tier2 }}</td>
         <td>{{ unit.area.text }}</td>
         <td>{{ unit.text }}</td>
-        <td><a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">delete</a></td>
+        <td><a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">remove</a></td>
       </tr>
   {% endfor %}
       <tr><td>{{ tier1 }}</td><td>{{ tier2 }}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -68,8 +68,8 @@
     </table>
 {% endif %}
     <input type="hidden" id="__course_id" value="{{ course.id }}" />
-    <div><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id, action='edit') }}">Edit Course</a></div>
-    <div><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id, action='delete') }}">Delete Course</a></div>
+    <div><a href="{{ url_for('course_edit', program_id=course.program.id, course_id=course.id) }}">Edit Course</a></div>
+    <div><a href="{{ url_for('course_delete', program_id=course.program.id, course_id=course.id) }}">Delete Course</a></div>
     <h2>Add Course Content</h2>
     <div>
       <label for="knowledge_areas">Knowledge Areas</label>
@@ -80,7 +80,7 @@
       </select>
     </div>
     <div>
-      <form method="post" action="{{ url_for('add_outcomes', program_id=course.program.id, course_id=course.id, source='unit') }}">
+      <form method="post" action="{{ url_for('add_outcomes', program_id=course.program.id, course_id=course.id) }}">
         <label for"knowledge_units">Knowledge Units</label>
         <select name="knowledge_units" id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
         </select>

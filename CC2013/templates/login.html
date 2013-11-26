@@ -10,9 +10,9 @@
     <h1>Login</h1>
     <form name="login" method="POST" action="">
       {{ form.hidden_tag() }}
-      <label for="openid">OpenID:</label>
+      {{ form.openid.label }}
       {{ form.openid(size=80) }}
-      {{ form.remember_me }} Remember Me
+      {{ form.remember_me }} {{ form.remember_me.label }}
       <input type="submit" value="Sign In" />
       |
 {%- for p in providers %}

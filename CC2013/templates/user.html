@@ -3,7 +3,7 @@
 {% block nav %}
     <ul>
       <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
-      <li><a href="{{ url_for('new_program') }}">Add new program</a></li>
+      <li><a href="{{ url_for('program_new') }}">Add new program</a></li>
 {% if g.user.is_authenticated() %}
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
 {% endif %}
@@ -11,15 +11,19 @@
 {% endblock nav %}
 {% block content %}
     <table>
-      <tr valign="top">
+    <tr valign="top">
         <td><img src="{{ user.avatar(128) }}"></td>
-        <td><h1>User: {{ user.nickname }}</h1></td>
-      </tr>
+        <td><h1>User: {{ user.nickname }}</h1>
+            {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+            {% if user.last_seen %}<p><i>Last seen on: {{ user.last_seen }}</i></p>{% endif %}
+            {% if user.id == g.user.id %}<p><a href="{{ url_for('user_settings') }}">Edit Profile</a></p>{% endif %}
+        </td>
+    </tr>
     </table>
     <hr>
     <h2>Programs</h2>
 {% for program in programs %}
-    <p><b>{{ program.title }}</b></p>
+    <p><a href={{ url_for('program', program_id=program.id) }}>{{ program.title }}</a></p>
 {% else %}
     <p>No programs have been defined.</p>
 {% endfor %}

@@ -4,7 +4,7 @@
     <ul>
       <li><a href="{{ url_for('program', program_id=program.id) }}">Back to {{ program.title }}</a></li>
 {% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('user', nickname=g.user.nickname) }}">User Profile</a></li>
+      <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">User Profile</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
 {% endif %}
     </ul>
@@ -12,10 +12,10 @@
 {% block content %}
 {% if course is defined %}
     {% set title, abbr, description = course.title, course.abbr, course.description %}
-    {% set action = url_for('modify_course', program_id=program.id, course_id=course.id) %}
+    {% set action = url_for('course_edit', program_id=program.id, course_id=course.id) %}
     <h1>Edit Course</h1>
 {% else %}
-    {% set action = url_for('modify_course', program_id=program.id) %}
+    {% set action = url_for('course_new', program_id=program.id) %}
     <h1>New Course</h1>
 {% endif %}
     <form method="post" action="{{ action }}">
