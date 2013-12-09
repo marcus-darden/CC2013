@@ -132,21 +132,14 @@ def program(program_id):
     # Query db
     program = Program.query.get_or_404(program_id)
 
-    # TODO: This needs query help!
-    # Join Unit/Course and query by course.program.id
-    units = []
-    for course in program.courses:
-        units.extend(course.units)
-    unit_ids = [unit.id for unit in units]
-
     # Calculate the core hours for the courses in this program
-    if unit_ids:
-        tier1, tier2 = (db.session.query(db.func.sum(Unit.tier1),
-                                         db.func.sum(Unit.tier2))
-                                  .filter(Unit.id.in_(unit_ids))
-                                  .first())
-    else:
-        tier1, tier2 = 0, 0
+    subquery = (Unit.query
+                    .join(Unit.courses, Course.program)
+                    .filter(Program.id == 1)
+                    .subquery())
+    tier1, tier2 = (db.session.query(db.func.sum(u1.c.tier1),
+                                     db.func.sum(u1.c.tier2))
+                              .first())
 
     # All core hours
     tier1_total, tier2_total = (db.session.query(db.func.sum(Unit.tier1),
@@ -163,9 +156,15 @@ def program(program_id):
            methods=['POST'])
 @login_required
 def program_delete(program_id):
+    # Verify db access
     program = Program.query.get_or_404(program_id)
+    if program.user.id != g.user.id:
+        abort(403)
 
-    return redirect(url_for('program', program_id=program_id))
+    db.session.delete(program)
+    db.session.commit()
+
+    return redirect(url_for('user_profile', nickname=g.user.nickname))
 
 
 # Course creation
@@ -270,9 +269,17 @@ def course(program_id, course_id):
 @app.route('/program/<int:program_id>/course/<int:course_id>/delete',
            methods=['POST'])
 def course_delete(program_id, course_id):
-    return redirect(url_for('course',
-                            program_id=program_id,
-                            course_id=course_id))
+    # Verify db access
+    course = Course.query.get_or_404(course_id)
+    if course.program.id != program_id:
+        abort(404)
+    if course.program.user.id != g.user.id:
+        abort(403)
+
+    db.session.delete(course)
+    db.session.commit()
+
+    return redirect(url_for('program', program_id=program_id))
     
 
 # Add Knowledge Units to a course
