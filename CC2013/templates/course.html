@@ -69,7 +69,11 @@
 {% endif %}
     <input type="hidden" id="__course_id" value="{{ course.id }}" />
     <div><a href="{{ url_for('course_edit', program_id=course.program.id, course_id=course.id) }}">Edit Course</a></div>
-    <div><a href="{{ url_for('course_delete', program_id=course.program.id, course_id=course.id) }}">Delete Course</a></div>
+    <div>
+      <form id="course_delete" method="post" action="{{ url_for('course_delete', program_id=course.program.id, course_id=course.id) }}">
+        <input type="submit" name="submit" value="Delete Course" />
+      </form>
+    </div>
     <h2>Add Course Content</h2>
     <div>
       <label for="knowledge_areas">Knowledge Areas</label>
