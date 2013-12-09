@@ -5,7 +5,7 @@ import os.path
 from CC2013 import app, db
 
 
-__all__ = ['User', 'Area', 'Unit', 'Outcome', 'Program', 'Course', 'ROLE_USER', 'ROLE_ADMIN']
+__all__ = ['User', 'Area', 'Unit', 'Outcome', 'Program', 'Course', 'course_units', 'ROLE_USER', 'ROLE_ADMIN']
 
 
 class Area(db.Model):
@@ -33,7 +33,7 @@ class Unit(db.Model):
     tier1 = db.Column(db.Float)
     tier2 = db.Column(db.Float)
     elective = db.Column(db.Float)
-    area_id = db.Column(db.String, db.ForeignKey('area.id'))
+    area_id = db.Column(db.String, db.ForeignKey('area.id', ondelete='cascade'))
     outcomes = db.relationship('Outcome', backref='unit', lazy='dynamic')
 
     def __init__(self, area, text, tier1, tier2):
@@ -53,7 +53,7 @@ class Outcome(db.Model):
     tier = db.Column(db.Enum('Tier 1', 'Tier 2', 'Elective', name='outcome_tier'))
     mastery = db.Column(db.Enum('Familiarity', 'Usage', 'Assessment', name='outcome_mastery'))
     number = db.Column(db.Integer)
-    unit_id = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    unit_id = db.Column(db.Integer, db.ForeignKey('unit.id', ondelete='cascade'))
 
     def __init__(self, unit, tier, mastery, number, text):
         self.unit_id = unit.id
@@ -117,7 +117,7 @@ class Program(db.Model):
     title = db.Column(db.String(128), unique=True)
     description = db.Column(db.String)
     courses = db.relationship('Course', backref='program', lazy='dynamic')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='cascade'))
 
     def __init__(self, user, title, description=None):
         self.user_id = user.id
@@ -139,7 +139,7 @@ class Course(db.Model):
     abbr = db.Column(db.String(8))
     title = db.Column(db.String(128))
     description = db.Column(db.String)
-    program_id = db.Column(db.Integer, db.ForeignKey('program.id'))
+    program_id = db.Column(db.Integer, db.ForeignKey('program.id', ondelete='cascade'))
     units = db.relationship('Unit', secondary=course_units,
                             backref=db.backref('courses', lazy='dynamic'))
 
