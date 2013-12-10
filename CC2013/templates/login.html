@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% block page_title %}CC2013 - Site Login{% endblock page_title %}
+{% block page_title %}CC2013 - Login Page{% endblock page_title %}
 {% block page_js %}<script src="{{ url_for('static', filename='login.js') }}"></script>{% endblock %}
 {% block nav %}
     <ul>
+      <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
       <li><a href="{{ url_for('index') }}">Homepage</a></li>
     </ul>
 {% endblock nav %}

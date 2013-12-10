@@ -3,11 +3,13 @@
 {% block page_js %}<script src="{{ url_for('static', filename='course.js') }}"></script>{% endblock %}
 {% block nav %}
     <ul>
-      <li><a href="{{ url_for('index') }}">Back to homepage</a></li>
-      <li><a href="{{ url_for('program', program_id=course.program.id) }}">Back to {{ course.program.title }}</a></li>
+      <li><a href="{{ url_for('index') }}">Homepage</a></li>
+      <li><a href="{{ url_for('user_profile', nickname=course.program.user.nickname) }}">User Profile</a></li>
+      <li><a href="{{ url_for('program', program_id=course.program.id) }}">Program Summary: {{ course.program.title }}</a></li>
+{% if course.program.user.id == g.user.id %}
       <li><a href="{{ url_for('course_new', program_id=course.program.id ) }}">Add new course</a></li>
+{% endif %}
 {% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">User Profile</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
 {% endif %}
     </ul>
@@ -42,7 +44,7 @@
         <td>{{ unit.tier2 }}</td>
         <td>{{ unit.area.text }}</td>
         <td>{{ unit.text }}</td>
-        <td><a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">remove</a></td>
+        <td>{% if course.program.user.id == g.user.id %}<a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">remove</a>{% else %}&nbsp;{% endif %}</td>
       </tr>
   {% endfor %}
       <tr><td>{{ tier1 }}</td><td>{{ tier2 }}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -67,7 +69,8 @@
   {% endfor %}
     </table>
 {% endif %}
-    <input type="hidden" id="__course_id" value="{{ course.id }}" />
+    <!-- input type="hidden" id="__course_id" value="{{ course.id }}" / -->
+{% if course.program.user.id == g.user.id %}
     <div><a href="{{ url_for('course_edit', program_id=course.program.id, course_id=course.id) }}">Edit Course</a></div>
     <div>
       <form id="course_delete" method="post" action="{{ url_for('course_delete', program_id=course.program.id, course_id=course.id) }}">
@@ -96,4 +99,5 @@
       <table name="learning_outcomes" id="learning_outcomes">
       </table>
     </div>
+{% endif %}
 {% endblock content %}

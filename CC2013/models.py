@@ -91,7 +91,7 @@ class User(db.Model):
             version += 1
         return new_nickname
 
-    def avatar(self, size):
+    def avatar(self, size=128):
         hash = md5(self.email).hexdigest()
         return 'http://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(hash, size)
 

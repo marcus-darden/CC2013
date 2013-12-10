@@ -10,11 +10,12 @@ from forms import *
 
 
 # OpenID Login
-@app.route('/login', methods = ['GET', 'POST'])
+@app.route('/login',
+           methods=['GET', 'POST'])
 @oid.loginhandler
 def login():
     if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('index'))
+        return redirect(url_for('user_profile', nickname=g.user.nickname))
     form = LoginForm()
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
@@ -33,7 +34,7 @@ def logout():
 
 # User info page
 @app.route('/user/<nickname>')
-@login_required
+#@login_required
 def user_profile(nickname):
     user = User.query.filter_by(nickname=nickname).first()
     if not user:
@@ -65,11 +66,10 @@ def user_settings():
 
 # Homepage
 @app.route('/')
-@login_required
 def index():
-    # TODO: ...
-    programs = g.user.programs.order_by(Program.title).all()
-    return render_template('programs.html', programs=programs)
+    return render_template('index.html', form=LoginForm(),
+                           providers=app.config['OPENID_PROVIDERS'],
+                           programs=Program.query.all())
 
 
 # Program creation
@@ -137,8 +137,8 @@ def program(program_id):
                     .join(Unit.courses, Course.program)
                     .filter(Program.id == 1)
                     .subquery())
-    tier1, tier2 = (db.session.query(db.func.sum(u1.c.tier1),
-                                     db.func.sum(u1.c.tier2))
+    tier1, tier2 = (db.session.query(db.func.sum(subquery.c.tier1),
+                                     db.func.sum(subquery.c.tier2))
                               .first())
 
     # All core hours

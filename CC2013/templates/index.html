@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block page_title %}CC2013 - Homepage{% endblock page_title %}
+{% block nav %}
+    <ul>
+      <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
+{% if not g.user.is_authenticated() %}
+      <li><a href="{{ url_for('login') }}">Login</a></li>
+{% else %}
+      <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">User Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+{% endif %}
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <h1>Programs</h1>
+    <table id="programs">
+{% for p in programs %}
+      <tr>
+        <td><a href="{{ url_for('user_profile', nickname=p.user.nickname) }}"><img src="{{ p.user.avatar(64) }}" alt="{{ p.user.nickname }}"></a></td>
+        <td><p><a href="{{ url_for('program', program_id=p.id) }}">{{ p.title }}</a></p>
+{%- if p.description -%}<p>{{ p.description }}</p>{%- endif -%}
+        </td>
+      </tr>
+{% endfor %}
+    </table>
+{% endblock content %}

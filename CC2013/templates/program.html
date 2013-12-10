@@ -3,10 +3,12 @@
 {% block page_js %}<script src="{{ url_for('static', filename='program.js') }}"></script>{% endblock %}
 {% block nav %}
     <ul>
-      <li><a href="{{ url_for('index') }}">Back to homepage</a></li>
+      <li><a href="{{ url_for('index') }}">Homepage</a></li>
+      <li><a href="{{ url_for('user_profile', nickname=program.user.nickname) }}">User Profile</a></li>
+{% if program.user.id == g.user.id %}
       <li><a href="{{ url_for('course_new', program_id=program.id ) }}">Add new course</a></li>
+{% endif %}
 {% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">User Profile</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
 {% endif %}
     </ul>
@@ -36,10 +38,12 @@
       <p>No courses have been added to this program.</p>
 {% endfor %}
     </ul>
+{% if program.user.id == g.user.id %}
     <div><a href="{{ url_for('program_edit', program_id=program.id) }}">Edit Program</a></div>
     <div>
       <form id="program_delete" method="post" action="{{ url_for('program_delete', program_id=program.id) }}">
         <input type="submit" name="submit" value="Delete Program" />
       </form>
     </div>
+{% endif %}
 {% endblock content %}
