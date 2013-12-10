@@ -10,6 +10,7 @@ SECRET_KEY = 'Computing Curricula 2013 Webapp'
 
 # Database config
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+SQLALCHEMY_DATABASE_URI = 'postgresql://swudaeceketywb:MIzdh5zSVMNb7l5P46OIkRd2y7@ec2-54-204-24-154.compute-1.amazonaws.com/d3esdjt0vsa5je'
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 # OpenID config
