@@ -49,7 +49,7 @@ class Unit(db.Model):
 class Outcome(db.Model):
     '''A "Learning Outcome", as defined in CC2013.'''
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(256))
+    text = db.Column(db.String(300))
     tier = db.Column(db.Enum('Tier 1', 'Tier 2', 'Elective', name='outcome_tier'))
     mastery = db.Column(db.Enum('Familiarity', 'Usage', 'Assessment', name='outcome_mastery'))
     number = db.Column(db.Integer)
