@@ -48,7 +48,7 @@ def user_profile(nickname):
 @app.route('/user/settings', methods = ['GET', 'POST'])
 @login_required
 def user_settings():
-    form = EditForm()
+    form = EditForm(g.user.nickname)
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
@@ -445,6 +445,7 @@ def after_login(response):
         nickname = response.nickname
         if nickname is None or nickname == '':
             nickname = response.email.split('@')[0]
+        nickname = User.make_unique_nickname(nickname)
         user = User(nickname=nickname, email=response.email, role=ROLE_USER)
         db.session.add(user)
         db.session.commit()
@@ -468,5 +469,12 @@ def before_request():
 # Error Handling
 # Not Found
 @app.errorhandler(404)
-def page_not_found(error):
-    return 'This page does not exist', 404
+def internal_error(error):
+    return render_template('error.html', error=404), 404
+
+
+# Other error
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('error.html', error=500), 500
