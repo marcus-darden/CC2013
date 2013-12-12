@@ -134,11 +134,13 @@ def program(program_id):
     # Calculate the core hours for the courses in this program
     subquery = (Unit.query
                     .join(Unit.courses, Course.program)
-                    .filter(Program.id == 1)
+                    .filter(Program.id == program_id)
                     .subquery())
     tier1, tier2 = (db.session.query(db.func.sum(subquery.c.tier1),
                                      db.func.sum(subquery.c.tier2))
                               .first())
+    tier1 = 0 if tier1 is None else tier1
+    tier2 = 0 if tier2 is None else tier2
 
     # All core hours
     tier1_total, tier2_total = (db.session.query(db.func.sum(Unit.tier1),
