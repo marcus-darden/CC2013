@@ -1,36 +1,16 @@
 {% extends "base.html" %}
 {% block page_title %}Course Information{% endblock page_title %}
 {% block page_js %}<script src="{{ url_for('static', filename='course.js') }}"></script>{% endblock %}
-{% block nav %}
-    <ul>
-      <li><a href="{{ url_for('index') }}">Homepage</a></li>
-      <li><a href="{{ url_for('user_profile', nickname=course.program.user.nickname) }}">User Profile</a></li>
-      <li><a href="{{ url_for('program', program_id=course.program.id) }}">Program Summary: {{ course.program.title }}</a></li>
-{% if course.program.user.id == g.user.id %}
-      <li><a href="{{ url_for('course_new', program_id=course.program.id ) }}">Add new course</a></li>
-{% endif %}
-{% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-{% endif %}
-    </ul>
-{% endblock nav %}
 {% block content %}
-    <h1>Course Information</h1>
-{% if message is defined %}
-    <p class="message">{{ message }}</p>
+    <h1>{{ course.title }} <small>{% if course.abbr %}({{ course.abbr }}){% endif %}</small></h1>
+    <p id="course_description">{{ course.description or "No description provided." }}</p>
+{% if course.program.user.id == g.user.id %}
+    <a href="{{ url_for('course_edit', program_id=course.program.id, course_id=course.id) }}">edit</a>
 {% endif %}
-    <dl>
-      <dt>Course Title</dt>
-      <dd>{{ course.title }}</dd>
-      <dt>Course Abbreviation</dt>
-      <dd>{{ course.abbr or "No abbreviation provided." }}</dd>
-      <dt>Description</dt>
-      <dd>{{ course.description or "No description provided." }}</dd>
-    </dl>
     <h2>Course Content</h2>
     <h3>Knowledge Units</h3>
 {% if course.units|length %}
-    <table>
+    <table class="table table-striped">
       <tr>
         <th>Tier 1</th>
         <th>Tier 2</th>
@@ -47,14 +27,15 @@
         <td>{% if course.program.user.id == g.user.id %}<a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">remove</a>{% else %}&nbsp;{% endif %}</td>
       </tr>
   {% endfor %}
-      <tr><td>{{ tier1 }}</td><td>{{ tier2 }}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>{{ tier1 }}</td><td>{{ tier2 }}</td><td>Totals</td><td>&nbsp;</td></tr>
     </table>
 {% else %}
     <p>No Knowledge Units have been added to this course.</p>
 {% endif %}
+<a href="">Assign Knowledge Units</a>
 {% if course.units|length %}
     <h3>Learning Outcomes</h3>
-    <table>
+    <table class="table table-striped">
       <tr>
         <th style="width:40px;">Tier</th>
         <th>Mastery</th>
@@ -69,35 +50,9 @@
   {% endfor %}
     </table>
 {% endif %}
-    <!-- input type="hidden" id="__course_id" value="{{ course.id }}" / -->
 {% if course.program.user.id == g.user.id %}
-    <div><a href="{{ url_for('course_edit', program_id=course.program.id, course_id=course.id) }}">Edit Course</a></div>
-    <div>
-      <form id="course_delete" method="post" action="{{ url_for('course_delete', program_id=course.program.id, course_id=course.id) }}">
+    <form id="course_delete" method="post" action="{{ url_for('course_delete', program_id=course.program.id, course_id=course.id) }}">
         <input type="submit" name="submit" value="Delete Course" />
-      </form>
-    </div>
-    <h2>Add Course Content</h2>
-    <div>
-      <label for="knowledge_areas">Knowledge Areas</label>
-      <select id="knowledge_areas" size="{{ areas|length }}">
-{% for area in areas %}
-        <option value="{{ area.id }}">{{ area.id }} - {{ area.text }}</option>
-{% endfor %}
-      </select>
-    </div>
-    <div>
-      <form method="post" action="{{ url_for('add_outcomes', program_id=course.program.id, course_id=course.id) }}">
-        <label for"knowledge_units">Knowledge Units</label>
-        <select name="knowledge_units" id="knowledge_units" size="{{ areas|length }}" multiple="multiple">
-        </select>
-        <input type="submit" id="add_units" value="Add Unit(s)" disabled="disabled"/>
-      </form>
-    </div>
-    <div>
-      <h3>Learning Outcomes</h3>
-      <table name="learning_outcomes" id="learning_outcomes">
-      </table>
-    </div>
+    </form>
 {% endif %}
 {% endblock content %}

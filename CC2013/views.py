@@ -66,7 +66,8 @@ def user_settings():
 # Homepage
 @app.route('/')
 def index():
-    return render_template('index.html', form=LoginForm(),
+    return render_template('index.html', homepage=True,
+                           form=LoginForm(),
                            providers=app.config['OPENID_PROVIDERS'],
                            programs=Program.query.all())
 

@@ -1,28 +1,12 @@
 {% extends "base.html" %}
 {% block page_title %}Program Summary{% endblock page_title %}
 {% block page_js %}<script src="{{ url_for('static', filename='program.js') }}"></script>{% endblock %}
-{% block nav %}
-    <ul>
-      <li><a href="{{ url_for('index') }}">Homepage</a></li>
-      <li><a href="{{ url_for('user_profile', nickname=program.user.nickname) }}">User Profile</a></li>
-{% if program.user.id == g.user.id %}
-      <li><a href="{{ url_for('course_new', program_id=program.id ) }}">Add new course</a></li>
-{% endif %}
-{% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-{% endif %}
-    </ul>
-{% endblock nav %}
 {% block content %}
-    <h1>Program Summary</h1>
-{% if message is defined %}
-    <p class="message">{{ message }}</p>
-{% endif %}
+    <h1>{{ program.title }}</h1>
+    <p>{{ program.description or "No description provided." }}</p>
+    <a href="{{ url_for('program_edit', program_id=program.id) }}">edit</a>
+    <h2>Curriculum Coverage</h2>
     <dl>
-      <dt>Program Title</dt>
-      <dd>{{ program.title }}</dd>
-      <dt>Description</dt>
-      <dd>{{ program.description or "No description provided." }}</dd>
       <dt>Number of courses</dt>
       <dd>{{ courses|length }}
       <dt>Tier 1 Hours</dt>
@@ -33,17 +17,15 @@
     <h2>Courses</h2>
     <ul>
 {% for course in program.courses %}
-      <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{% if course.abbr %}{{ course.abbr }}: {% endif %}{{ course.title }}</a></li>
+      <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{{ course.title }}{% if course.abbr %} ({{ course.abbr }}){% endif %}</a></li>
 {% else %}
       <p>No courses have been added to this program.</p>
 {% endfor %}
     </ul>
+    <a href="{{ url_for('course_new', program_id=program.id ) }}">Add new course</a>
 {% if program.user.id == g.user.id %}
-    <div><a href="{{ url_for('program_edit', program_id=program.id) }}">Edit Program</a></div>
-    <div>
-      <form id="program_delete" method="post" action="{{ url_for('program_delete', program_id=program.id) }}">
-        <input type="submit" name="submit" value="Delete Program" />
-      </form>
-    </div>
+    <form id="program_delete" method="post" action="{{ url_for('program_delete', program_id=program.id) }}">
+      <input type="submit" name="submit" value="Delete Program" />
+    </form>
 {% endif %}
 {% endblock content %}

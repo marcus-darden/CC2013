@@ -1,16 +1,5 @@
 {% extends "base.html" %}
-{% block page_title %}CC2013 - Homepage{% endblock page_title %}
-{% block nav %}
-    <ul>
-      <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
-{% if not g.user.is_authenticated() %}
-      <li><a href="{{ url_for('login') }}">Login</a></li>
-{% else %}
-      <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">User Profile</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-{% endif %}
-    </ul>
-{% endblock nav %}
+{% block page_title %}Homepage{% endblock page_title %}
 {% block content %}
     <h1>Programs</h1>
     <table id="programs">

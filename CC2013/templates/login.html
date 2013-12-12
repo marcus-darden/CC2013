@@ -1,23 +1,20 @@
 {% extends "base.html" %}
-{% block page_title %}CC2013 - Login Page{% endblock page_title %}
+{% block page_title %}Login Page{% endblock page_title %}
 {% block page_js %}<script src="{{ url_for('static', filename='login.js') }}"></script>{% endblock %}
-{% block nav %}
-    <ul>
-      <li><a href="{{ url_for('knowledge_areas') }}">Curriculum Exemplar (dev)</a></li>
-      <li><a href="{{ url_for('index') }}">Homepage</a></li>
-    </ul>
-{% endblock nav %}
 {% block content %}
     <h1>Login</h1>
-    <form name="login" method="POST" action="">
+    <form name="login" method="POST" action="" role="form">
       {{ form.hidden_tag() }}
-      {{ form.openid.label }}
-      {{ form.openid(size=80) }}
-      {{ form.remember_me }} {{ form.remember_me.label }}
-      <input type="submit" value="Sign In" />
+      <div class="form-group">
+        {{ form.openid.label() }}
+        {{ form.openid(size=80, class="form-control") }}
+      </div>
+      <div class="form-group">
+        {{ form.remember_me(class="form-control") }} {{ form.remember_me.label }}</div>
       |
 {%- for p in providers %}
       <a href="javascript:set_openid('{{ p.url }}', '{{ p.name }}');">{{ p.name }}</a> |
 {%- endfor %}
+      <input type="submit" value="Sign In" class="btn btn-primary" />
     </form>
 {% endblock content %}

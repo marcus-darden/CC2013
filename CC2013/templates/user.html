@@ -1,32 +1,20 @@
 {% extends "base.html" %}
-{% block page_title %}User Information{% endblock page_title %}
-{% block nav %}
-    <ul>
-      <li><a href="{{ url_for('index') }}">Homepage</a></li>
-{% if user.id == g.user.id %}
-      <li><a href="{{ url_for('program_new') }}">Add new program</a></li>
-{% endif %}
-{% if g.user.is_authenticated() %}
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-{% endif %}
-    </ul>
-{% endblock nav %}
+{% block page_title %}User Profile{% endblock page_title %}
 {% block content %}
-    <table>
-    <tr valign="top">
-        <td><img src="{{ user.avatar(128) }}"></td>
-        <td><h1>User: {{ user.nickname }}</h1>
-            {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-            {% if user.last_seen %}<p><i>Last seen on: {{ user.last_seen }}</i></p>{% endif %}
-            {% if user.id == g.user.id %}<p><a href="{{ url_for('user_settings') }}">Edit Profile</a></p>{% endif %}
-        </td>
-    </tr>
-    </table>
-    <hr>
+    <h1>{{ user.nickname }}</h1>
+    <img id="user_avatar" src="{{ user.avatar(128) }}">
+{% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+{% if user.last_seen %}<p id="last_seen">Last seen on: {{ user.last_seen }}</p>{% endif %}
+{% if user.id == g.user.id %}<p><a href="{{ url_for('user_settings') }}">Edit Profile</a></p>{% endif %}
     <h2>Programs</h2>
+    <ul>
 {% for program in programs %}
-    <p><a href={{ url_for('program', program_id=program.id) }}>{{ program.title }}</a></p>
+      <li><a href={{ url_for('program', program_id=program.id) }}>{{ program.title }}</a></li>
 {% else %}
-    <p>No programs have been defined.</p>
+      <p>No programs have been defined.</p>
 {% endfor %}
+    </ul>
+{% if user.id == g.user.id %}
+    <a href="{{ url_for('program_new') }}">Add new program</a>
+{% endif %}
 {% endblock content %}
