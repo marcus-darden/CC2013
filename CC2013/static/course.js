@@ -23,23 +23,23 @@ $(function() {
 
     // Knowledge Unit listbox handler
   $('#knowledge_units').change(function() {
-      var unit_ids = $('#knowledge_units').val();
+    var unit_ids = $('#knowledge_units').val();
 
-      // Add Unit(s) button enable/disable
-      if(unit_ids.length > 0)
-        $('#add_units').removeAttr('disabled')
-      else
-        $('#add_units').attr('disabled', 'disabled')
+    // Add Unit(s) button enable/disable
+    if(unit_ids.length > 0)
+      $('#add_units').removeAttr('disabled')
+    else
+      $('#add_units').attr('disabled', 'disabled')
 
-      // Get Learning Outcomes, based on KUs and fill Learning Outcomes listbox
-      var table = $('#learning_outcomes');
-      table.empty();
+    // Get Learning Outcomes, based on KUs and fill Learning Outcomes listbox
+    var table = $('#learning_outcomes');
+    table.empty();
 
-      var row = $('<tr/>');
-      row.append($('<th/>').text('Tier'));
-      row.append($('<th/>').text('Mastery'));
-      row.append($('<th/>').text('Learning Outcome'));
-      table.append(row);
+    var row = $('<tr/>');
+    row.append($('<th/>').text('Tier'));
+    row.append($('<th/>').text('Mastery'));
+    row.append($('<th/>').text('Learning Outcome'));
+    table.append(row);
 
     $.each(unit_ids, function(i, unit_id) {
       $.getJSON('/json', {'unit_id': unit_id}, function(outcomes) {
