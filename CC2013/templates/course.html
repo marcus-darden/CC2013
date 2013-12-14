@@ -27,7 +27,7 @@
         <td>{% if course.program.user.id == g.user.id %}<a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">remove</a>{% else %}&nbsp;{% endif %}</td>
       </tr>
   {% endfor %}
-      <tr><td>{{ tier1 }}</td><td>{{ tier2 }}</td><td>Totals</td><td>&nbsp;</td></tr>
+      <tr><td>{{ course.tier1_hours }}</td><td>{{ course.tier2_hours }}</td><td>Totals</td><td>&nbsp;</td></tr>
     </table>
 {% else %}
     <p>No Knowledge Units have been added to this course.</p>
@@ -41,7 +41,7 @@
         <th>Mastery</th>
         <th>Learning Outcome</th>
       </tr>
-  {% for outcome in course_outcomes %}
+  {% for outcome in course.outcomes %}
       <tr>
         <td>{{ outcome.tier }}</td>
         <td>{{ outcome.mastery }}</td>

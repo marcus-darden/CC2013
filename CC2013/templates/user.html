@@ -8,7 +8,7 @@
 {% if user.id == g.user.id %}<p><a href="{{ url_for('user_settings') }}">Edit Profile</a></p>{% endif %}
     <h2>Programs</h2>
     <ul>
-{% for program in programs %}
+{% for program in user.programs %}
       <li><a href={{ url_for('program', program_id=program.id) }}>{{ program.title }}</a></li>
 {% else %}
       <p>No programs have been defined.</p>

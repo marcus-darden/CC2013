@@ -79,6 +79,19 @@ class User(db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
 
+    def add_program(self, program):
+        if not self.has_program(program):
+            self.programs.append(program)
+            return self
+
+    def remove_program(self, program):
+        if self.has_program(program):
+            self.programs.remove(program)
+            return self
+
+    def has_program(self, program):
+        return self.programs.filter(Program.id == program.id).count() > 0
+
     @staticmethod
     def make_unique_nickname(nickname):
         if User.query.filter_by(nickname=nickname).first() == None:
@@ -124,6 +137,54 @@ class Program(db.Model):
         self.title = title
         self.description = description
 
+    def add_course(self, course):
+        if not self.has_course(course):
+            self.courses.append(course)
+            return self
+
+    def remove_course(self, course):
+        if self.has_course(course):
+            self.courses.remove(course)
+            return self
+
+    def has_course(self, course):
+        return self.courses.filter(Course.id == course.id).count() > 0
+
+    @staticmethod
+    def all_tier1_hours():
+        return (db.session.query(db.func.sum(Unit.tier1))
+                          .first())[0]
+
+    @staticmethod
+    def all_tier2_hours():
+        return (db.session.query(db.func.sum(Unit.tier2))
+                          .first())[0]
+
+    @property
+    def core_subquery(self):
+        return (Unit.query
+                    .join(Unit.courses, Course.program)
+                    .filter(Program.id == self.id)
+                    .subquery())
+
+    @property
+    def tier1_hours(self):
+        # An empty program
+        if self.courses.count() == 0:
+            return 0
+
+        return (db.session.query(db.func.sum(self.core_subquery.c.tier1))
+                          .first())[0]
+
+    @property
+    def tier2_hours(self):
+        # An empty program
+        if self.courses.count() == 0:
+            return 0
+
+        return (db.session.query(db.func.sum(self.core_subquery.c.tier2))
+                          .first())[0]
+
     def __repr__(self):
         return '<Program: {0.title}>'.format(self)
 
@@ -148,6 +209,44 @@ class Course(db.Model):
         self.title = title
         self.abbr = abbr
         self.description = description
+
+    def add_unit(self, unit):
+        if not self.has_unit(unit):
+            self.units.append(unit)
+            return self
+
+    def remove_unit(self, unit):
+        if self.has_unit(unit):
+            self.units.remove(unit)
+            return self
+
+    def has_unit(self, unit):
+        return self.units.filter(Unit.id == unit.id).count > 0
+
+    @property
+    def outcomes(self):
+        return (Outcome.query.join(Outcome.unit, Unit.courses)
+                       .filter(Course.id == self.id)
+                       .order_by(Outcome.tier, Outcome.id)
+                       .all())
+
+    @property
+    def tier1_hours(self):
+        if len(self.units) == 0:
+            return 0
+        return (db.session.query(db.func.sum(Unit.tier1))
+                          .join(Unit.courses)
+                          .filter(Course.id == self.id)
+                          .first())[0]
+
+    @property
+    def tier2_hours(self):
+        if len(self.units) == 0:
+            return 0
+        return (db.session.query(db.func.sum(Unit.tier2))
+                          .join(Unit.courses)
+                          .filter(Course.id == self.id)
+                          .first())[0]
 
     def __repr__(self):
         return '<Course: {0.abbr} - {0.title} {0.program}>'.format(self)

@@ -29,23 +29,21 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
+
     return redirect(url_for('index'))
 
 
 # User info page
 @app.route('/user/<nickname>')
 def user_profile(nickname):
-    user = User.query.filter_by(nickname=nickname).first()
-    if not user:
-        #flash('User ' + nickname + ' not found.')
-        return redirect(url_for('index'))
-    programs = user.programs.all()
+    user = User.query.filter_by(nickname=nickname).first_or_404()
 
-    return render_template('user.html', user=user, programs=programs)
+    return render_template('user.html', user=user)
 
 
 # Edit user information
-@app.route('/user/settings', methods = ['GET', 'POST'])
+@app.route('/user/settings',
+           methods=['GET', 'POST'])
 @login_required
 def user_settings():
     form = EditForm(g.user.nickname)
@@ -54,7 +52,7 @@ def user_settings():
         g.user.about_me = form.about_me.data
         db.session.add(g.user)
         db.session.commit()
-        #flash('Your changes have been saved.')
+
         return redirect(url_for('user_profile', nickname=g.user.nickname))
     else:
         form.nickname.data = g.user.nickname
@@ -73,85 +71,57 @@ def index():
 
 
 # Program creation
-@app.route('/program/new')
+@app.route('/program/new',
+           methods=['GET', 'POST'])
 @login_required
 def program_new():
-    return render_template('edit_program.html')
+    if request.method == 'GET':
+        return render_template('edit_program.html')
+    elif request.method == 'POST':
+        """Execute program creation"""
+        # Get data from form
+        title = request.form['program_title'].strip()
+        description = request.form['program_description'].strip()
+
+        # Create new program object and store in the database
+        program = Program(g.user, title, description)
+        db.session.add(program)
+        db.session.commit()
+
+        return redirect(url_for('program', program_id=program.id))
 
 
-@app.route('/program/new',
-           methods=['POST'])
-@login_required
-def program_new_post():
-    """Execute program creation"""
-    # Get data from form
-    title = request.form['program_title'].strip()
-    description = request.form['program_description'].strip()
-
-    # Create new program object and store in the database
-    program = Program(g.user, title, description)
-    db.session.add(program)
-    db.session.commit()
-
-    #flash('New entry was successfully posted')
-    return redirect(url_for('program', program_id=program.id))
-
-
-@app.route('/program/<int:program_id>/edit')
+# Edit Program Details
+@app.route('/program/<int:program_id>/edit',
+           methods=['GET', 'POST'])
 @login_required
 def program_edit(program_id):
     program = Program.query.get_or_404(program_id)
-    if program.user_id != g.user.id:
-        abort(403)
+    if request.method == 'GET':
+        if program.user_id != g.user.id:
+            abort(403)
 
-    return render_template('edit_program.html', program=program)
+        return render_template('edit_program.html', program=program)
+    elif request.method == 'POST':
+        # Verify db access
+        if program.user_id != g.user.id:
+            abort(403)
 
+        # Get form data and update program
+        program.title = request.form['program_title'].strip()
+        program.description = request.form['program_description'].strip()
+        db.session.commit()
 
-# Execute program edit
-@app.route('/program/<int:program_id>/edit',
-           methods=['POST'])
-@login_required
-def program_edit_post(program_id):
-    # Verify db access
-    program = Program.query.get_or_404(program_id)
-    if program.user_id != g.user.id:
-        abort(403)
-
-    # Get form data and update program
-    program.title = request.form['program_title'].strip()
-    program.description = request.form['program_description'].strip()
-    db.session.commit()
-
-    #flash('New entry was successfully posted')
-    return redirect(url_for('program', program_id=program_id))
+        return redirect(url_for('program', program_id=program_id))
 
 
 # Program Summary
 @app.route('/program/<int:program_id>')
 def program(program_id):
-    # Query db
+    # Verify db access
     program = Program.query.get_or_404(program_id)
 
-    # Calculate the core hours for the courses in this program
-    subquery = (Unit.query
-                    .join(Unit.courses, Course.program)
-                    .filter(Program.id == program_id)
-                    .subquery())
-    tier1, tier2 = (db.session.query(db.func.sum(subquery.c.tier1),
-                                     db.func.sum(subquery.c.tier2))
-                              .first())
-    tier1 = 0 if tier1 is None else tier1
-    tier2 = 0 if tier2 is None else tier2
-
-    # All core hours
-    tier1_total, tier2_total = (db.session.query(db.func.sum(Unit.tier1),
-                                                 db.func.sum(Unit.tier2))
-                                          .first())
-
-    return render_template('program.html', program=program,
-                           courses=program.courses.all(),
-                           tier1=tier1, tier1_total=tier1_total,
-                           tier2=tier2, tier2_total=tier2_total)
+    return render_template('program.html', program=program)
 
 
 @app.route('/program/<int:program_id>/delete',
@@ -170,61 +140,38 @@ def program_delete(program_id):
 
 
 # Course creation
-@app.route('/program/<int:program_id>/course/new', methods=['GET'])
+@app.route('/program/<int:program_id>/course/new',
+           methods=['GET', 'POST'])
 @login_required
 def course_new(program_id):
-    program = Program.query.get_or_404(program_id)
-    if program.user_id != g.user.id:
-        abort(403)
-
-    return render_template('edit_course.html', program=program)
-
-
-@app.route('/program/<int:program_id>/course/new',
-           methods=['POST'])
-@login_required
-def course_new_post(program_id):
     # Verify db access
     program = Program.query.get_or_404(program_id)
     if program.user_id != g.user.id:
         abort(403)
+
+    if request.method == 'GET':
+        return render_template('edit_course.html', program=program)
+    elif request.method == 'POST':
+        # Get form data
+        title = request.form['course_title'].strip()
+        abbr = request.form['course_abbr'].strip()
+        description = request.form['course_description'].strip()
     
-    # Get form data
-    title = request.form['course_title'].strip()
-    abbr = request.form['course_abbr'].strip()
-    description = request.form['course_description'].strip()
-    
-    # Create new course object and store in the database
-    course = Course(program, title, abbr, description)
-    db.session.add(course)
-    db.session.commit()
+        # Create new course object and store in the database
+        course = Course(program, title, abbr, description)
+        db.session.add(course)
+        db.session.commit()
 
-    #flash('New entry was successfully posted')
-    return redirect(url_for('course',
-                            program_id=program_id,
-                            course_id=course.id))
+        return redirect(url_for('course',
+                                program_id=program_id,
+                                course_id=course.id))
 
 
-# Execute course modification
+# Edit Course Details
 @app.route('/program/<int:program_id>/course/<int:course_id>/edit',
-           methods=['GET'])
+           methods=['GET', 'POST'])
 @login_required
 def course_edit(program_id, course_id):
-    course = Course.query.get_or_404(course_id)
-    if course.program_id != program_id:
-        abort(404)
-    if course.program.user_id != g.user.id:
-        abort(403)
-    
-    return render_template('edit_course.html',
-                           program=course.program,
-                           course=course) 
-
-
-@app.route('/program/<int:program_id>/course/<int:course_id>/edit',
-           methods=['POST'])
-@login_required
-def course_edit_post(program_id, course_id):
     # Verify db access
     course = Course.query.get_or_404(course_id)
     if course.program_id != program_id:
@@ -232,16 +179,22 @@ def course_edit_post(program_id, course_id):
     if course.program.user_id != g.user.id:
         abort(403)
 
-    # Get form data and edit the course
-    course.title = request.form['course_title'].strip()
-    course.abbr = request.form['course_abbr'].strip()
-    course.description = request.form['course_description'].strip()
-    db.session.commit()
+    if request.method == 'GET':
+        return render_template('edit_course.html',
+                               program=course.program,
+                               course=course) 
+    elif request.method == 'POST':
+        # Get form data and edit the course
+        course.title = request.form['course_title'].strip()
+        course.abbr = request.form['course_abbr'].strip()
+        course.description = request.form['course_description'].strip()
 
-    #flash('New entry was successfully posted')
-    return redirect(url_for('course',
-                            program_id=program_id,
-                            course_id=course.id))
+        db.session.add(course)
+        db.session.commit()
+
+        return redirect(url_for('course',
+                                program_id=program_id,
+                                course_id=course.id))
 
 
 # Course Information
@@ -252,20 +205,7 @@ def course(program_id, course_id):
     if course.program.id != program_id:
         abort(404)
 
-    areas = Area.query.order_by(Area.id).all()
-    course_outcomes = (Outcome.query.join(Outcome.unit, Unit.courses)
-                              .filter(Course.id == course_id)
-                              .order_by(Outcome.tier, Outcome.id)
-                              .all())
-    tier1, tier2 = (db.session.query(db.func.sum(Unit.tier1),
-                                     db.func.sum(Unit.tier2))
-                              .join(Unit.courses)
-                              .filter(Course.id == course_id)
-                              .first())
-
-    return render_template('course.html', course=course,
-                           areas=areas, course_outcomes=course_outcomes,
-                           tier1=tier1, tier2=tier2)
+    return render_template('course.html', course=course)
 
 
 @app.route('/program/<int:program_id>/course/<int:course_id>/delete',
@@ -297,13 +237,13 @@ def add_outcomes(program_id, course_id):
         abort(403)
 
     # Get form data and modify course
-    units_list = request.form.getlist('knowledge_units')
-    unit_ids = [int(unit) for unit in units_list]
+    unit_ids_list = request.form.getlist('knowledge_units')
+    unit_ids = [int(unit_id) for unit_id in unit_ids_list]
     units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
-    outcomes = (Outcome.query
-                       .filter(Outcome.unit_id.in_(unit_ids))
-                       .all())
-    course.units.extend(units)
+    for unit in units:
+        course = course.add_unit(unit)
+
+    db.session.add(course)
     db.session.commit()
 
     return redirect(url_for('course',
@@ -315,7 +255,7 @@ def add_outcomes(program_id, course_id):
 @app.route('/program/<int:program_id>/course/<int:course_id>/unit/<int:unit_id>/delete')
 @login_required
 def delete_unit(program_id, course_id, unit_id):
-    # Query db and verify that program_id, course_id, and unit_id are related
+    # Verify db access
     course = Course.query.get_or_404(course_id)
     if (course.program.id != program_id
         or course.program.user_id != g.user.id):
@@ -325,7 +265,8 @@ def delete_unit(program_id, course_id, unit_id):
         abort(404)
 
     # Delete!
-    course.units.remove(unit)
+    course = course.remove_unit(unit)
+    db.session.add(course)
     db.session.commit()
 
     return redirect(url_for('course', program_id=program_id, course_id=course_id))
@@ -452,6 +393,7 @@ def after_login(response):
         user = User(nickname=nickname, email=response.email, role=ROLE_USER)
         db.session.add(user)
         db.session.commit()
+
     remember_me = False
     if 'remember_me' in session:
         remember_me = session['remember_me']
