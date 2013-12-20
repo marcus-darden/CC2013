@@ -1,0 +1,11 @@
+body {
+  padding-top: 50px;
+}
+
+ol.breadcrumb {
+  margin-bottom: 0;
+}
+
+ul.navbar-right {
+  padding-right: 15px;
+}
