@@ -1,22 +1,21 @@
 {% extends "base.html" %}
-{% block page_title %}Course Information{% endblock page_title %}
-{% block page_js %}<script src="{{ url_for('static', filename='course.js') }}"></script>{% endblock %}
+{% block page_title %}{{ _('Course Information') }}{% endblock page_title %}
+{% block page_js %}<script src="/static/js/course.js"></script>{% endblock %}
 {% block content %}
     <h1>{{ course.title }} <small>{% if course.abbr %}({{ course.abbr }}){% endif %}</small></h1>
-    <p id="course_description">{{ course.description or "No description provided." }}</p>
+    <p id="course_description">{{ course.description or "_('No description provided.')" }}</p>
 {% if course.program.user.id == g.user.id %}
-    <a href="{{ url_for('course_edit', program_id=course.program.id, course_id=course.id) }}">edit</a>
+    <a href="{{ url_for('course_edit_details', program_id=course.program.id, course_id=course.id) }}">{{ _('edit course details') }}</a>
 {% endif %}
-    <h2>Course Content</h2>
-    <h3>Knowledge Units</h3>
+    <h2>{{ _('Course Content') }}</h2>
+    <h3>{{ _('Knowledge Units') }}</h3>
 {% if course.units|length %}
     <table class="table table-striped">
       <tr>
-        <th>Tier 1</th>
-        <th>Tier 2</th>
-        <th>Knowledge Area</th>
-        <th>Knowledge Unit</th>
-        <th>&nbsp;</th>
+        <th>{{ _('Tier 1') }}</th>
+        <th>{{ _('Tier 2') }}</th>
+        <th>{{ _('Knowledge Area') }}</th>
+        <th>{{ _('Knowledge Unit') }}</th>
       </tr>
   {% for unit in course.units %}
       <tr>
@@ -24,22 +23,28 @@
         <td>{{ unit.tier2 }}</td>
         <td>{{ unit.area.text }}</td>
         <td>{{ unit.text }}</td>
-        <td>{% if course.program.user.id == g.user.id %}<a href="{{ url_for('delete_unit', program_id=course.program.id, course_id=course.id, unit_id=unit.id) }}">remove</a>{% else %}&nbsp;{% endif %}</td>
       </tr>
   {% endfor %}
-      <tr><td>{{ course.tier1_hours }}</td><td>{{ course.tier2_hours }}</td><td>Totals</td><td>&nbsp;</td></tr>
+      <tr>
+        <td>{{ course.tier1_hours }}</td>
+        <td>{{ course.tier2_hours }}</td>
+        <td>{{ _('Totals') }}</td>
+        <td>&nbsp;</td>
+      </tr>
     </table>
 {% else %}
-    <p>No Knowledge Units have been added to this course.</p>
+    <p>{{ _('No Knowledge Units have been added to this course.') }}</p>
 {% endif %}
-<a href="">Assign Knowledge Units</a>
+{% if course.program.user.id == g.user.id %}
+    <a href="{{ url_for('course_edit_content', program_id=course.program.id, course_id=course.id) }}">{{ _('edit course content') }}</a>
+{% endif %}
 {% if course.units|length %}
-    <h3>Learning Outcomes</h3>
+    <h3>{{ _('Learning Outcomes') }}</h3>
     <table class="table table-striped">
       <tr>
-        <th style="width:40px;">Tier</th>
-        <th>Mastery</th>
-        <th>Learning Outcome</th>
+        <th style="width:6em;">Tier</th>
+        <th>{{ _('Mastery') }}</th>
+        <th>{{ _('Learning Outcome') }}</th>
       </tr>
   {% for outcome in course.outcomes %}
       <tr>
@@ -52,7 +57,7 @@
 {% endif %}
 {% if course.program.user.id == g.user.id %}
     <form id="course_delete" method="post" action="{{ url_for('course_delete', program_id=course.program.id, course_id=course.id) }}">
-        <input type="submit" name="submit" value="Delete Course" />
+        <input type="submit" name="submit" value="{{ _('Delete Course') }}" />
     </form>
 {% endif %}
 {% endblock content %}

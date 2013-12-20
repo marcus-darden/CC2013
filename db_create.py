@@ -25,7 +25,7 @@ def populate_from_csv():
             if len(row) == 2:
                 id = row[0].strip().upper()
                 text = row[1].strip()
-                area = Area(id, text)
+                area = Area(id=id, text=text)
                 db.session.add(area)
     db.session.commit()
 
@@ -49,7 +49,7 @@ def populate_from_csv():
                 text = row[1].strip()
                 tier1 = float(row[2])
                 tier2 = float(row[3])
-                unit = Unit(area, text, tier1, tier2)
+                unit = Unit(area=area, text=text, tier1=tier1, tier2=tier2)
                 db.session.add(unit)
     db.session.commit()
 
@@ -69,7 +69,7 @@ def populate_from_csv():
                 mastery = row[3].strip()
                 number = int(row[4])
                 text = row[5].strip()
-                outcome = Outcome(unit, tier, mastery, number, text)
+                outcome = Outcome(unit=unit, tier=tier, mastery=mastery, number=number, text=text)
                 db.session.add(outcome)
     db.session.commit()
 
@@ -85,6 +85,7 @@ def populate_from_csv():
 
 # Create the database and initialize from csv data
 db.create_all()
+
 populate_from_csv()
 
 if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):

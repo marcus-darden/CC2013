@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block page_title %}Login Page{% endblock page_title %}
-{% block page_js %}<script src="{{ url_for('static', filename='login.js') }}"></script>{% endblock %}
+{% block page_title %}{{ _('Login Page') }}{% endblock page_title %}
+{% block page_js %}<script src="/static/js/login.js"></script>{% endblock %}
 {% block content %}
-    <h1>Login</h1>
+    <h1>{{ _('Login') }}</h1>
     <form name="login" method="POST" action="" role="form">
       {{ form.hidden_tag() }}
       <div class="form-group">
@@ -15,6 +15,6 @@
 {%- for p in providers %}
       <a href="javascript:set_openid('{{ p.url }}', '{{ p.name }}');">{{ p.name }}</a> |
 {%- endfor %}
-      <input type="submit" value="Sign In" class="btn btn-primary" />
+      <input type="submit" value="{{ _('Sign In') }}" class="btn btn-primary" />
     </form>
 {% endblock content %}

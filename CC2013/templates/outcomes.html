@@ -1,4 +1,4 @@
-<h1>Learning Outcomes</h1>
+<h1>{{ _('Learning Outcomes') }}</h1>
 
 {% if area is defined %}
 <h2><a href="{{ url_for('knowledge_units', area_id=area.id) }}">{{ area.id }} - {{ area.text }}</a></h2>
@@ -7,7 +7,7 @@
 {% if hours %}{% set list="ol" %}{% else %}{% set list="ul" %}{% endif %}
 
 {% if tier1|length %}
-<h4>Tier 1{% if hours %} ({{ hours[0] }} hours){% endif %}</h4>
+<h4>{{ _('Tier 1') }}{% if hours %} ({{ hours[0] }} {{ _('hours')) }}{% endif %}</h4>
 <{{ list }}>
 {% for outcome in tier1 %}
   <li>{{ outcome.text }}</li>
@@ -16,7 +16,7 @@
 {% endif %}
 
 {% if tier2|length %}
-<h4>Tier 2{% if hours %} ({{ hours[1] }} hours){% endif %}</h4>
+<h4>{{ _('Tier 2') }}{% if hours %} ({{ hours[1] }} {{ _('hours') }}){% endif %}</h4>
 <{{ list }}>
 {% for outcome in tier2 %}
   <li>{{ outcome.text }}</li>
@@ -25,7 +25,7 @@
 {% endif %}
 
 {% if electives|length %}
-<h4>Electives</h4>
+<h4>{{ _('Electives') }}</h4>
 <{{ list }}>
 {% for outcome in electives %}
   <li>{{ outcome.text }}</li>

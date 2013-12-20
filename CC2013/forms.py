@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, TextAreaField
 from wtforms.validators import Required, Length
+from flask.ext.babel import gettext
 
 
 __all__ = ['LoginForm', 'EditForm']
@@ -8,12 +9,12 @@ __all__ = ['LoginForm', 'EditForm']
 
 class LoginForm(Form):
     openid = TextField('OpenID:', validators=[Required()])
-    remember_me = BooleanField('Remember Me', default=False)
+    remember_me = BooleanField(gettext('Remember Me'), default=False)
 
 
 class EditForm(Form):
-    nickname = TextField('Nickname:', validators=[Required()])
-    about_me = TextAreaField('About Me:', validators=[Length(min = 0, max = 140)])
+    nickname = TextField(gettext('Nickname:'), validators=[Required()])
+    about_me = TextAreaField(gettext('About Me:'), validators=[Length(min = 0, max = 140)])
 
     def __init__(self, original_nickname, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -27,8 +28,14 @@ class EditForm(Form):
         # Custom validation for unique nicknames
         if self.nickname.data == self.original_nickname:
             return True
+        if self.nickname.data != User.make_valid_nickname(self.nickname.data):
+            self.nickname.errors.append(gettext("This nickname has invalid "
+                                                "characters. Please use "
+                                                "letters, numbers, dots and "
+                                                " underscores only."))
+            return False
         user = User.query.filter_by(nickname=self.nickname.data).first()
         if user:
-            self.nickname.errors.append('This nickname is already in use. Please choose another one.')
+            self.nickname.errors.append(gettext('This nickname is already in use. Please choose another one.'))
             return False
         return True

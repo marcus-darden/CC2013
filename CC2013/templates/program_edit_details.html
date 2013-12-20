@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block page_title %}{% if program %}{{ _('Edit Program Details') }}{% else %}{{ _('New Program') }}{% endif %}{% endblock page_title %}
+{% block content %}
+{% if program is defined %}
+    {% set title, description = program.title, program.description %}
+    {% set action = url_for('program_edit_details', program_id=program.id) %}
+    <h1>{{ _('Edit Program Details') }}</h1>
+{% else %}
+    {% set action = url_for('program_new') %}
+    <h1>{{ _('New Program') }}</h1>
+    <p>{{ _('Create a program (major, minor, concentration, etc.) to design a new curriculum.') }}</p>
+{% endif %}
+{% if message is defined %}
+    <p class="message">{{ message }}</p>
+{% endif %}
+    <form method="post" action="{{ action }}" role="form">
+      <div class="form-group">
+        <label for="program_title">{{ _('Program Title (required)') }}</label>
+        <input name="program_title" type="text" value="{{ title|e }}" placeholder="{{ _('Computer Science Major') }}" required autofocus class="form-control" /> 
+      </div>
+      <div class="form-group">
+        <label for="program_description">{{ _('Description') }}</label>
+        <textarea name="program_description" placeholder="{{ _('The catalog description including high-level outcomes and administrativia.') }}" rows=4 class="form-control">{{ description|e }}</textarea>
+      </div>
+      <input type="submit" name="submit" value="{{ _('Submit') }}" class="btn btn-primary"/>
+    </form> 
+{% endblock content %}

@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-{% block page_title %}User Profile{% endblock page_title %}
+{% block page_title %}{{ _('User Profile') }}{% endblock page_title %}
 {% block content %}
     <h1>{{ user.nickname }}</h1>
     <img id="user_avatar" src="{{ user.avatar(128) }}">
 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-{% if user.last_seen %}<p id="last_seen">Last seen on: {{ user.last_seen }}</p>{% endif %}
-{% if user.id == g.user.id %}<p><a href="{{ url_for('user_settings') }}">Edit Profile</a></p>{% endif %}
-    <h2>Programs</h2>
+{% if user.last_seen %}<p id="last_seen">{{ _('Last seen on:') }} {{ momentjs(user.last_seen).calendar() }}</p>{% endif %}
+{% if user.id == g.user.id %}<p><a href="{{ url_for('user_settings') }}">{{ _('Edit Profile') }}</a></p>{% endif %}
+    <h2>{{ _('Programs') }}</h2>
     <ul>
 {% for program in user.programs %}
       <li><a href={{ url_for('program', program_id=program.id) }}>{{ program.title }}</a></li>
 {% else %}
-      <p>No programs have been defined.</p>
+      <p>{{ _('No programs have been defined.') }}</p>
 {% endfor %}
     </ul>
 {% if user.id == g.user.id %}
-    <a href="{{ url_for('program_new') }}">Add new program</a>
+    <a href="{{ url_for('program_new') }}">{{ _('Add new program') }}</a>
 {% endif %}
 {% endblock content %}

@@ -1,32 +1,34 @@
 {% extends "base.html" %}
-{% block page_title %}Program Summary{% endblock page_title %}
-{% block page_js %}<script src="{{ url_for('static', filename='program.js') }}"></script>{% endblock %}
+{% block page_title %}{{ _('Program Summary') }}{% endblock page_title %}
+{% block page_js %}<script src="/static/js/program.js"></script>{% endblock %}
 {% block content %}
 {% set courses = program.courses.all() %}
     <h1>{{ program.title }}</h1>
-    <p>{{ program.description or "No description provided." }}</p>
-    <a href="{{ url_for('program_edit', program_id=program.id) }}">edit</a>
-    <h2>Curriculum Coverage</h2>
+    <p>{{ program.description or "{{ _('No description provided.') }}" }}</p>
+{% if program.user.id == g.user.id %}
+    <a href="{{ url_for('program_edit_details', program_id=program.id) }}">{{ _('edit program details') }}</a>
+{% endif %}
+    <h2>{{ _('Curriculum Coverage') }}</h2>
     <dl>
-      <dt>Number of courses</dt>
+      <dt>{{ _('Number of courses') }}</dt>
       <dd>{{ courses|length }}
-      <dt>Tier 1 Hours</dt>
+      <dt>{{ _('Tier 1 Hours') }}</dt>
       <dd>{{ program.tier1_hours }}/{{ program.all_tier1_hours() }} ({{ "%0.0f"|format(program.tier1_hours / program.all_tier1_hours() * 100) }}%)</dd>
-      <dt>Tier 2 Hours</dt>
+      <dt>{{ _('Tier 2 Hours') }}</dt>
       <dd>{{ program.tier2_hours }}/{{ program.all_tier2_hours() }} ({{ "%0.0f"|format(program.tier2_hours / program.all_tier2_hours() * 100) }}%)</dd>
     </dl>
-    <h2>Courses</h2>
+    <h2>{{ _('Courses') }}</h2>
     <ul>
 {% for course in program.courses %}
       <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{{ course.title }}{% if course.abbr %} ({{ course.abbr }}){% endif %}</a></li>
 {% else %}
-      <p>No courses have been added to this program.</p>
+      <p>{{ _('No courses have been added to this program.') }}</p>
 {% endfor %}
     </ul>
-    <a href="{{ url_for('course_new', program_id=program.id ) }}">Add new course</a>
+    <a href="{{ url_for('course_new', program_id=program.id ) }}">{{ _('add new course') }}</a>
 {% if program.user.id == g.user.id %}
     <form id="program_delete" method="post" action="{{ url_for('program_delete', program_id=program.id) }}">
-      <input type="submit" name="submit" value="Delete Program" />
+      <input type="submit" name="submit" value="{{ _('Delete Program') }}" />
     </form>
 {% endif %}
 {% endblock content %}

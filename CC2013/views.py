@@ -1,10 +1,12 @@
 from datetime import datetime
 import json
 
-from flask import abort, jsonify, g, redirect, render_template, request, session, url_for
+from flask import abort, flash, g, jsonify, redirect, render_template, request, session, url_for
 from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask.ext.babel import gettext
 
-from CC2013 import app, db, lm, oid
+from config import PROGRAMS_PER_PAGE, LANGUAGES
+from CC2013 import app, db, lm, oid, babel
 from models import *
 from forms import *
 
@@ -41,7 +43,7 @@ def user_profile(nickname):
     return render_template('user.html', user=user)
 
 
-# Edit user information
+# User Edit Details
 @app.route('/user/settings',
            methods=['GET', 'POST'])
 @login_required
@@ -58,16 +60,20 @@ def user_settings():
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
 
-    return render_template('edit_user.html', form=form)
+    return render_template('user_edit.html', form=form)
 
 
 # Homepage
 @app.route('/')
-def index():
+@app.route('/index')
+@app.route('/index/<int:page>')
+def index(page=1):
     return render_template('index.html', homepage=True,
                            form=LoginForm(),
                            providers=app.config['OPENID_PROVIDERS'],
-                           programs=Program.query.all())
+                           programs=Program.query.paginate(page,
+                                                           PROGRAMS_PER_PAGE,
+                                                           False))
 
 
 # Program creation
@@ -76,7 +82,7 @@ def index():
 @login_required
 def program_new():
     if request.method == 'GET':
-        return render_template('edit_program.html')
+        return render_template('program_edit_details.html')
     elif request.method == 'POST':
         """Execute program creation"""
         # Get data from form
@@ -91,17 +97,17 @@ def program_new():
         return redirect(url_for('program', program_id=program.id))
 
 
-# Edit Program Details
-@app.route('/program/<int:program_id>/edit',
+# Program Edit Details
+@app.route('/program/<int:program_id>/edit-details',
            methods=['GET', 'POST'])
 @login_required
-def program_edit(program_id):
+def program_edit_details(program_id):
     program = Program.query.get_or_404(program_id)
     if request.method == 'GET':
         if program.user_id != g.user.id:
             abort(403)
 
-        return render_template('edit_program.html', program=program)
+        return render_template('program_edit_details.html', program=program)
     elif request.method == 'POST':
         # Verify db access
         if program.user_id != g.user.id:
@@ -150,7 +156,7 @@ def course_new(program_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('edit_course.html', program=program)
+        return render_template('course_edit_details.html', program=program)
     elif request.method == 'POST':
         # Get form data
         title = request.form['course_title'].strip()
@@ -167,11 +173,11 @@ def course_new(program_id):
                                 course_id=course.id))
 
 
-# Edit Course Details
-@app.route('/program/<int:program_id>/course/<int:course_id>/edit',
+# Course Edit Details
+@app.route('/program/<int:program_id>/course/<int:course_id>/edit-details',
            methods=['GET', 'POST'])
 @login_required
-def course_edit(program_id, course_id):
+def course_edit_details(program_id, course_id):
     # Verify db access
     course = Course.query.get_or_404(course_id)
     if course.program_id != program_id:
@@ -180,7 +186,7 @@ def course_edit(program_id, course_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('edit_course.html',
+        return render_template('course_edit_details.html',
                                program=course.program,
                                course=course) 
     elif request.method == 'POST':
@@ -225,10 +231,10 @@ def course_delete(program_id, course_id):
     
 
 # Add Knowledge Units to a course
-@app.route('/program/<int:program_id>/course/<int:course_id>/unit/add',
-           methods=['POST'])
+@app.route('/program/<int:program_id>/course/<int:course_id>/edit-content',
+           methods=['GET', 'POST'])
 @login_required
-def add_outcomes(program_id, course_id):
+def course_edit_content(program_id, course_id):
     # Verify db access
     course = Course.query.get_or_404(course_id)
     if course.program.id != program_id:
@@ -236,19 +242,24 @@ def add_outcomes(program_id, course_id):
     if course.program.user_id != g.user.id:
         abort(403)
 
-    # Get form data and modify course
-    unit_ids_list = request.form.getlist('knowledge_units')
-    unit_ids = [int(unit_id) for unit_id in unit_ids_list]
-    units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
-    for unit in units:
-        course = course.add_unit(unit)
+    if request.method == 'GET':
+        return render_template('course_edit_content.html',
+                               course=course,
+                               areas=Area.query.all())
+    elif request.method == 'POST':
+        # Get form data and modify course
+        unit_ids_list = request.form.getlist('knowledge_units')
+        unit_ids = [int(unit_id) for unit_id in unit_ids_list]
+        units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
+        for unit in units:
+            course = course.add_unit(unit)
 
-    db.session.add(course)
-    db.session.commit()
+        db.session.add(course)
+        db.session.commit()
 
-    return redirect(url_for('course',
-                            program_id=program_id,
-                            course_id=course_id))
+        return redirect(url_for('course',
+                                program_id=program_id,
+                                course_id=course_id))
 
 
 # Execute unit deletion
@@ -381,7 +392,7 @@ def load_user(id):
 @oid.after_login
 def after_login(response):
     if response.email is None or response.email == '':
-        #flash('Invalid login. Please try again.')
+        flash(gettext('Invalid login. Please try again.'))
         return redirect(url_for('login'))
     user = User.query.filter_by(email=response.email).first()
     if user is None:
@@ -390,6 +401,7 @@ def after_login(response):
         if nickname is None or nickname == '':
             nickname = response.email.split('@')[0]
         nickname = User.make_unique_nickname(nickname)
+        nickname = User.make_valid_nickname(nickname)
         user = User(nickname=nickname, email=response.email, role=ROLE_USER)
         db.session.add(user)
         db.session.commit()
@@ -423,3 +435,9 @@ def internal_error(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('error.html', error=500), 500
+
+
+# Languages and i18n
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(LANGUAGES.keys())

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block page_title %}Homepage{% endblock page_title %}
+{% block page_title %}{{ _('Homepage') }}{% endblock page_title %}
 {% block content %}
-    <h1>Programs</h1>
+    <h1>{{ _('Programs') }}</h1>
     <table id="programs">
-{% for p in programs %}
+{% for p in programs.items %}
       <tr>
         <td><a href="{{ url_for('user_profile', nickname=p.user.nickname) }}"><img src="{{ p.user.avatar(64) }}" alt="{{ p.user.nickname }}"></a></td>
         <td><p><a href="{{ url_for('program', program_id=p.id) }}">{{ p.title }}</a></p>
@@ -12,4 +12,6 @@
       </tr>
 {% endfor %}
     </table>
+{% if programs.has_prev %}<a href="{{ url_for('index', page=programs.prev_num) }}"><< {{ _('Newer programs') }}</a>{% else %}<< {{ _('Newer programs') }}{% endif %} | 
+{% if programs.has_next %}<a href="{{ url_for('index', page=programs.next_num) }}">{{ _('Older programs') }} >></a>{% else %}{{ _('Older programs') }} >>{% endif %}
 {% endblock content %}

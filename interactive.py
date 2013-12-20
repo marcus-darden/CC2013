@@ -12,14 +12,18 @@ else:
     db.session.add(ont)
     db.session.commit()
 
-    csm = Program(ont, 'CS Major [2014]', 'The Computer Science Major')
+    csm = Program(user=ont, title='CS Major [2014]', description='The Computer Science Major')
     db.session.add(csm)
     db.session.commit()
 
-    cs1 = Course(csm, 'Computer Science I', 'CS 140', 'The introduction to Computer Science')
+    cs1 = Course(program=csm, title='Computer Science I', abbr='CS 140', description='The introduction to Computer Science')
     db.session.add(cs1)
-    cs2 = Course(csm, 'Computer Science II', 'CS 240', 'The introduction, continued.')
+    cs2 = Course(program=csm, title='Computer Science II', abbr='CS 240', description='The introduction, continued.')
     db.session.add(cs2)
-    dm = Course(csm, 'Discrete Mathematics', 'MTH 242')
+    dm = Course(program=csm, title='Discrete Mathematics', abbr='MTH 242')
     db.session.add(dm)
+    db.session.commit()
+
+    cs1.units.extend(Area.query.get('SDF').units.all())
+    db.session.add(cs1)
     db.session.commit()

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block page_title %}Edit User Information{% endblock page_title %}
+{% block page_title %}{{ _('Edit Profile Details') }}{% endblock page_title %}
 {% block content %}
-    <h1>Edit Profile Details</h1>
+    <h1>{{ _('Edit Profile Details') }}</h1>
     <form action="" method="post" name="edit" role="form">
       {{ form.hidden_tag() }}
       <div class="form-group">
@@ -15,6 +15,6 @@
       {{ form.about_me.label }}
       {{ form.about_me(cols=32, rows=4, class="form-control") }}
       </div>
-      <input type="submit" value="Save Changes" class="btn btn-primary" />
+      <input type="submit" value="{{ _('Save Changes') }}" class="btn btn-primary" />
     </form>
 {% endblock content %}
