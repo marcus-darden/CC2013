@@ -4,8 +4,9 @@ import json
 from flask import abort, flash, g, jsonify, redirect, render_template, request, session, url_for
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.babel import gettext
+from flask.ext.sqlalchemy import get_debug_queries
 
-from config import PROGRAMS_PER_PAGE, LANGUAGES
+from config import PROGRAMS_PER_PAGE, LANGUAGES, DATABASE_QUERY_TIMEOUT
 from CC2013 import app, db, lm, oid, babel
 from models import *
 from forms import *
@@ -415,6 +416,18 @@ def before_request():
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
+
+
+@app.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= DATABASE_QUERY_TIMEOUT:
+            app.logger.warning('SLOW QUERY: {0.statement}\n'
+                               'Parameters: {0.parameters}\n'
+                               'Duration: {0.duration:f}s\n'
+                               'Context: {0.context}\n'.format(query))
+
+    return response
 
 
 # Error Handling
