@@ -231,8 +231,7 @@ def course_delete(program_id, course_id):
     
 
 # Add Knowledge Units to a course
-@app.route('/program/<int:program_id>/course/<int:course_id>/edit-content',
-           methods=['GET', 'POST'])
+@app.route('/program/<int:program_id>/course/<int:course_id>/edit-content')
 @login_required
 def course_edit_content(program_id, course_id):
     # Verify db access
@@ -242,24 +241,9 @@ def course_edit_content(program_id, course_id):
     if course.program.user_id != g.user.id:
         abort(403)
 
-    if request.method == 'GET':
-        return render_template('course_edit_content.html',
-                               course=course,
-                               areas=Area.query.all())
-    elif request.method == 'POST':
-        # Get form data and modify course
-        unit_ids_list = request.form.getlist('knowledge_units')
-        unit_ids = [int(unit_id) for unit_id in unit_ids_list]
-        units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
-        for unit in units:
-            course = course.add_unit(unit)
-
-        db.session.add(course)
-        db.session.commit()
-
-        return redirect(url_for('course',
-                                program_id=program_id,
-                                course_id=course_id))
+    return render_template('course_edit_content.html',
+                           course=course,
+                           areas=Area.query.all())
 
 
 # Execute unit deletion
@@ -284,43 +268,53 @@ def delete_unit(program_id, course_id, unit_id):
 
 
 # AJAX here...
-@app.route('/json')
-def get_json():
-    # Get form data...
+@app.route('/json/course_content')
+def get_course_content():
+    # Get request parameters
+    course_id = request.args.get('course_id', 0, type=int)
+
+    course = Course.query.get(course_id)
+    units_json = [unit.json() for unit in course.units]
+
+    return json.dumps(units_json)
+
+
+@app.route('/json/unassigned_units')
+def get_unassigned_units():
+    # Get request parameters
     area_id = request.args.get('area_id', '')
-    course_id = int(request.args.get('course_id', '0'))
+    course_id = request.args.get('course_id', 0, type=int)
 
-    # Get listbox data
-    if area_id:
-        # A KA was selected, get all relevent KUs, not assigned to this course
-        course = Course.query.get(course_id)
-        unwanted = (Unit.query
-                        .filter_by(area_id=area_id)
-                        .join(Unit.courses)
-                        .filter_by(id=course_id)
-                        .subquery())
-        units = (Unit.query
-                     .filter_by(area_id=area_id)
-                     .outerjoin(unwanted, Unit.id == unwanted.c.id)
-                     .filter(unwanted.c.id == None)
-                     .all())
-        items = [{'id': u.id,
-                  'text': u.text,
-                  'tier1': u.tier1,
-                  'tier2': u.tier2} for u in units]
-    else:
-        # A KU was selected, get all relevent LOs
-        unit_id = request.args.get('unit_id', 0, type=int)
-        outcomes = (Outcome.query
-                           .filter_by(unit_id=unit_id)
-                           .order_by(Outcome.number)
-                           .all())
-        items = [{'id': o.id,
-                  'text': o.text,
-                  'tier': o.tier,
-                  'mastery': o.mastery} for o in outcomes]
+    # Query db
+    program = Course.query.get(course_id).program
+    units = program.get_unassigned_units(area_id)
+    units_json = [unit.json() for unit in units]
 
-    return json.dumps(items)
+    return json.dumps(units_json)
+
+
+@app.route('/json/unit_area_id')
+def get_unit_area_id():
+    # Get request parameters
+    unit_id = request.args.get('unit_id', 0, type=int)
+    unit = Unit.query.get(unit_id)
+
+    response = {'unit': unit.json(),
+                'area': unit.area.json()}
+
+    return json.dumps(response)
+
+
+@app.route('/json/unit_outcomes')
+def get_unit_outcomes():
+    # Get request parameters
+    unit_id = request.args.get('unit_id', 0)
+    unit = Unit.query.get(unit_id)
+
+    response = {'unit': unit.json(),
+                'outcomes': [outcome.json() for outcome in unit.outcomes]}
+
+    return json.dumps(response)
 
 
 # General curriculum exemplar browser
