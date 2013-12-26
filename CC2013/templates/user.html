@@ -4,7 +4,7 @@
     <h1>{{ user.nickname }}</h1>
     <img id="user_avatar" src="{{ user.avatar(128) }}">
 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-{% if user.last_seen %}<p id="last_seen">{{ _('Last seen on:') }} {{ momentjs(user.last_seen).calendar() }}</p>{% endif %}
+{% if user.last_seen %}<p id="last_seen">{{ _('Last seen:') }} {{ momentjs(user.last_seen).calendar() }}</p>{% endif %}
 {% if user.id == g.user.id %}<p><a href="{{ url_for('user_settings') }}">{{ _('Edit Profile') }}</a></p>{% endif %}
     <h2>{{ _('Programs') }}</h2>
     <ul>

@@ -7,12 +7,12 @@ class momentjs(object):
 
     def render(self, render_format):
         markup_format = '<script>\ndocument.write(moment("{}").{});\n</script>'
-        time_format = '%Y-%m-%dT%H:%M:%S Z'
+        time_format = self.timestamp.strftime('%Y-%m-%d %H:%M:%S Z')
 
         return Markup(markup_format.format(time_format, render_format))
 
     def format(self, fmt):
-        return self.render('format("%s")'.format(fmt))
+        return self.render('format("{}")'.format(fmt))
 
     def calendar(self):
         return self.render('calendar()')
