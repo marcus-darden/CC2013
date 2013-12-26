@@ -90,7 +90,7 @@ def program_new():
         description = request.form['program_description'].strip()
 
         # Create new program object and store in the database
-        program = Program(g.user, title, description)
+        program = Program(user=g.user, title=title, description=description)
         db.session.add(program)
         db.session.commit()
 
@@ -164,7 +164,7 @@ def course_new(program_id):
         description = request.form['course_description'].strip()
     
         # Create new course object and store in the database
-        course = Course(program, title, abbr, description)
+        course = Course(program=program, title=title, abbr=abbr, description=description)
         db.session.add(course)
         db.session.commit()
 

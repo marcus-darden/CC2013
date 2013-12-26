@@ -1,6 +1,7 @@
 import csv
 from hashlib import md5
 import os.path
+import re
 
 from flask.ext.whooshalchemy import whoosh_index
 
@@ -19,8 +20,12 @@ class Area(db.Model):
     text = db.Column(db.String(64))
     units = db.relationship('Unit', backref='area', lazy='dynamic')
 
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return '<Knowledge Area: {0.id:>3s}>'.format(self)
+
+    def json(self):
+        return {'id': self.id,
+                'text': self.text}
 
 
 class Unit(db.Model):
@@ -36,8 +41,14 @@ class Unit(db.Model):
     area_id = db.Column(db.String, db.ForeignKey('area.id', ondelete='cascade'))
     outcomes = db.relationship('Outcome', backref='unit', lazy='dynamic')
 
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return '<Knowledge Unit: "{0.text}" Hours: ({0.tier1}, {0.tier2}) {0.area}>'.format(self)
+
+    def json(self):
+        return {'tier1': self.tier1,
+                'tier2': self.tier2,
+                'text': self.text,
+                'id': self.id}
 
 
 class Outcome(db.Model):
@@ -50,8 +61,14 @@ class Outcome(db.Model):
     number = db.Column(db.Integer)
     unit_id = db.Column(db.Integer, db.ForeignKey('unit.id', ondelete='cascade'))
 
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return '<Outcome: {0.number:2d}. {0.text} Tier: {0.tier} Mastery: {0.mastery} {0.unit}>'.format(self)
+
+    def json(self):
+        return {'id': self.id,
+                'text': self.text,
+                'tier': self.tier,
+                'mastery': self.mastery}
 
 
 ROLE_USER = 0
@@ -112,7 +129,7 @@ class User(db.Model):
     def is_authenticated(self):
         return True
 
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return '<User {0.nickname}>'.format(self)
 
 
@@ -149,7 +166,7 @@ class Program(db.Model):
                           .first())[0]
 
     @property
-    def core_subquery(self):
+    def core_subquery(self): # pragma: no cover
         return (Unit.query
                     .join(Unit.courses, Course.program)
                     .filter(Program.id == self.id)
@@ -165,7 +182,22 @@ class Program(db.Model):
         return (db.session.query(db.func.sum(self.core_subquery.c.tier2))
                           .first())[0] or 0
 
-    def __repr__(self):
+    def get_unassigned_units(self, area_id=None):
+        subquery = (Course.query
+                          .join(Program)
+                          .filter_by(id=self.id)
+                          .subquery())
+
+        query = (Unit.query
+                     .outerjoin(course_units)
+                     .outerjoin(subquery)
+                     .filter_by(id=None))
+        if area_id:
+            query = query.filter(Unit.area_id == area_id)
+
+        return query
+
+    def __repr__(self): # pragma: no cover
         return '<Program: {0.title}>'.format(self)
 
 
@@ -196,7 +228,7 @@ class Course(db.Model):
             return self
 
     def has_unit(self, unit):
-        return self.units.filter(Unit.id == unit.id).count > 0
+        return unit in self.units
 
     @property
     def outcomes(self):
@@ -223,7 +255,7 @@ class Course(db.Model):
                           .filter(Course.id == self.id)
                           .first())[0]
 
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return '<Course: {0.abbr} - {0.title} {0.program}>'.format(self)
 
 
