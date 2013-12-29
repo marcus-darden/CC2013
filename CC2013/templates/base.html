@@ -46,7 +46,11 @@
 {% if not homepage %}
     <ol class="breadcrumb">
       <li><a href="{{ url_for('index') }}">{{ _('Home') }}</a></li>
-{% if course %}
+{% if content_page %}
+      <li><a href="{{ url_for('program', program_id=course.program.id) }}">{{ _('Program') }}</a></li>
+      <li><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id) }}">{{ _('Course') }}</a></li>
+      <li class="active">{{ _('Content') }}</li>
+{% elif course %}
       <li><a href="{{ url_for('program', program_id=course.program.id) }}">{{ _('Program') }}</a></li>
       <li class="active">{{ _('Course') }}</li>
 {% elif program %}
