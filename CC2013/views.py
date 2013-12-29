@@ -248,24 +248,55 @@ def course_edit_content(program_id, course_id):
 
 
 # Execute unit deletion
-@app.route('/program/<int:program_id>/course/<int:course_id>/unit/<int:unit_id>/delete')
+@app.route('/program/<int:program_id>/course/<int:course_id>/remove')
 @login_required
-def delete_unit(program_id, course_id, unit_id):
+def remove_unit(program_id, course_id):
     # Verify db access
     course = Course.query.get_or_404(course_id)
-    if (course.program.id != program_id
-        or course.program.user_id != g.user.id):
+    if course.program.id != program_id:
         abort(404)
-    unit = Unit.query.get_or_404(unit_id)
-    if unit not in course.units:
-        abort(404)
+    if course.program.user_id != g.user.id:
+        abort(403)
 
-    # Delete!
-    course = course.remove_unit(unit)
+    # Get request parameters
+    units_str = request.args.get('units')
+    units_obj = json.loads(units_str)
+    unit_ids = [int(unit) for unit in units_obj['units']]
+    units = Unit.query.filter(Unit.id.in_(unit_ids))
+
+    for unit in units:
+        course = course.remove_unit(unit)
+
+    # Commit!
     db.session.add(course)
     db.session.commit()
 
-    return redirect(url_for('course', program_id=program_id, course_id=course_id))
+    return json.dumps(True)
+
+
+@app.route('/program/<int:program_id>/course/<int:course_id>/add')
+@login_required
+def add_unit(program_id, course_id):
+    # Verify db access
+    course = Course.query.get_or_404(course_id)
+    if course.program.id != program_id:
+        abort(404)
+    if course.program.user_id != g.user.id:
+        abort(403)
+
+    # Get request parameters
+    units_str = request.args.get('units')
+    units_obj = json.loads(units_str)
+    units = [int(unit) for unit in units_obj['units']]
+
+    for unit in units:
+        course.add_unit(Unit.query.get(unit))
+
+    # Commit!
+    db.session.add(course)
+    db.session.commit()
+
+    return json.dumps(True)
 
 
 # AJAX here...
