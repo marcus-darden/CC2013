@@ -13,9 +13,10 @@ SECRET_KEY = 'Computing Curricula 2013 Webapp'
 
 # Database config
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-                                         'sqlite:///' + os.path.join(basedir, 'app.db')
+                                         'sqlite:///' + os.path.join(basedir, 'app.db'))
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 WHOOSH_BASE = os.path.join(basedir, 'search.db')
+WHOOSH_ENABLED = bool(os.environ.get('HEROKU'))
 SQLALCHEMY_RECORD_QUERIES = True
 DATABASE_QUERY_TIMEOUT = 0.5  # slow database query threshold (in seconds)
 

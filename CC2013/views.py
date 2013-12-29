@@ -6,7 +6,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.babel import gettext
 from flask.ext.sqlalchemy import get_debug_queries
 
-from config import PROGRAMS_PER_PAGE, LANGUAGES, DATABASE_QUERY_TIMEOUT
+from config import DATABASE_QUERY_TIMEOUT, LANGUAGES, PROGRAMS_PER_PAGE, WHOOSH_ENABLED
 from CC2013 import app, db, lm, oid, babel
 from models import *
 from forms import *
@@ -416,6 +416,8 @@ def before_request():
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
+    g.locale = get_locale()
+    g.search_enabled = WHOOSH_ENABLED
 
 
 @app.after_request
