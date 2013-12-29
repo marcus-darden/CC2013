@@ -1,4 +1,4 @@
-# Translations template for PROJECT.
+# Spanish translations for PROJECT.
 # Copyright (C) 2013 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-12-18 21:32-0400\n"
-"PO-Revision-Date: 2013-12-19 00:19-0400\n"
+"POT-Creation-Date: 2013-12-29 15:18-0500\n"
+"PO-Revision-Date: 2013-12-29 15:36-0500\n"
 "Last-Translator: \n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
-"X-Generator: Poedit 1.6.2\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: es\n"
+"X-Generator: Poedit 1.6.3\n"
 
 #: CC2013/forms.py:12
 msgid "Remember Me"
@@ -43,19 +43,22 @@ msgstr ""
 msgid "This nickname is already in use. Please choose another one."
 msgstr "Este apodo ya está en uso. Por favor, elija otro."
 
-#: CC2013/views.py:395
+#: CC2013/views.py:421
 msgid "Invalid login. Please try again."
 msgstr "Inicio de sesión no válido. Por favor, inténtelo de nuevo."
 
-#: CC2013/templates/areas.html:4 CC2013/templates/units.html:7
+#: CC2013/templates/areas.html:4 CC2013/templates/course.html:15
+#: CC2013/templates/units.html:7
 msgid "Tier 1"
 msgstr "Nivel 1"
 
-#: CC2013/templates/areas.html:4 CC2013/templates/units.html:7
+#: CC2013/templates/areas.html:4 CC2013/templates/course.html:16
+#: CC2013/templates/units.html:7
 msgid "Tier 2"
 msgstr "Nivel 2"
 
-#: CC2013/templates/areas.html:4 CC2013/templates/units.html:7
+#: CC2013/templates/areas.html:4 CC2013/templates/course.html:17
+#: CC2013/templates/units.html:7
 msgid "Knowledge Area"
 msgstr "Área de Conocimiento"
 
@@ -79,15 +82,20 @@ msgstr "Salir"
 msgid "Home"
 msgstr "Página de Inicio"
 
-#: CC2013/templates/base.html:50 CC2013/templates/base.html:53
+#: CC2013/templates/base.html:50 CC2013/templates/base.html:54
+#: CC2013/templates/base.html:57
 msgid "Program"
 msgstr "Programa"
 
-#: CC2013/templates/base.html:51
+#: CC2013/templates/base.html:51 CC2013/templates/base.html:55
 msgid "Course"
 msgstr "Curso"
 
-#: CC2013/templates/base.html:55
+#: CC2013/templates/base.html:52
+msgid "Content"
+msgstr "Contenido"
+
+#: CC2013/templates/base.html:59
 msgid "Profile"
 msgstr "Perfil"
 
@@ -95,31 +103,83 @@ msgstr "Perfil"
 msgid "Course Information"
 msgstr "Información Sobre el Curso"
 
-#: CC2013/templates/edit_course.html:2 CC2013/templates/edit_course.html:7
+#: CC2013/templates/course.html:8
+msgid "edit course details"
+msgstr "editar detalles del curso"
+
+#: CC2013/templates/course.html:10
+msgid "Course Content"
+msgstr "El Contenido del Curso"
+
+#: CC2013/templates/course.html:11 CC2013/templates/units.html:1
+msgid "Knowledge Units"
+msgstr "Unidades de Conocimiento"
+
+#: CC2013/templates/course.html:18 CC2013/templates/units.html:7
+msgid "Knowledge Unit"
+msgstr "Unidad de Conocimiento"
+
+#: CC2013/templates/course.html:31
+msgid "Totals"
+msgstr "Totales"
+
+#: CC2013/templates/course.html:36
+msgid "No Knowledge Units have been added to this course."
+msgstr "No hay cursos se han añadido a este programa."
+
+#: CC2013/templates/course.html:39
+msgid "edit course content"
+msgstr "contenido editar curso"
+
+#: CC2013/templates/course.html:42
+msgid "Learning Outcomes"
+msgstr ""
+"La descripción de catálogo que incluye los resultados de alto nivel y "
+"administrativa."
+
+#: CC2013/templates/course.html:46
+msgid "Mastery"
+msgstr "Maestría"
+
+#: CC2013/templates/course.html:47
+msgid "Learning Outcome"
+msgstr "Resultado de Aprendizaje"
+
+#: CC2013/templates/course.html:60
+msgid "Delete Course"
+msgstr "Borrar Curso"
+
+#: CC2013/templates/course_edit_content.html:3
+msgid "Edit Course Content"
+msgstr "Contenido Editar Curso"
+
+#: CC2013/templates/course_edit_details.html:2
+#: CC2013/templates/course_edit_details.html:7
 msgid "Edit Course Details"
 msgstr "Editar Detalles del Curso"
 
-#: CC2013/templates/edit_course.html:2 CC2013/templates/edit_course.html:10
+#: CC2013/templates/course_edit_details.html:2
+#: CC2013/templates/course_edit_details.html:10
 msgid "New Course"
 msgstr "Nuevo Curso"
 
-#: CC2013/templates/edit_course.html:14
+#: CC2013/templates/course_edit_details.html:14
 msgid "Course Title (required)"
 msgstr "Título del Curso (obligatorio)"
 
-#: CC2013/templates/edit_course.html:15
+#: CC2013/templates/course_edit_details.html:15
 msgid "Computer Science I"
 msgstr "Ciencias de la Computación I"
 
-#: CC2013/templates/edit_course.html:18
+#: CC2013/templates/course_edit_details.html:18
 msgid "Course Abbreviation"
 msgstr "Abreviatura del Curso"
 
-#: CC2013/templates/edit_course.html:22
+#: CC2013/templates/course_edit_details.html:22
 msgid "Course Description"
 msgstr "Descripción del Curso"
 
-#: CC2013/templates/edit_course.html:23
+#: CC2013/templates/course_edit_details.html:23
 msgid ""
 "The catalog description including high-level outcomes, topics covered, and "
 "pedagogical approach."
@@ -127,52 +187,10 @@ msgstr ""
 "La descripción de catálogo que incluye los resultados de alto nivel, los "
 "temas tratados, y el enfoque pedagógico."
 
-#: CC2013/templates/edit_course.html:25 CC2013/templates/edit_program.html:25
+#: CC2013/templates/course_edit_details.html:25
+#: CC2013/templates/program_edit_details.html:25
 msgid "Submit"
 msgstr "Entregar"
-
-#: CC2013/templates/edit_program.html:2 CC2013/templates/edit_program.html:7
-msgid "Edit Program Details"
-msgstr "Editar Detalles del Programa"
-
-#: CC2013/templates/edit_program.html:2 CC2013/templates/edit_program.html:10
-msgid "New Program"
-msgstr "Nuevo Programa"
-
-#: CC2013/templates/edit_program.html:11
-msgid ""
-"Create a program (major, minor, concentration, etc.) to design a new "
-"curriculum."
-msgstr ""
-"Crear un programa (mayor, menor, concentración, etc) para diseñar un nuevo "
-"plan de estudios."
-
-#: CC2013/templates/edit_program.html:18
-msgid "Program Title (required)"
-msgstr "Título del Programa (requerido)"
-
-#: CC2013/templates/edit_program.html:19
-msgid "Computer Science Major"
-msgstr ""
-
-#: CC2013/templates/edit_program.html:22
-msgid "Description"
-msgstr "Descripción"
-
-#: CC2013/templates/edit_program.html:23
-msgid ""
-"The catalog description including high-level outcomes and administrativia."
-msgstr ""
-"La descripción de catálogo que incluye los resultados de alto nivel y "
-"administrativia."
-
-#: CC2013/templates/edit_user.html:2 CC2013/templates/edit_user.html:4
-msgid "Edit Profile Details"
-msgstr "Editar Detalles del Perfil"
-
-#: CC2013/templates/edit_user.html:18
-msgid "Save Changes"
-msgstr "Guardar Cambios"
 
 #: CC2013/templates/error.html:5
 msgid "File Not Found"
@@ -208,7 +226,7 @@ msgstr "Programas antiguos"
 
 #: CC2013/templates/login.html:2
 msgid "Login Page"
-msgstr "la página de inicio"
+msgstr "La Página de Inicio"
 
 #: CC2013/templates/login.html:18
 msgid "Sign In"
@@ -218,57 +236,86 @@ msgstr "Registrarse"
 msgid "Program Summary"
 msgstr "Resumen del programa"
 
-#: CC2013/templates/program.html:8
-msgid "edit"
-msgstr "editar"
-
 #: CC2013/templates/program.html:9
+msgid "edit program details"
+msgstr "editar detalles del programa"
+
+#: CC2013/templates/program.html:11
 msgid "Curriculum Coverage"
 msgstr "Cobertura Curriculum"
 
-#: CC2013/templates/program.html:11
+#: CC2013/templates/program.html:13
 msgid "Number of courses"
 msgstr "Número de cursos"
 
-#: CC2013/templates/program.html:13
+#: CC2013/templates/program.html:15
 msgid "Tier 1 Hours"
 msgstr "Nivel 1 Horas"
 
-#: CC2013/templates/program.html:15
+#: CC2013/templates/program.html:17
 msgid "Tier 2 Hours"
 msgstr "Nivel 2 Horas"
 
-#: CC2013/templates/program.html:18
+#: CC2013/templates/program.html:20
 msgid "Courses"
 msgstr "Cursos"
 
-#: CC2013/templates/program.html:23
+#: CC2013/templates/program.html:25
 msgid "No courses have been added to this program."
 msgstr "No hay cursos se han añadido a este programa."
 
-#: CC2013/templates/program.html:26
-msgid "Add new course"
-msgstr "Añadir nuevo curso"
+#: CC2013/templates/program.html:28
+msgid "add new course"
+msgstr "añadir nuevo curso"
 
-#: CC2013/templates/program.html:29
+#: CC2013/templates/program.html:31
 msgid "Delete Program"
 msgstr "Borrar Programa"
 
-#: CC2013/templates/units.html:1
-msgid "Knowledge Units"
-msgstr "Unidades de Conocimiento"
+#: CC2013/templates/program_edit_details.html:2
+#: CC2013/templates/program_edit_details.html:7
+msgid "Edit Program Details"
+msgstr "Editar Detalles del Programa"
 
-#: CC2013/templates/units.html:7
-msgid "Knowledge Unit"
-msgstr "Unidad de Conocimiento"
+#: CC2013/templates/program_edit_details.html:2
+#: CC2013/templates/program_edit_details.html:10
+msgid "New Program"
+msgstr "Nuevo Programa"
+
+#: CC2013/templates/program_edit_details.html:11
+msgid ""
+"Create a program (major, minor, concentration, etc.) to design a new "
+"curriculum."
+msgstr ""
+"Crear un programa (mayor, menor, concentración, etc) para diseñar un nuevo "
+"plan de estudios."
+
+#: CC2013/templates/program_edit_details.html:18
+msgid "Program Title (required)"
+msgstr "Título del Programa (requerido)"
+
+#: CC2013/templates/program_edit_details.html:19
+msgid "Computer Science Major"
+msgstr "Mayor de Ciencias de la Computación"
+
+#: CC2013/templates/program_edit_details.html:22
+msgid "Description"
+msgstr "Descripción"
+
+#: CC2013/templates/program_edit_details.html:23
+msgid ""
+"The catalog description including high-level outcomes and administrativia."
+msgstr ""
+"La descripción de catálogo que incluye los resultados de alto nivel y "
+"administrativia."
 
 #: CC2013/templates/user.html:7
-msgid "Last seen on:"
+msgid "Last seen:"
 msgstr "Visto por última vez en:"
 
 #: CC2013/templates/user.html:8
 msgid "Edit Profile"
-msgstr "Editar perfil"
+msgstr "Editar Perfil"
 
 #: CC2013/templates/user.html:14
 msgid "No programs have been defined."
@@ -277,3 +324,14 @@ msgstr "Ningún programa se han definido."
 #: CC2013/templates/user.html:18
 msgid "Add new program"
 msgstr "Añadir nuevo programa"
+
+#: CC2013/templates/user_edit.html:2 CC2013/templates/user_edit.html:4
+msgid "Edit Profile Details"
+msgstr "Editar Detalles del Perfil"
+
+#: CC2013/templates/user_edit.html:18
+msgid "Save Changes"
+msgstr "Guardar Cambios"
+
+#~ msgid "edit"
+#~ msgstr "editar"
