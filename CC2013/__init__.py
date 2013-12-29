@@ -59,7 +59,7 @@ if os.environ.get('HEROKU'):
     import logging
 
     # Log stdout
-    from logging.handlers import StreamHandler
+    from logging import StreamHandler
     stream_handler = StreamHandler()
     app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
