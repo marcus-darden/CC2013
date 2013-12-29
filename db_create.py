@@ -74,13 +74,15 @@ def populate_from_csv():
     db.session.commit()
 
     if logging:
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+    if app.config['DEBUG']:
         program = Program('CS Major [2014]', 'The Computer Science Major from the 2014-15 Academic Catalog')
         db.session.add(program)
         db.session.commit()
         course = Course(program, 'Discrete Mathematics', 'MTH 242', 'Sets, logic, proofs, etc.')
         db.session.add(course)
         db.session.commit()
-        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
 # Create the database and initialize from csv data
