@@ -38,7 +38,7 @@ class Unit(db.Model):
     tier1 = db.Column(db.Float)
     tier2 = db.Column(db.Float)
     elective = db.Column(db.Float)
-    area_id = db.Column(db.String, db.ForeignKey('area.id', ondelete='cascade'))
+    area_id = db.Column(db.String(3), db.ForeignKey('area.id', ondelete='cascade'))
     outcomes = db.relationship('Outcome', backref='unit', lazy='dynamic')
 
     def __repr__(self): # pragma: no cover
@@ -138,7 +138,7 @@ class Program(db.Model):
     __searchable__ = ['title', 'description']
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), unique=True)
-    description = db.Column(db.String)
+    description = db.Column(db.String(512))
     courses = db.relationship('Course', backref='program', lazy='dynamic')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='cascade'))
 
@@ -212,7 +212,7 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     abbr = db.Column(db.String(8))
     title = db.Column(db.String(128))
-    description = db.Column(db.String)
+    description = db.Column(db.String(512))
     program_id = db.Column(db.Integer, db.ForeignKey('program.id', ondelete='cascade'))
     units = db.relationship('Unit', secondary=course_units,
                             backref=db.backref('courses', lazy='dynamic'))
