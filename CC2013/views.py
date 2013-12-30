@@ -297,8 +297,8 @@ def add_unit(program_id, course_id):
         course = course.add_unit(Unit.query.get(unit))
 
     # Commit!
-    app.logger.info('Ready to add')
-    db.session.add(course)
+    #app.logger.info('Ready to add')
+    #db.session.add(course)
     app.logger.info('Added, Ready to commit')
     db.session.commit()
     app.logger.info('Committed')
