@@ -34,39 +34,37 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-right">
-{% if not g.user.is_authenticated() %}
+{%- if not g.user.is_authenticated() %}
             <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
-{% else %}
+{%- else %}
             <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">{{ _('User Profile') }}</a></li>
             <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
-{% endif %}
+{%- endif %}
           </ul>
         </div>
     </nav>
-{% if not homepage %}
+{%- if not homepage %}
     <ol class="breadcrumb">
       <li><a href="{{ url_for('index') }}">{{ _('Home') }}</a></li>
-{% if content_page %}
+{%- if content_page %}
       <li><a href="{{ url_for('program', program_id=course.program.id) }}">{{ _('Program') }}</a></li>
       <li><a href="{{ url_for('course', program_id=course.program.id, course_id=course.id) }}">{{ _('Course') }}</a></li>
       <li class="active">{{ _('Content') }}</li>
-{% elif course %}
+{%- elif course %}
       <li><a href="{{ url_for('program', program_id=course.program.id) }}">{{ _('Program') }}</a></li>
       <li class="active">{{ _('Course') }}</li>
-{% elif program %}
+{%- elif program %}
       <li class="active">{{ _('Program') }}</li>
-{% elif user %}
+{%- elif user %}
       <li class="active">{{ _('Profile') }}</li>
-{% endif %}
+{%- endif %}
     </ol>
-{% endif %}
+{%- endif %}
     <div id="content" class="container">
-{% block content %}
-{% endblock content %}
+{%- block content %}{%- endblock content %}
     </div>
     <footer>
-{%- block footer -%}
-{%- endblock footer -%}
+{%- block footer -%}{%- endblock footer -%}
     </footer>
   </body>
 </html>

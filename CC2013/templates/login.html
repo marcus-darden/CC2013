@@ -7,17 +7,17 @@
       {{ form.hidden_tag() }}
       <div class="help-block">{{ _('Click on your OpenID provider below:') }}</div>
       <div class="control-group">
-{% for pr in providers %}
+{%- for pr in providers %}
         <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');"><img src="/static/img/{{pr.name.lower()}}.png" class="img-polaroid" style="margin:2px;" /></a>
-{% endfor %}
+{%- endfor %}
       </div>
       <div class="control-group{% if form.errors.openid %} error{% endif %}">
         <label class="control-label" for="openid">{{ _('Or enter your OpenID here:') }}</label>
         <div class="controls">
           {{ form.openid(size=80, class="span4") }}
-{% for error in form.errors.openid %}
+{%- for error in form.errors.openid %}
           <span class="help-inline">[{{error}}]</span><br>
-{% endfor %}
+{%- endfor %}
         </div>
       </div>
       <div class="control-group">
@@ -33,4 +33,4 @@
         </div>
       </div>
     </form>
-{% endblock content %}
+{%- endblock content %}
