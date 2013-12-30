@@ -294,7 +294,7 @@ def add_unit(program_id, course_id):
 
     for unit in units:
         app.logger.info('For unit ' + str(unit))
-        course.add_unit(Unit.query.get(unit))
+        course = course.add_unit(Unit.query.get(unit))
 
     # Commit!
     app.logger.info('Ready to add')
