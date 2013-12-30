@@ -242,6 +242,7 @@ def course_edit_content(program_id, course_id):
     if course.program.user_id != g.user.id:
         abort(403)
 
+    app.logger.info('Inside edit content')
     return render_template('course_edit_content.html',
                            course=course,
                            areas=Area.query.all())
