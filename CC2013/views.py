@@ -269,7 +269,7 @@ def remove_unit(program_id, course_id):
         course = course.remove_unit(unit)
 
     # Commit!
-    db.session.add(course)
+    #db.session.add(course)
     db.session.commit()
 
     return json.dumps(True)
@@ -294,7 +294,7 @@ def add_unit(program_id, course_id):
 
     for unit in units:
         app.logger.info('For unit ' + str(unit))
-        course = course.add_unit(Unit.query.get(unit))
+        course.add_unit(Unit.query.get(unit))
 
     # Commit!
     #app.logger.info('Ready to add')
