@@ -279,7 +279,9 @@ def remove_unit(program_id, course_id):
 @login_required
 def add_unit(program_id, course_id):
     # Verify db access
+    app.logger.info('Entering add unit')
     course = Course.query.get_or_404(course_id)
+    app.logger.info('Course obtained from the db')
     if course.program.id != program_id:
         abort(404)
     if course.program.user_id != g.user.id:
@@ -291,11 +293,15 @@ def add_unit(program_id, course_id):
     units = [int(unit) for unit in units_obj['units']]
 
     for unit in units:
+        app.logger.info('For unit ' + str(unit))
         course.add_unit(Unit.query.get(unit))
 
     # Commit!
+    app.logger.info('Ready to add')
     db.session.add(course)
+    app.logger.info('Added, Ready to commit')
     db.session.commit()
+    app.logger.info('Committed')
 
     return json.dumps(True)
 
