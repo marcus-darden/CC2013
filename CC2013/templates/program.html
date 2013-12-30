@@ -25,8 +25,8 @@
       <p>{{ _('No courses have been added to this program.') }}</p>
 {% endfor %}
     </ul>
-    <a href="{{ url_for('course_new', program_id=program.id ) }}">{{ _('add new course') }}</a>
 {% if program.user.id == g.user.id %}
+    <a href="{{ url_for('course_new', program_id=program.id ) }}">{{ _('add new course') }}</a>
     <form id="program_delete" method="post" action="{{ url_for('program_delete', program_id=program.id) }}">
       <input type="submit" name="submit" value="{{ _('Delete Program') }}" />
     </form>
