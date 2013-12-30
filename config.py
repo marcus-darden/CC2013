@@ -18,7 +18,7 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 WHOOSH_BASE = os.path.join(basedir, 'search.db')
 WHOOSH_ENABLED = bool(os.environ.get('HEROKU'))
 SQLALCHEMY_RECORD_QUERIES = True
-DATABASE_QUERY_TIMEOUT = 0.5  # slow database query threshold (in seconds)
+DATABASE_QUERY_TIMEOUT = 5  # slow database query threshold (in seconds)
 
 # OpenID config
 OPENID_PROVIDERS = [
