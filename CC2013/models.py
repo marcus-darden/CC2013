@@ -215,7 +215,8 @@ class Course(db.Model):
     description = db.Column(db.String(512))
     program_id = db.Column(db.Integer, db.ForeignKey('program.id', ondelete='cascade'))
     units = db.relationship('Unit', secondary=course_units,
-                            backref=db.backref('courses', lazy='dynamic'))
+                            backref=db.backref('courses', lazy='dynamic'),
+                            order_by='Unit.id')
 
     def add_unit(self, unit):
         if not self.has_unit(unit):
