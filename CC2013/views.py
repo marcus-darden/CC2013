@@ -388,10 +388,10 @@ def after_login(response):
 @app.before_request
 def before_request():
     g.user = current_user
-    if g.user.is_authenticated():
-        g.user.last_seen = datetime.utcnow()
-        db.session.add(g.user)
-        db.session.commit()
+    #if g.user.is_authenticated():
+        #g.user.last_seen = datetime.utcnow()
+        #db.session.add(g.user)
+        #db.session.commit()
     g.locale = get_locale()
     g.search_enabled = WHOOSH_ENABLED
 
