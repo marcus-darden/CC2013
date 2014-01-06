@@ -48,7 +48,8 @@ class Unit(db.Model):
         return {'tier1': self.tier1,
                 'tier2': self.tier2,
                 'text': self.text,
-                'id': self.id}
+                'id': self.id,
+                'area_id': self.area_id}
 
 
 class Outcome(db.Model):
