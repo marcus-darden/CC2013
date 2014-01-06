@@ -166,8 +166,10 @@ def course_new(program_id):
     
         # Create new course object and store in the database
         course = Course(program=program, title=title, abbr=abbr, description=description)
-        db.session.add(course)
+        #db.session.add(course)
         db.session.commit()
+
+        return redirect(url_for('index'))
 
         return redirect(url_for('course',
                                 program_id=program_id,
