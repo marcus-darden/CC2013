@@ -7,17 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-12-29 15:18-0500\n"
+"POT-Creation-Date: 2013-12-30 14:04-0500\n"
 "PO-Revision-Date: 2013-12-29 15:36-0500\n"
 "Last-Translator: \n"
 "Language-Team: es <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
-"Language: es\n"
-"X-Generator: Poedit 1.6.3\n"
 
 #: CC2013/forms.py:12
 msgid "Remember Me"
@@ -33,17 +31,17 @@ msgstr "Acerca de mí:"
 
 #: CC2013/forms.py:32
 msgid ""
-"This nickname has invalid characters. Please use letters, numbers, dots and  "
-"underscores only."
+"This nickname has invalid characters. Please use letters, numbers, dots "
+"and  underscores only."
 msgstr ""
-"Este apodo tiene caracteres no válidos. Utilice letras, números, puntos y "
-"guiones bajos solamente."
+"Este apodo tiene caracteres no válidos. Utilice letras, números, puntos y"
+" guiones bajos solamente."
 
 #: CC2013/forms.py:39
 msgid "This nickname is already in use. Please choose another one."
 msgstr "Este apodo ya está en uso. Por favor, elija otro."
 
-#: CC2013/views.py:421
+#: CC2013/views.py:422
 msgid "Invalid login. Please try again."
 msgstr "Inicio de sesión no válido. Por favor, inténtelo de nuevo."
 
@@ -102,6 +100,10 @@ msgstr "Perfil"
 #: CC2013/templates/course.html:2
 msgid "Course Information"
 msgstr "Información Sobre el Curso"
+
+#: CC2013/templates/course.html:6
+msgid "No description provided"
+msgstr ""
 
 #: CC2013/templates/course.html:8
 msgid "edit course details"
@@ -181,8 +183,8 @@ msgstr "Descripción del Curso"
 
 #: CC2013/templates/course_edit_details.html:23
 msgid ""
-"The catalog description including high-level outcomes, topics covered, and "
-"pedagogical approach."
+"The catalog description including high-level outcomes, topics covered, "
+"and pedagogical approach."
 msgstr ""
 "La descripción de catálogo que incluye los resultados de alto nivel, los "
 "temas tratados, y el enfoque pedagógico."
@@ -228,7 +230,15 @@ msgstr "Programas antiguos"
 msgid "Login Page"
 msgstr "La Página de Inicio"
 
-#: CC2013/templates/login.html:18
+#: CC2013/templates/login.html:8
+msgid "Click on your OpenID provider below:"
+msgstr ""
+
+#: CC2013/templates/login.html:15
+msgid "Or enter your OpenID here:"
+msgstr ""
+
+#: CC2013/templates/login.html:32
 msgid "Sign In"
 msgstr "Registrarse"
 
@@ -264,7 +274,7 @@ msgstr "Cursos"
 msgid "No courses have been added to this program."
 msgstr "No hay cursos se han añadido a este programa."
 
-#: CC2013/templates/program.html:28
+#: CC2013/templates/program.html:29
 msgid "add new course"
 msgstr "añadir nuevo curso"
 
@@ -287,8 +297,8 @@ msgid ""
 "Create a program (major, minor, concentration, etc.) to design a new "
 "curriculum."
 msgstr ""
-"Crear un programa (mayor, menor, concentración, etc) para diseñar un nuevo "
-"plan de estudios."
+"Crear un programa (mayor, menor, concentración, etc) para diseñar un "
+"nuevo plan de estudios."
 
 #: CC2013/templates/program_edit_details.html:18
 msgid "Program Title (required)"
@@ -303,8 +313,7 @@ msgid "Description"
 msgstr "Descripción"
 
 #: CC2013/templates/program_edit_details.html:23
-msgid ""
-"The catalog description including high-level outcomes and administrativia."
+msgid "The catalog description including high-level outcomes and administrativia."
 msgstr ""
 "La descripción de catálogo que incluye los resultados de alto nivel y "
 "administrativia."
@@ -335,3 +344,7 @@ msgstr "Guardar Cambios"
 
 #~ msgid "edit"
 #~ msgstr "editar"
+
+#~ msgid "No description provided."
+#~ msgstr ""
+
