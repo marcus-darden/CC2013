@@ -3,7 +3,7 @@
 {% block content %}
 {% if program is defined %}
     {% set title, description = program.title, program.description %}
-    {% set action = url_for('program_edit_details', program_id=program.id) %}
+    {% set action = url_for('program_details', program_id=program.id) %}
     <h1>{{ _('Edit Program Details') }}</h1>
 {% else %}
     {% set action = url_for('program_new') %}

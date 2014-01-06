@@ -6,7 +6,7 @@
     <h1>{{ program.title }}</h1>
     <p>{{ program.description or "{{ _('No description provided.') }}" }}</p>
 {% if program.user.id == g.user.id %}
-    <a href="{{ url_for('program_edit_details', program_id=program.id) }}">{{ _('edit program details') }}</a>
+    <a href="{{ url_for('program_details', program_id=program.id) }}">{{ _('edit program details') }}</a>
 {% endif %}
     <h2>{{ _('Curriculum Coverage') }}</h2>
     <dl>

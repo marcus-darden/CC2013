@@ -37,7 +37,7 @@
 {%- if not g.user.is_authenticated() %}
             <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
 {%- else %}
-            <li><a href="{{ url_for('user_profile', nickname=g.user.nickname) }}">{{ _('User Profile') }}</a></li>
+            <li><a href="{{ url_for('user', nickname=g.user.nickname) }}">{{ _('User Profile') }}</a></li>
             <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
 {%- endif %}
           </ul>
