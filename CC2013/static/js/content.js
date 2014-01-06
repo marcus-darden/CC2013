@@ -15,7 +15,7 @@ $(function() {
       $table.append($row);
 
       // Insert Learning Outcome rows
-      $.getJSON('/json/unit_outcomes', {'unit_id': unit_id}, function(response) {
+      $.getJSON('/unit/' + unit_id + '/outcomes', null, function(response) {
         $.each(response.outcomes, function(i, outcome) {
           row = $('<tr/>');
           row.append($('<td/>').text(outcome.tier));
@@ -68,7 +68,7 @@ $(function() {
     // Build AJAX url
     var course_id = $('#__course_id').val();
     var program_id = $('#__program_id').val();
-    var ajax_url = '/program/' + program_id + '/course/' + course_id + '/unit/unassigned';
+    var ajax_url = '/program/' + program_id + '/unassigned';
 
     // Fill listbox
     $.getJSON(ajax_url, {'area_id': area_id}, function(units) {
@@ -81,7 +81,7 @@ $(function() {
     // Build AJAX url
     var course_id = $('#__course_id').val();
     var program_id = $('#__program_id').val();
-    var ajax_url = '/program/' + program_id + '/course/' + course_id + '/content';
+    var ajax_url = '/program/' + program_id + '/course/' + course_id + '/units';
 
     // Fill listbox
     $.getJSON(ajax_url, null, function(units) {
@@ -155,79 +155,80 @@ $(function() {
   }
 
   // Remove the given list of Knowledge Units from the current course
-  function remove_units($units) {
+  function unit_remove($units) {
     // Build AJAX url
-    var course_id = $('#__course_id').val();
-    var program_id = $('#__program_id').val();
-    var ajax_url = '/program/' + program_id + '/course/' + course_id + '/unit/remove';
+    var course_id = parseInt($('#__course_id').val());
+    var program_id = parseInt($('#__program_id').val());
+    //var ajax_url = "{{ url_for('unit_remove', program_id=program_id, course_id=course_id) }}";
+    var ajax_url = '/program/' + program_id + '/course/' + course_id + '/content';
 
     // Build units list and send to server
     var units = $.map($units, function(option, i) {
       return parseInt(option.value);
     });
     var units_json = JSON.stringify(units);
-    $.getJSON(ajax_url, {'units': units_json}, function(response) {
-      // Upon successful db activity, move course_content -> {unassigned_units | null}
-      if(response) {
-        var area_id = $('#knowledge_areas').val();
-        var $unassigned_units = $('#unassigned_units');
+    $.post(ajax_url, {'units': units_json, 'add': false},
+      function(response) {
+        // Upon successful db activity, move course_content -> {unassigned_units | null}
+        if(response) {
+          var area_id = $('#knowledge_areas').val();
+          var $unassigned_units = $('#unassigned_units');
 
-        $.each($units, function(i, option) {
-          if(option.getAttribute('data-area_id') === area_id)
-            insert_unit($(option), $unassigned_units);
-          else
-            $(option).remove();
-        });
-      }
-    });
+          $.each($units, function(i, option) {
+            if(option.getAttribute('data-area_id') === area_id)
+              insert_unit($(option), $unassigned_units);
+            else
+              $(option).remove();
+          });
+        }
+        update_buttons();
+      },
+      'json'
+    );
   }
 
   $('#remove_all').click(function() {
-    var $units = $('#course_content option');
-
-    remove_units($units);
+    unit_remove($units = $('#course_content option'));
   });
 
   $('#remove_selected').click(function() {
-    var $units = $('#course_content option:selected');
-
-    remove_units($units);
+    unit_remove($units = $('#course_content option:selected'));
   });
 
   // unassigned_units -> course_content
-  function add_units($units) {
+  function unit_add($units) {
     // Build AJAX url
     var course_id = $('#__course_id').val();
     var program_id = $('#__program_id').val();
-    var ajax_url = '/program/' + program_id + '/course/' + course_id + '/unit/add';
+    var ajax_url = '/program/' + program_id + '/course/' + course_id + '/content';
 
     // Build units list and send to server
     var units = $.map($units, function(option, i) {
       return parseInt(option.value);
     });
     var units_json = JSON.stringify(units);
-    $.getJSON(ajax_url, {'units': units_json}, function(response) {
-      // Upon successful db activity, move unassigned_units -> course_content
-      if(response) {
-        var $course_content = $('#course_content');
+    $.post(ajax_url, {'units': units_json, 'add': true},
+      function(response) {
+        // Upon successful db activity, move unassigned_units -> course_content
+        if(response) {
+          var $course_content = $('#course_content');
 
-        $.each($units, function(i, option) {
-          insert_unit($(option), $course_content);
-        });
-      }
-    });
+          $.each($units, function(i, option) {
+            insert_unit($(option), $course_content);
+          });
+        }
+        update_buttons();
+      },
+      'json'
+    );
   }
 
   $('#add_selected').click(function() {
-    var $units = $('#unassigned_units option:selected');
-
-    add_units($units);
+    unit_add($units = $('#unassigned_units option:selected'));
   });
 
   $('#add_all').click(function() {
-    var $units = $('#unassigned_units option');
-
-    add_units($units);
+    unit_add($units = $('#unassigned_units option'));
   });
 
   function update_page() {

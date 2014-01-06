@@ -38,17 +38,17 @@ def logout():
 
 # User info page
 @app.route('/user/<nickname>')
-def user_profile(nickname):
+def user(nickname):
     user = User.query.filter_by(nickname=nickname).first_or_404()
 
     return render_template('user.html', user=user)
 
 
 # User Edit Details
-@app.route('/user/settings',
+@app.route('/user/details',
            methods=['GET', 'POST'])
 @login_required
-def user_settings():
+def user_details():
     form = EditForm(g.user.nickname)
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
@@ -61,7 +61,7 @@ def user_settings():
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
 
-    return render_template('user_edit.html', form=form)
+    return render_template('user_details.html', form=form)
 
 
 # Homepage
@@ -83,7 +83,7 @@ def index(page=1):
 @login_required
 def program_new():
     if request.method == 'GET':
-        return render_template('program_edit_details.html')
+        return render_template('program_details.html')
     elif request.method == 'POST':
         """Execute program creation"""
         # Get data from form
@@ -99,16 +99,16 @@ def program_new():
 
 
 # Program Edit Details
-@app.route('/program/<int:program_id>/edit-details',
+@app.route('/program/<int:program_id>/details',
            methods=['GET', 'POST'])
 @login_required
-def program_edit_details(program_id):
+def program_details(program_id):
     program = Program.query.get_or_404(program_id)
     if request.method == 'GET':
         if program.user_id != g.user.id:
             abort(403)
 
-        return render_template('program_edit_details.html', program=program)
+        return render_template('program_details.html', program=program)
     elif request.method == 'POST':
         # Verify db access
         if program.user_id != g.user.id:
@@ -157,7 +157,7 @@ def course_new(program_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('course_edit_details.html', program=program)
+        return render_template('course_details.html', program=program)
     elif request.method == 'POST':
         # Get form data
         title = request.form['course_title'].strip()
@@ -175,10 +175,10 @@ def course_new(program_id):
 
 
 # Course Edit Details
-@app.route('/program/<int:program_id>/course/<int:course_id>/edit-details',
+@app.route('/program/<int:program_id>/course/<int:course_id>/details',
            methods=['GET', 'POST'])
 @login_required
-def course_edit_details(program_id, course_id):
+def course_details(program_id, course_id):
     # Verify db access
     course = Course.query.get_or_404(course_id)
     if course.program_id != program_id:
@@ -187,7 +187,7 @@ def course_edit_details(program_id, course_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('course_edit_details.html',
+        return render_template('course_details.html',
                                program=course.program,
                                course=course) 
     elif request.method == 'POST':
@@ -196,7 +196,6 @@ def course_edit_details(program_id, course_id):
         course.abbr = request.form['course_abbr'].strip()
         course.description = request.form['course_description'].strip()
 
-        db.session.add(course)
         db.session.commit()
 
         return redirect(url_for('course',
@@ -231,10 +230,11 @@ def course_delete(program_id, course_id):
     return redirect(url_for('program', program_id=program_id))
     
 
-# Add Knowledge Units to a course
-@app.route('/program/<int:program_id>/course/<int:course_id>/edit-content')
+# Modify the Knowledge Units in a Course
+@app.route('/program/<int:program_id>/course/<int:course_id>/content',
+           methods=['GET', 'POST'])
 @login_required
-def course_edit_content(program_id, course_id):
+def course_content(program_id, course_id):
     # Verify db access
     course = Course.query.get_or_404(course_id)
     if course.program.id != program_id:
@@ -242,112 +242,52 @@ def course_edit_content(program_id, course_id):
     if course.program.user_id != g.user.id:
         abort(403)
 
-    app.logger.info('Inside edit content')
-    return render_template('course_edit_content.html',
-                           course=course,
-                           areas=Area.query.all())
+    if request.method == 'GET':
+        return render_template('course_content.html',
+                               course=course,
+                               areas=Area.query.all())
+    elif request.method == 'POST':
+        # Get request parameters
+        add = json.loads(request.form['add'])
+        unit_ids = json.loads(request.form['units'])
+        units = Unit.query.filter(Unit.id.in_(unit_ids))
 
+        # Add/Remove the units
+        modify = course.add_unit if add else course.remove_unit
+        for unit in units:
+            modify(unit)
 
-# Execute unit deletion
-@app.route('/program/<int:program_id>/course/<int:course_id>/remove')
-@login_required
-def remove_unit(program_id, course_id):
-    # Verify db access
-    course = Course.query.get_or_404(course_id)
-    if course.program.id != program_id:
-        abort(404)
-    if course.program.user_id != g.user.id:
-        abort(403)
+        db.session.commit()
 
-    # Get request parameters
-    units_str = request.args.get('units')
-    units_obj = json.loads(units_str)
-    unit_ids = [int(unit) for unit in units_obj['units']]
-    units = Unit.query.filter(Unit.id.in_(unit_ids))
-
-    for unit in units:
-        course = course.remove_unit(unit)
-
-    # Commit!
-    #db.session.add(course)
-    db.session.commit()
-
-    return json.dumps(True)
-
-
-@app.route('/program/<int:program_id>/course/<int:course_id>/add')
-@login_required
-def add_unit(program_id, course_id):
-    # Verify db access
-    app.logger.info('Entering add unit')
-    course = Course.query.get_or_404(course_id)
-    app.logger.info('Course obtained from the db')
-    if course.program.id != program_id:
-        abort(404)
-    if course.program.user_id != g.user.id:
-        abort(403)
-
-    # Get request parameters
-    units_str = request.args.get('units')
-    units_obj = json.loads(units_str)
-    units = [int(unit) for unit in units_obj['units']]
-
-    for unit in units:
-        app.logger.info('For unit ' + str(unit))
-        course.add_unit(Unit.query.get(unit))
-
-    # Commit!
-    #app.logger.info('Ready to add')
-    #db.session.add(course)
-    app.logger.info('Added, Ready to commit')
-    db.session.commit()
-    app.logger.info('Committed')
-
-    return json.dumps(True)
+        return json.dumps(True)
 
 
 # AJAX here...
-@app.route('/json/course_content')
-def get_course_content():
+@app.route('/program/<int:program_id>/course/<int:course_id>/units')
+def course_units(program_id, course_id):
     # Get request parameters
-    course_id = request.args.get('course_id', 0, type=int)
-
     course = Course.query.get(course_id)
     units_json = [unit.json() for unit in course.units]
 
     return json.dumps(units_json)
 
 
-@app.route('/json/unassigned_units')
-def get_unassigned_units():
+@app.route('/program/<int:program_id>/unassigned')
+def unassigned_units(program_id):
     # Get request parameters
     area_id = request.args.get('area_id', '')
-    course_id = request.args.get('course_id', 0, type=int)
 
     # Query db
-    program = Course.query.get(course_id).program
+    program = Program.query.get(program_id)
     units = program.get_unassigned_units(area_id)
     units_json = [unit.json() for unit in units]
 
     return json.dumps(units_json)
 
 
-@app.route('/json/unit_area_id')
-def get_unit_area_id():
+@app.route('/unit/<int:unit_id>/outcomes')
+def unit_outcomes(unit_id):
     # Get request parameters
-    unit_id = request.args.get('unit_id', 0, type=int)
-    unit = Unit.query.get(unit_id)
-
-    response = {'unit': unit.json(),
-                'area': unit.area.json()}
-
-    return json.dumps(response)
-
-
-@app.route('/json/unit_outcomes')
-def get_unit_outcomes():
-    # Get request parameters
-    unit_id = request.args.get('unit_id', 0)
     unit = Unit.query.get(unit_id)
 
     response = {'unit': unit.json(),
@@ -358,7 +298,7 @@ def get_unit_outcomes():
 
 # General curriculum exemplar browser
 # Browser: Knowledge Areas
-@app.route('/areas')
+@app.route('/area')
 def knowledge_areas():
     areas = Area.query.all()
     hours = (db.session.query(db.func.sum(Unit.tier1),
@@ -371,8 +311,7 @@ def knowledge_areas():
 
 
 # Browser: Knowledge Units
-@app.route('/units')
-@app.route('/area/<area_id>')
+@app.route('/area/<area_id>/unit')
 def knowledge_units(area_id=None):
     if area_id:
         area = Area.query.get_or_404(area_id)
@@ -390,15 +329,9 @@ def knowledge_units(area_id=None):
 
 
 # Browser: Learning Outcomes
-@app.route('/outcomes')
-@app.route('/area/<area_id>/unit/<int:unit_id>')
-def learning_outcomes(area_id=None, unit_id=-1):
-    if unit_id < 0:
-        tier1 = Outcome.query.filter_by(tier='Tier 1').all()
-        tier2 = Outcome.query.filter_by(tier='Tier 2').all()
-        electives = Outcome.query.filter_by(tier='Elective').all()
-        hours = None
-    else:
+@app.route('/area/<area_id>/unit/<int:unit_id>/outcome')
+def learning_outcomes(area_id=None, unit_id=0):
+    if unit_id:
         unit = Unit.query.get_or_404(unit_id)
         if unit.area.id != area_id:
             abort(404)
@@ -410,6 +343,11 @@ def learning_outcomes(area_id=None, unit_id=-1):
                                   db.func.sum(Unit.tier2))
                            .filter(Unit.id == unit_id)
                            .first())
+    else:
+        tier1 = Outcome.query.filter_by(tier='Tier 1').all()
+        tier2 = Outcome.query.filter_by(tier='Tier 2').all()
+        electives = Outcome.query.filter_by(tier='Elective').all()
+        hours = None
 
     return render_template('outcomes.html', **locals())
 

@@ -5,7 +5,7 @@
     <h1>{{ course.title }} <small>{% if course.abbr %}({{ course.abbr }}){% endif %}</small></h1>
     <p id="course_description">{{ course.description or "_('No description provided.')" }}</p>
 {% if course.program.user.id == g.user.id %}
-    <a href="{{ url_for('course_edit_details', program_id=course.program.id, course_id=course.id) }}">{{ _('edit course details') }}</a>
+    <a href="{{ url_for('course_details', program_id=course.program.id, course_id=course.id) }}">{{ _('edit course details') }}</a>
 {% endif %}
     <h2>{{ _('Course Content') }}</h2>
     <h3>{{ _('Knowledge Units') }}</h3>
@@ -36,7 +36,7 @@
     <p>{{ _('No Knowledge Units have been added to this course.') }}</p>
 {% endif %}
 {% if course.program.user.id == g.user.id %}
-    <a href="{{ url_for('course_edit_content', program_id=course.program.id, course_id=course.id) }}">{{ _('edit course content') }}</a>
+    <a href="{{ url_for('course_content', program_id=course.program.id, course_id=course.id) }}">{{ _('edit course content') }}</a>
 {% endif %}
 {% if course.units|length %}
     <h3>{{ _('Learning Outcomes') }}</h3>

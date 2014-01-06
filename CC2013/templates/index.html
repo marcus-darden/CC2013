@@ -5,7 +5,7 @@
     <table id="programs">
 {% for p in programs.items %}
       <tr>
-        <td><a href="{{ url_for('user_profile', nickname=p.user.nickname) }}"><img src="{{ p.user.avatar(64) }}" alt="{{ p.user.nickname }}"></a></td>
+        <td><a href="{{ url_for('user', nickname=p.user.nickname) }}"><img src="{{ p.user.avatar(64) }}" alt="{{ p.user.nickname }}"></a></td>
         <td><p><a href="{{ url_for('program', program_id=p.id) }}">{{ p.title }}</a></p>
 {%- if p.description -%}<p>{{ p.description }}</p>{%- endif -%}
         </td>
