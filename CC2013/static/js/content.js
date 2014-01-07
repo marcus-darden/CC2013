@@ -188,11 +188,11 @@ $(function() {
   }
 
   $('#remove_all').click(function() {
-    unit_remove($units = $('#course_content option'));
+    unit_remove($('#course_content option'));
   });
 
   $('#remove_selected').click(function() {
-    unit_remove($units = $('#course_content option:selected'));
+    unit_remove($('#course_content option:selected'));
   });
 
   // unassigned_units -> course_content
@@ -224,11 +224,11 @@ $(function() {
   }
 
   $('#add_selected').click(function() {
-    unit_add($units = $('#unassigned_units option:selected'));
+    unit_add($('#unassigned_units option:selected'));
   });
 
   $('#add_all').click(function() {
-    unit_add($units = $('#unassigned_units option'));
+    unit_add($('#unassigned_units option'));
   });
 
   function update_page() {
