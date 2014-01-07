@@ -250,8 +250,8 @@ def course_content(program_id, course_id):
         # Get request parameters
         add = json.loads(request.form['add'])
         unit_ids = json.loads(request.form['units'])
-        units = Unit.query.filter(Unit.id.in_(unit_ids))
-        app.logger.info(('Adding' if add else 'Removing') + str(units))
+        units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
+        app.logger.info(('Adding ' if add else 'Removing ') + str(units))
 
         # Add/Remove the units
         modify = course.add_unit if add else course.remove_unit
