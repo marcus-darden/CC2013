@@ -254,9 +254,12 @@ def course_content(program_id, course_id):
         app.logger.info(('Adding ' if add else 'Removing ') + str(units))
 
         # Add/Remove the units
-        modify = course.add_unit if add else course.remove_unit
-        for unit in units:
-            modify(unit)
+        if add:
+            for unit in units:
+                course = course.add_unit(unit)
+        else:
+            for unit in units:
+                course = course.remove_unit(unit)
 
         db.session.commit()
 
