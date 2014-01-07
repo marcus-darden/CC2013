@@ -187,9 +187,7 @@ def course_details(program_id, course_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('course_details.html',
-                               program=course.program,
-                               course=course) 
+        return render_template('course_details.html', course=course) 
     elif request.method == 'POST':
         # Get form data and edit the course
         course.title = request.form['course_title'].strip()
@@ -247,10 +245,13 @@ def course_content(program_id, course_id):
                                course=course,
                                areas=Area.query.all())
     elif request.method == 'POST':
+        print 'Modifying course content'
         # Get request parameters
         add = json.loads(request.form['add'])
         unit_ids = json.loads(request.form['units'])
         units = Unit.query.filter(Unit.id.in_(unit_ids))
+        print ('Adding' if add else 'Removing'),
+        print units
 
         # Add/Remove the units
         modify = course.add_unit if add else course.remove_unit
