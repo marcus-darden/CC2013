@@ -245,13 +245,13 @@ def course_content(program_id, course_id):
                                course=course,
                                areas=Area.query.all())
     elif request.method == 'POST':
-        print 'Modifying course content'
+        app.logger.info('Modifying course content')
+        app.logger.info(str(request.form))
         # Get request parameters
         add = json.loads(request.form['add'])
         unit_ids = json.loads(request.form['units'])
         units = Unit.query.filter(Unit.id.in_(unit_ids))
-        print ('Adding' if add else 'Removing'),
-        print units
+        app.logger.info(('Adding' if add else 'Removing') + str(units))
 
         # Add/Remove the units
         modify = course.add_unit if add else course.remove_unit
