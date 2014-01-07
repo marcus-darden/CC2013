@@ -222,7 +222,7 @@ class Course(db.Model):
 
     def add_unit(self, unit):
         app.logger.info('Add Unit called ' + str(unit))
-        app.logger.info(str(self.units))
+        app.logger.info('Course units: ' + str(self.units))
         if not self.has_unit(unit):
             self.units.append(unit)
             return self
