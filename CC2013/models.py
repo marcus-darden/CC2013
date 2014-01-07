@@ -192,7 +192,8 @@ class Program(db.Model):
         query = (Unit.query
                      .outerjoin(course_units)
                      .outerjoin(subquery)
-                     .filter_by(id=None))
+                     .filter_by(id=None)
+                     .order_by(Unit.id))
         if area_id:
             query = query.filter(Unit.area_id == area_id)
 
