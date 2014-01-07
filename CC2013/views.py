@@ -256,12 +256,11 @@ def course_content(program_id, course_id):
         # Add/Remove the units
         if add:
             for unit in units:
-                course = course.add_unit(unit)
+                course.add_unit(unit)
         else:
             for unit in units:
-                course = course.remove_unit(unit)
+                course.remove_unit(unit)
 
-        db.session.add(course)
         db.session.commit()
 
         return json.dumps(True)
