@@ -261,6 +261,8 @@ def course_content(program_id, course_id):
             for unit in units:
                 course.remove_unit(unit)
 
+        print 'course.units:', course.units
+
         db.session.commit()
 
         return json.dumps(True)
