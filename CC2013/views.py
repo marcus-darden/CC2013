@@ -257,6 +257,7 @@ def course_content(program_id, course_id):
         if add:
             for unit in units:
                 course.add_unit(unit)
+                db.session.commit()
         else:
             for unit in units:
                 course.remove_unit(unit)
