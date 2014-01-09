@@ -57,6 +57,8 @@ if not app.debug:
 
 if os.environ.get('HEROKU'):
     import logging
+    logging.basicConfig()
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     # Log stdout
     from logging import StreamHandler
