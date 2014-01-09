@@ -262,7 +262,7 @@ def course_content(program_id, course_id):
             for unit in units:
                 course.remove_unit(unit)
 
-        print 'course.units:', course.units
+        app.logger.info('course.units: ' + str(course.units))
 
         db.session.commit()
 
