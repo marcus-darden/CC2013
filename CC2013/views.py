@@ -263,7 +263,10 @@ def course_content(program_id, course_id):
                 course.remove_unit(unit)
 
         app.logger.info('course.units: ' + str(course.units))
-
+        if course in db.session:
+            app.logger.info('Course in session')
+        else:
+            app.logger.info('Course not in session')
         db.session.commit()
 
         return json.dumps(True)
