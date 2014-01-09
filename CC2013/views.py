@@ -267,6 +267,7 @@ def course_content(program_id, course_id):
             app.logger.info('Course in session')
         else:
             app.logger.info('Course not in session')
+            db.session.add(course)
         db.session.commit()
 
         return json.dumps(True)
