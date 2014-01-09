@@ -265,8 +265,10 @@ def course_content(program_id, course_id):
         app.logger.info('course.units: ' + str(course.units))
         if course in db.session:
             app.logger.info('Course in session')
+            print 'Course in session'
         else:
             app.logger.info('Course not in session')
+            print 'Course not in session'
             db.session.add(course)
         db.session.commit()
 
