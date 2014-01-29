@@ -6,7 +6,7 @@
     {% set action = url_for('course_details', program_id=course.program.id, course_id=course.id) %}
     <h1>{{ _('Edit Course Details') }}</h1>
 {% else %}
-    {% set action = url_for('course_new', program_id=course.program.id) %}
+    {% set action = url_for('course_new', program_id=program.id) %}
     <h1>{{ _('New Course') }}</h1>
 {% endif %}
     <form method="post" action="{{ action }}" role="form">
