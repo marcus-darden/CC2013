@@ -195,6 +195,10 @@ $(function() {
     unit_remove($('#course_content option:selected'));
   });
 
+  $('#course_content').dblclick(function() {
+    unit_remove($('#course_content option:selected'));
+  });
+
   // unassigned_units -> course_content
   function unit_add($units) {
     // Build AJAX url
@@ -223,6 +227,10 @@ $(function() {
     );
   }
 
+  $('#unassigned_units').dblclick(function() {
+    unit_add($('#unassigned_units option:selected'));
+  });
+
   $('#add_selected').click(function() {
     unit_add($('#unassigned_units option:selected'));
   });
@@ -231,10 +239,7 @@ $(function() {
     unit_add($('#unassigned_units option'));
   });
 
-  function update_page() {
-    // Ensure that selected Knowledge Area has units displayed
-    show_area_units('', 0);
-    show_course_content();
-  }
-  update_page();
+  show_area_units('', 0);
+  show_course_content();
+  update_buttons();
 });
