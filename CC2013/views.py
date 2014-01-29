@@ -117,6 +117,7 @@ def program_details(program_id):
         # Get form data and update program
         program.title = request.form['program_title'].strip()
         program.description = request.form['program_description'].strip()
+        db.session.add(program)
         db.session.commit()
 
         return redirect(url_for('program', program_id=program_id))
@@ -194,6 +195,7 @@ def course_details(program_id, course_id):
         course.abbr = request.form['course_abbr'].strip()
         course.description = request.form['course_description'].strip()
 
+        db.session.add(course)
         db.session.commit()
 
         return redirect(url_for('course',
@@ -245,31 +247,20 @@ def course_content(program_id, course_id):
                                course=course,
                                areas=Area.query.all())
     elif request.method == 'POST':
-        app.logger.info('Modifying course content')
-        app.logger.info(str(request.form))
         # Get request parameters
         add = json.loads(request.form['add'])
         unit_ids = json.loads(request.form['units'])
         units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
-        app.logger.info(('Adding ' if add else 'Removing ') + str(units))
 
         # Add/Remove the units
         if add:
             for unit in units:
-                course.add_unit(unit)
-                db.session.commit()
+                course = course.add_unit(unit)
         else:
             for unit in units:
-                course.remove_unit(unit)
+                course = course.remove_unit(unit)
 
-        app.logger.info('course.units: ' + str(course.units))
-        if course in db.session:
-            app.logger.info('Course in session')
-            print 'Course in session'
-        else:
-            app.logger.info('Course not in session')
-            print 'Course not in session'
-            db.session.add(course)
+        db.session.add(course)
         db.session.commit()
 
         return json.dumps(True)
