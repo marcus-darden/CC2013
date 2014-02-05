@@ -116,7 +116,7 @@ class User(db.Model):
 
     def avatar(self, size=128):
         hash = md5(self.email).hexdigest()
-        return 'http://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(hash, size)
+        return 'https://secure.gravatar.com/avatar/{}?d=identicon&s={}'.format(hash, size)
 
     def get_id(self):
         return unicode(self.id)
