@@ -4,5 +4,5 @@ if [ "$FLASK_ENV" == "development" ]; then
     echo "Development Launch"
     python ironman.py
 else
-    gunicorn ironman:app
+    gunicorn -w4 ironman:app
 fi
