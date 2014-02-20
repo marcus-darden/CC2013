@@ -116,7 +116,7 @@ class User(db.Model):
 
     def avatar(self, size=128):
         hash = md5(self.email).hexdigest()
-        return 'http://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(hash, size)
+        return 'https://secure.gravatar.com/avatar/{}?d=identicon&s={}'.format(hash, size)
 
     def get_id(self):
         return unicode(self.id)
@@ -192,7 +192,8 @@ class Program(db.Model):
         query = (Unit.query
                      .outerjoin(course_units)
                      .outerjoin(subquery)
-                     .filter_by(id=None))
+                     .filter_by(id=None)
+                     .order_by(Unit.id))
         if area_id:
             query = query.filter(Unit.area_id == area_id)
 
@@ -220,6 +221,8 @@ class Course(db.Model):
                             order_by='Unit.id')
 
     def add_unit(self, unit):
+        app.logger.info('Add Unit called ' + str(unit))
+        app.logger.info('Course units: ' + str(self.units))
         if not self.has_unit(unit):
             self.units.append(unit)
             return self

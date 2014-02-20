@@ -117,6 +117,7 @@ def program_details(program_id):
         # Get form data and update program
         program.title = request.form['program_title'].strip()
         program.description = request.form['program_description'].strip()
+        db.session.add(program)
         db.session.commit()
 
         return redirect(url_for('program', program_id=program_id))
@@ -187,15 +188,14 @@ def course_details(program_id, course_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('course_details.html',
-                               program=course.program,
-                               course=course) 
+        return render_template('course_details.html', course=course) 
     elif request.method == 'POST':
         # Get form data and edit the course
         course.title = request.form['course_title'].strip()
         course.abbr = request.form['course_abbr'].strip()
         course.description = request.form['course_description'].strip()
 
+        db.session.add(course)
         db.session.commit()
 
         return redirect(url_for('course',
@@ -250,13 +250,17 @@ def course_content(program_id, course_id):
         # Get request parameters
         add = json.loads(request.form['add'])
         unit_ids = json.loads(request.form['units'])
-        units = Unit.query.filter(Unit.id.in_(unit_ids))
+        units = Unit.query.filter(Unit.id.in_(unit_ids)).all()
 
         # Add/Remove the units
-        modify = course.add_unit if add else course.remove_unit
-        for unit in units:
-            modify(unit)
+        if add:
+            for unit in units:
+                course = course.add_unit(unit)
+        else:
+            for unit in units:
+                course = course.remove_unit(unit)
 
+        db.session.add(course)
         db.session.commit()
 
         return json.dumps(True)
