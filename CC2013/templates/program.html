@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block page_title %}{{ _('Program Summary') }}{% endblock page_title %}
-{% block page_js %}<script src="/static/js/program.js"></script>{% endblock %}
+{% block page_js %}
+    <script src="/static/js/program.js"></script>
+    <script src="/static/js/highcharts.js"></script>
+{% endblock %}
 {% block content %}
 {% set courses = program.courses.all() %}
     <h1>{{ program.title }}</h1>

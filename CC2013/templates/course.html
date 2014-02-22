@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block page_title %}{{ _('Course Information') }}{% endblock page_title %}
-{% block page_js %}<script src="/static/js/course.js"></script>{% endblock %}
+{% block page_js %}
+    <script src="/static/js/course.js"></script>
+{% endblock %}
 {% block content %}
     <h1>{{ course.title }} <small>{% if course.abbr %}({{ course.abbr }}){% endif %}</small></h1>
     <p id="course_description">{{ course.description or _('No course description has been provided.') }}</p>
