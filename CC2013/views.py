@@ -282,11 +282,48 @@ def unassigned_units(program_id):
     area_id = request.args.get('area_id', '')
 
     # Query db
-    program = Program.query.get(program_id)
+    program = Program.query.get_or_404(program_id)
     units = program.get_unassigned_units(area_id)
     units_json = [unit.json() for unit in units]
 
     return json.dumps(units_json)
+
+
+@app.route('/program/<int:program_id>/coverage')
+def program_coverage(program_id):
+    program = Program.query.get_or_404(program_id)
+    titles, tier1_hours, tier2_hours = program.content_coverage()
+
+    # Highcharts.com data structure
+    # Draws a stacked bar graph
+    #
+    #  Course 1   |  +++++++++oooooo
+    #  Course 2   |  +++oooooooo
+    #             -------------------
+    #             0  1  2  3  4  5  6 
+    #
+    #       o: Tier 1 Hours, +: Tier 2 Hours
+    chart_json = {
+        'chart': {'type': 'bar'},
+        'title': {'text': None},
+        'xAxis': {
+            'title': {'text': None},
+            'categories': titles
+        },
+        'yAxis': {'title': {'text': None}},
+        'plotOptions': {'series': {'stacking': 'normal'}},
+        'series': [{
+            'type': 'column',
+            'name': 'Tier 1 Hours',
+            'data': tier1_hours
+        }, {
+            'type': 'column',
+            'name': 'Tier 2 Hours',
+            'data': tier2_hours
+        }]
+    }
+
+    return json.dumps(chart_json)
 
 
 @app.route('/unit/<int:unit_id>/outcomes')

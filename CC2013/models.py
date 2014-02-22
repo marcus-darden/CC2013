@@ -199,6 +199,12 @@ class Program(db.Model):
 
         return query
 
+    def content_coverage(self):
+        data = [(c.title, c.tier1_hours, c.tier2_hours) for c in self.courses]
+        titles, tier1_hours, tier2_hours = zip(*data)
+
+        return titles, tier1_hours, tier2_hours
+
     def __repr__(self): # pragma: no cover
         return '<Program: {0.title}>'.format(self)
 
