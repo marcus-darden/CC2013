@@ -1,7 +1,9 @@
 {% set content_page = True %}
 {% extends "base.html" %}
 {% block page_title %}{{ _('Edit Course Content') }}{% endblock %}
-{% block page_js %}<script src="/static/js/content.js"></script>{% endblock %}
+{% block page_js %}
+    <script src="/static/js/content.js"></script>
+{% endblock %}
 {% block content %}
     <input type="hidden" id="__course_id" value="{{ course.id }}" />
     <input type="hidden" id="__program_id" value="{{ course.program.id }}" />

@@ -1,22 +1,20 @@
 {% extends "base.html" %}
 {% block page_title %}{{ _('Program Summary') }}{% endblock page_title %}
-{% block page_js %}<script src="/static/js/program.js"></script>{% endblock %}
+{% block page_js %}
+    <script src="/static/js/program.js"></script>
+    <script src="/static/js/highcharts.js"></script>
+{% endblock %}
 {% block content %}
+    <input type="hidden" id="__program_id" value="{{ program.id }}" />
 {% set courses = program.courses.all() %}
     <h1>{{ program.title }}</h1>
     <p>{{ program.description or "{{ _('No description provided.') }}" }}</p>
 {% if program.user.id == g.user.id %}
     <a href="{{ url_for('program_details', program_id=program.id) }}">{{ _('edit program details') }}</a>
 {% endif %}
-    <h2>{{ _('Curriculum Coverage') }}</h2>
-    <dl>
-      <dt>{{ _('Number of courses') }}</dt>
-      <dd>{{ courses|length }}
-      <dt>{{ _('Tier 1 Hours') }}</dt>
-      <dd>{{ program.tier1_hours }}/{{ program.all_tier1_hours() }} ({{ "%0.0f"|format(program.tier1_hours / program.all_tier1_hours() * 100) }}%)</dd>
-      <dt>{{ _('Tier 2 Hours') }}</dt>
-      <dd>{{ program.tier2_hours }}/{{ program.all_tier2_hours() }} ({{ "%0.0f"|format(program.tier2_hours / program.all_tier2_hours() * 100) }}%)</dd>
-    </dl>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
     <h2>{{ _('Courses') }}</h2>
     <ul>
 {% for course in program.courses %}
@@ -25,6 +23,23 @@
       <p>{{ _('No courses have been added to this program.') }}</p>
 {% endfor %}
     </ul>
+    <h3>{{ _('Core Content Coverage') }}</h3>
+    <dl>
+      <dt>{{ _('Number of courses') }}</dt>
+      <dd>{{ courses|length }}
+      <dt>{{ _('Tier 1 Hours') }}</dt>
+      <dd>{{ program.tier1_hours }}/{{ program.all_tier1_hours() }} ({{ "%0.0f"|format(program.tier1_hours / program.all_tier1_hours() * 100) }}%)</dd>
+      <dt>{{ _('Tier 2 Hours') }}</dt>
+      <dd>{{ program.tier2_hours }}/{{ program.all_tier2_hours() }} ({{ "%0.0f"|format(program.tier2_hours / program.all_tier2_hours() * 100) }}%)</dd>
+    </dl>
+    </div>
+    </div>
+    <div class="col-sm-8">
+      <div class="form-group">
+    <div id="coverage_chart" style="width:100%; height:500px;"></div>
+    </div>
+    </div>
+    </div>
 {% if program.user.id == g.user.id %}
     <a href="{{ url_for('course_new', program_id=program.id ) }}">{{ _('add new course') }}</a>
     <form id="program_delete" method="post" action="{{ url_for('program_delete', program_id=program.id) }}">
