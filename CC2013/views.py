@@ -305,7 +305,7 @@ def program_coverage(program_id):
     #       o: Tier 1 Hours, +: Tier 2 Hours
     chart_json = {
         'chart': {'type': 'bar'},
-        'title': {'text': None},
+        'title': {'text': 'Core Content by Course'},
         'xAxis': {
             'title': {'text': None},
             'categories': titles
