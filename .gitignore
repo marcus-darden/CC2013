@@ -40,3 +40,5 @@ nosetests.xml
 *.db
 .env
 tmp/
+
+!bin/web
