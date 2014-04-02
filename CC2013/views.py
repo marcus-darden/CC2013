@@ -18,7 +18,7 @@ from forms import *
 @oid.loginhandler
 def login():
     if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('user_profile', nickname=g.user.nickname))
+        return redirect(url_for('user', nickname=g.user.nickname))
     form = LoginForm()
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
@@ -56,7 +56,7 @@ def user_details():
         db.session.add(g.user)
         db.session.commit()
 
-        return redirect(url_for('user_profile', nickname=g.user.nickname))
+        return redirect(url_for('user', nickname=g.user.nickname))
     else:
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
@@ -144,7 +144,7 @@ def program_delete(program_id):
     db.session.delete(program)
     db.session.commit()
 
-    return redirect(url_for('user_profile', nickname=g.user.nickname))
+    return redirect(url_for('user', nickname=g.user.nickname))
 
 
 # Course creation
