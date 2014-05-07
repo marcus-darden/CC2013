@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block page_title %}{{ _('Course Information') }}{% endblock page_title %}
+{% block page_title %}{{ _('Course Information') }} - {{ course.title }}{% endblock page_title %}
 {% block page_js %}
     <script src="/static/js/course.js"></script>
 {% endblock %}
@@ -44,7 +44,7 @@
     <h3>{{ _('Learning Outcomes') }}</h3>
     <table class="table table-striped">
       <tr>
-        <th style="width:6em;">Tier</th>
+        <th style="width:6em;">{{ _('Tier') }}</th>
         <th>{{ _('Mastery') }}</th>
         <th>{{ _('Learning Outcome') }}</th>
       </tr>
