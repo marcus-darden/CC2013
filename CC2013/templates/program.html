@@ -18,7 +18,7 @@
     <h2>{{ _('Courses') }}</h2>
     <ul>
 {% for course in program.courses %}
-      <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}">{{ course.title }}{% if course.abbr %} ({{ course.abbr }}){% endif %}</a></li>
+      <li><a href="{{ url_for('course', program_id=program.id, course_id=course.id) }}" title="{{ course.description }}">{{ course.title }}{% if course.abbr %} ({{ course.abbr }}){% endif %}</a></li>
 {% else %}
       <p>{{ _('No courses have been added to this program.') }}</p>
 {% endfor %}
