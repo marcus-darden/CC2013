@@ -184,20 +184,20 @@ class Program(db.Model):
                           .first())[0] or 0
 
     def get_unassigned_units(self, area_id=None):
-        subquery = (Course.query
-                          .join(Program)
-                          .filter_by(id=self.id)
-                          .subquery())
+        program_courses = self.courses.statement.alias()
+        program_units = (Unit.query
+                             .with_entities(Unit.id)
+                             .join(course_units)
+                             .join(program_courses)
+                             .all())
+        unassigned_units = (Unit.query
+                                .filter(Unit.id.notin_(program_units))
+                                .order_by(Unit.id))
 
-        query = (Unit.query
-                     .outerjoin(course_units)
-                     .outerjoin(subquery)
-                     .filter_by(id=None)
-                     .order_by(Unit.id))
         if area_id:
-            query = query.filter(Unit.area_id == area_id)
+            unassigned_units = unassigned_units.filter(Unit.area_id == area_id)
 
-        return query
+        return unassigned_units
 
     def content_coverage(self):
         data = [(c.title, c.tier1_hours, c.tier2_hours) for c in self.courses]
