@@ -2,7 +2,8 @@ $(function() {
   // Draw Core Content Coverage Chart
   var ajax_url = '/program/' + $('#__program_id').val() + '/coverage';
   $.getJSON(ajax_url, null, function(response) {
-    $('#coverage_chart').highcharts(response);
+    if(response)
+      $('#coverage_chart').highcharts(response);
   });
 
   // Confirm program deletion

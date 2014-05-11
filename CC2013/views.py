@@ -292,6 +292,8 @@ def unassigned_units(program_id):
 @app.route('/program/<int:program_id>/coverage')
 def program_coverage(program_id):
     program = Program.query.get_or_404(program_id)
+    if not len(program.courses.all()):
+        return ''
     titles, tier1_hours, tier2_hours = program.content_coverage()
 
     # Highcharts.com data structure
