@@ -16,14 +16,14 @@
       <tr>
         <th>{{ _('Tier 1') }}</th>
         <th>{{ _('Tier 2') }}</th>
-        <th>{{ _('Knowledge Unit') }}</th>
+        <th>{{ _('Knowledge Unit') }} (ID)</th>
         <th>{{ _('Knowledge Area') }}</th>
       </tr>
   {% for unit in course.units %}
       <tr>
         <td>{{ unit.tier1 }}</td>
         <td>{{ unit.tier2 }}</td>
-        <td>{{ unit.text }}</td>
+        <td>{{ unit.text }} ({{ unit.id }})</td>
         <td>{{ unit.area.text }}</td>
       </tr>
   {% endfor %}
@@ -47,12 +47,14 @@
         <th style="width:6em;">{{ _('Tier') }}</th>
         <th>{{ _('Mastery') }}</th>
         <th>{{ _('Learning Outcome') }}</th>
+        <th>KU ID</th>
       </tr>
   {% for outcome in course.outcomes %}
       <tr>
         <td>{{ outcome.tier }}</td>
         <td>{{ outcome.mastery }}</td>
         <td>{{ outcome.text }}</td>
+        <td>{{ outcome.unit_id }}</td>
       </tr>
   {% endfor %}
     </table>

@@ -200,7 +200,7 @@ class Program(db.Model):
         return unassigned_units
 
     def content_coverage(self):
-        data = [(c.title, c.tier1_hours, c.tier2_hours) for c in self.courses]
+        data = [(c.abbr or c.title, c.tier1_hours, c.tier2_hours) for c in self.courses]
         titles, tier1_hours, tier2_hours = zip(*data)
 
         return titles, tier1_hours, tier2_hours
@@ -245,7 +245,7 @@ class Course(db.Model):
     def outcomes(self):
         return (Outcome.query.join(Outcome.unit, Unit.courses)
                        .filter(Course.id == self.id)
-                       .order_by(Outcome.tier, Outcome.id)
+                       .order_by(Outcome.mastery, Outcome.tier, Outcome.id)
                        .all())
 
     @property
