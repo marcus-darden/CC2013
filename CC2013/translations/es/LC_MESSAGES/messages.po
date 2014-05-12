@@ -331,8 +331,8 @@ msgid "No programs have been defined."
 msgstr "Ningún programa se han definido."
 
 #: CC2013/templates/user.html:18
-msgid "Add new program"
-msgstr "Añadir nuevo programa"
+msgid "add new program"
+msgstr "añadir nuevo programa"
 
 #: CC2013/templates/user_edit.html:2 CC2013/templates/user_edit.html:4
 msgid "Edit Profile Details"
