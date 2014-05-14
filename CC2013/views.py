@@ -153,7 +153,7 @@ def program_delete(program_id):
 @login_required
 def course_new(program_id):
     # Verify db access
-    print 'Querying for program...',
+    print 'Querying for program...'
     program = Program.query.get_or_404(program_id)
     if program.user_id != g.user.id:
         abort(403)
@@ -172,6 +172,7 @@ def course_new(program_id):
         # Create new course object and store in the database
         course = Course(program=program, title=title, abbr=abbr, description=description)
         print 'course created:', course
+        print dir(db.session)
         db.session.add(course)
         print 'course added'
         db.session.commit()
