@@ -172,7 +172,7 @@ def course_new(program_id):
         # Create new course object and store in the database
         course = Course(program=program, title=title, abbr=abbr, description=description)
         print 'course created:', course
-        print dir(db.session)
+        print 'session active:', db.session.is_active
         db.session.add(course)
         print 'course added'
         db.session.commit()
