@@ -153,22 +153,29 @@ def program_delete(program_id):
 @login_required
 def course_new(program_id):
     # Verify db access
+    print 'Querying for program...',
     program = Program.query.get_or_404(program_id)
     if program.user_id != g.user.id:
         abort(403)
+    print program
 
     if request.method == 'GET':
         return render_template('course_details.html', program=program)
     elif request.method == 'POST':
+        print 'METHOD: POST'
         # Get form data
         title = request.form['course_title'].strip()
         abbr = request.form['course_abbr'].strip()
         description = request.form['course_description'].strip()
     
+        print 'form data:', title, abbr, description
         # Create new course object and store in the database
         course = Course(program=program, title=title, abbr=abbr, description=description)
+        print 'course created:', course
         db.session.add(course)
+        print 'course added'
         db.session.commit()
+        print 'session committed'
 
         return redirect(url_for('course',
                                 program_id=program_id,
