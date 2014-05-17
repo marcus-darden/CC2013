@@ -6,7 +6,7 @@ from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.mail import Mail
 from flask.ext.babel import Babel
- 
+
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 from momentjs import momentjs
 
@@ -22,10 +22,6 @@ mail = Mail(app)
 babel = Babel(app)
 
 app.jinja_env.globals['momentjs'] = momentjs
-
-
-import CC2013.views
-
 
 # Log files
 if not app.debug:
@@ -53,7 +49,7 @@ if not app.debug:
                                'CC2013 failure',
                                credentials)
     mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
+    #app.logger.addHandler(mail_handler)
 
 if os.environ.get('HEROKU'):
     import logging
@@ -66,4 +62,3 @@ if os.environ.get('HEROKU'):
     app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('CC2013 startup')
-
