@@ -74,7 +74,7 @@ def index(page=1):
                            providers=app.config['OPENID_PROVIDERS'],
                            programs=Program.query.paginate(page,
                                                            PROGRAMS_PER_PAGE,
-                                                           False))
+                                                           False).items)
 
 
 # Program creation
