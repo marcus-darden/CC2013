@@ -7,9 +7,12 @@ Flask-OAuth==0.12
 Flask-OpenID==1.1.1
 Flask-SQLAlchemy==1.0
 Flask-WTF==0.9.3
-Flask-WhooshAlchemy==0.55a
 Jinja2==2.7.1
 MarkupSafe==0.18
+
+git+git://github.com/gyllstromk/Flask-WhooshAlchemy.git
+# REPLACED FROM github: Flask-WhooshAlchemy==0.55a
+
 SQLAlchemy==0.8.3
 Tempita==0.5.1
 WTForms==1.0.5
