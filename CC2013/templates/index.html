@@ -3,7 +3,7 @@
 {% block content %}
     <h1>{{ _('Programs') }}</h1>
     <table id="programs">
-{% for p in programs.items %}
+{% for p in programs %}
       <tr>
         <td><a href="{{ url_for('user', nickname=p.user.nickname) }}"><img src="{{ p.user.avatar(64) }}" alt="{{ p.user.nickname }}"></a></td>
         <td><p><a href="{{ url_for('program', program_id=p.id) }}">{{ p.title }}</a></p>
@@ -12,6 +12,8 @@
       </tr>
 {% endfor %}
     </table>
+{% if programs.has_prev or programs.has_next %}
 {% if programs.has_prev %}<a href="{{ url_for('index', page=programs.prev_num) }}"><< {{ _('Newer programs') }}</a>{% else %}<< {{ _('Newer programs') }}{% endif %} | 
 {% if programs.has_next %}<a href="{{ url_for('index', page=programs.next_num) }}">{{ _('Older programs') }} >></a>{% else %}{{ _('Older programs') }} >>{% endif %}
+{% endif %}
 {% endblock content %}
