@@ -1,7 +1,7 @@
-from datetime import datetime
 import json
+import sys
 
-from flask import abort, flash, g, jsonify, redirect, render_template, request, session, url_for
+from flask import abort, flash, g, redirect, render_template, request, session, url_for
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.babel import gettext
 from flask.ext.sqlalchemy import get_debug_queries
@@ -22,7 +22,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'],
+                             ask_for_optional=['dob', 'fullname', 'image'])
 
     return render_template('login.html', form=form,
                            providers=app.config['OPENID_PROVIDERS'])
@@ -69,9 +70,8 @@ def user_details():
 @app.route('/index')
 @app.route('/index/<int:page>')
 def index(page=1):
-    return render_template('index.html', homepage=True,
-                           form=LoginForm(),
-                           providers=app.config['OPENID_PROVIDERS'],
+    db.session.rollback()
+    return render_template('index.html',
                            programs=Program.query.paginate(page,
                                                            PROGRAMS_PER_PAGE,
                                                            False).items)
@@ -164,7 +164,7 @@ def course_new(program_id):
         title = request.form['course_title'].strip()
         abbr = request.form['course_abbr'].strip()
         description = request.form['course_description'].strip()
-    
+
         # Create new course object and store in the database
         course = Course(program=program, title=title, abbr=abbr, description=description)
         db.session.add(course)
@@ -188,7 +188,7 @@ def course_details(program_id, course_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('course_details.html', course=course) 
+        return render_template('course_details.html', course=course)
     elif request.method == 'POST':
         # Get form data and edit the course
         course.title = request.form['course_title'].strip()
@@ -228,7 +228,7 @@ def course_delete(program_id, course_id):
     db.session.commit()
 
     return redirect(url_for('program', program_id=program_id))
-    
+
 
 # Modify the Knowledge Units in a Course
 @app.route('/program/<int:program_id>/course/<int:course_id>/content',
@@ -302,7 +302,7 @@ def program_coverage(program_id):
     #  Course 1   |  +++++++++oooooo
     #  Course 2   |  +++oooooooo
     #             -------------------
-    #             0  1  2  3  4  5  6 
+    #             0  1  2  3  4  5  6
     #
     #       o: Tier 1 Hours, +: Tier 2 Hours
     chart_json = {
@@ -405,6 +405,7 @@ def load_user(id):
 # Login callback
 @oid.after_login
 def after_login(response):
+    print 'AFTER_LOGIN()'
     if response.email is None or response.email == '':
         flash(gettext('Invalid login. Please try again.'))
         return redirect(url_for('login'))

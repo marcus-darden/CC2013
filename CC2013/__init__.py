@@ -6,7 +6,7 @@ from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.mail import Mail
 from flask.ext.babel import Babel
- 
+
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 from momentjs import momentjs
 
@@ -24,7 +24,7 @@ babel = Babel(app)
 app.jinja_env.globals['momentjs'] = momentjs
 
 
-import CC2013.views
+import CC2013.views  # import after app, to add all routes
 
 
 # Log files
