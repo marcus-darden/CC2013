@@ -164,7 +164,7 @@ def course_new(program_id):
         title = request.form['course_title'].strip()
         abbr = request.form['course_abbr'].strip()
         description = request.form['course_description'].strip()
-    
+
         # Create new course object and store in the database
         course = Course(program=program, title=title, abbr=abbr, description=description)
         db.session.add(course)
@@ -188,7 +188,7 @@ def course_details(program_id, course_id):
         abort(403)
 
     if request.method == 'GET':
-        return render_template('course_details.html', course=course) 
+        return render_template('course_details.html', course=course)
     elif request.method == 'POST':
         # Get form data and edit the course
         course.title = request.form['course_title'].strip()
@@ -228,7 +228,7 @@ def course_delete(program_id, course_id):
     db.session.commit()
 
     return redirect(url_for('program', program_id=program_id))
-    
+
 
 # Modify the Knowledge Units in a Course
 @app.route('/program/<int:program_id>/course/<int:course_id>/content',
@@ -302,7 +302,7 @@ def program_coverage(program_id):
     #  Course 1   |  +++++++++oooooo
     #  Course 2   |  +++oooooooo
     #             -------------------
-    #             0  1  2  3  4  5  6 
+    #             0  1  2  3  4  5  6
     #
     #       o: Tier 1 Hours, +: Tier 2 Hours
     chart_json = {
