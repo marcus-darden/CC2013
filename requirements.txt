@@ -7,7 +7,10 @@ Flask-OAuth==0.12
 Flask-OpenID==1.2.1
 Flask-SQLAlchemy==1.0
 Flask-WTF==0.9.3
-Flask-WhooshAlchemy==0.55a
+
+git+git://github.com/gyllstromk/Flask-WhooshAlchemy.git
+# REPLACED FROM github: Flask-WhooshAlchemy==0.55a
+
 Jinja2==2.7.2
 MarkupSafe==0.23
 MySQL-python==1.2.5
