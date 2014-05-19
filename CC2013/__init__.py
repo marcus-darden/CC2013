@@ -53,7 +53,7 @@ if not app.debug:
                                'CC2013 failure',
                                credentials)
     mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
+    #app.logger.addHandler(mail_handler)
 
 if os.environ.get('HEROKU'):
     import logging
@@ -66,4 +66,3 @@ if os.environ.get('HEROKU'):
     app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('CC2013 startup')
-
