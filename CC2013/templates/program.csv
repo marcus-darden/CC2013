@@ -1,4 +1,4 @@
-{% set courses = programs.courses.all() %}
+{% set courses = program.courses.all() %}
 "Program Summary","","{{ program.title }}"<br>
 "Number of courses","{{ courses|length }}"<br>
 "Tier 1 Hours","{{ program.tier1_hours }}","{{ program.all_tier1_hours() }}","{{ "%0.0f"|format(program.tier1_hours / program.all_tier1_hours() * 100) }}%"<br>
