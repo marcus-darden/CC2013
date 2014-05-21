@@ -132,6 +132,15 @@ def program(program_id):
     return render_template('program.html', program=program)
 
 
+# Export Program
+@app.route('/program/<int:program_id>/csv')
+def program_csv(program_id):
+    # Verify db access
+    program = Program.query.get_or_404(program_id)
+
+    return render_template('program.csv', program=program)
+
+
 @app.route('/program/<int:program_id>/delete',
            methods=['POST'])
 @login_required
