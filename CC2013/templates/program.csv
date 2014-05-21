@@ -1,35 +1,35 @@
-Summary
-Number of courses
-{{ courses|length }}
-Tier 1 Hours
-{{ program.tier1_hours }},{{ program.all_tier1_hours() }},{{ "%0.0f"|format(program.tier1_hours / program.all_tier1_hours() * 100) }}%
-Tier 2 Hours
-{{ program.tier2_hours }},{{ program.all_tier2_hours() }},{{ "%0.0f"|format(program.tier2_hours / program.all_tier2_hours() * 100) }}%
-
+Program Summary<br>
+Number of courses<br>
+{{ courses|length }}<br>
+Tier 1 Hours<br>
+{{ program.tier1_hours }},{{ program.all_tier1_hours() }},{{ "%0.0f"|format(program.tier1_hours / program.all_tier1_hours() * 100) }}%<br>
+Tier 2 Hours<br>
+{{ program.tier2_hours }},{{ program.all_tier2_hours() }},{{ "%0.0f"|format(program.tier2_hours / program.all_tier2_hours() * 100) }}%<br>
+<br>
 {% for course in program.courses %}
-{{ course.abbr }}
-{{ course.title }}
-{{ course.description }}
-
-Knowledge Units
+{{ course.abbr }}<br>
+{{ course.title }}<br>
+{{ course.description }}<br>
+<br>
+Knowledge Units<br>
 {% if course.units|length %}
-Tier 1,Tier 2,Knowledge Unit,Knowledge Area
+Tier 1,Tier 2,Knowledge Unit,Knowledge Area<br>
   {% for unit in course.units %}
-{{ unit.tier1 }},{{ unit.tier2 }},"{{ unit.text }} ({{ unit.id }})","{{ unit.area.text }}"
+{{ unit.tier1 }},{{ unit.tier2 }},"{{ unit.text }} ({{ unit.id }})","{{ unit.area.text }}"<br>
   {% endfor %}
-{{ course.tier1_hours }},{{ course.tier2_hours }}
+{{ course.tier1_hours }},{{ course.tier2_hours }}<br>
 {% else %}
-No Knowledge Units have been added to this course.
+No Knowledge Units have been added to this course.<br>
 {% endif %}
-
-Learning Outcomes
-KU ID,Outcome ID,Tier,Mastery,Learning Outcome
+<br>
+Learning Outcomes<br>
+KU ID,Outcome ID,Tier,Mastery,Learning Outcome<br>
   {% for outcome in course.outcomes %}
-{{ outcome.unit_id }},{{ outcome.id }},{{ outcome.tier }},{{ outcome.mastery }},"{{ outcome.text }}"
+{{ outcome.unit_id }},{{ outcome.id }},{{ outcome.tier }},{{ outcome.mastery }},"{{ outcome.text }}"<br>
   {% endfor %}
- 
-
+ <br>
+<br>
 {% else %}
-No courses have been added to this program.
+No courses have been added to this program.<br>
 {% endfor %}
 
