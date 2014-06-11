@@ -2,8 +2,10 @@
 {% block page_title %}{{ _('Login Page') }}{% endblock page_title %}
 {% block page_js %}
     <script src="/static/js/login.js"></script>
+    <script src="/static/js/oauth.js"></script>
 {% endblock %}
 {% block content %}
+    <div id="fb-root"></div>
     <h1>{{ _('Login') }}</h1>
     <form name="login" method="POST" action="" role="form">
       {{ form.hidden_tag() }}
@@ -35,4 +37,18 @@
         </div>
       </div>
     </form>
+
+<span id="signinButton">
+  <span
+    class="g-signin"
+    data-callback="signinCallback"
+    data-clientid="418878317932-e1mfebb4jdnjqh851gmobg0od9baqchb.apps.googleusercontent.com"
+    data-cookiepolicy="single_host_origin"
+    data-scope="email">
+  </span>
+</span>
+
+<!--fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+<div id="status"></div-->
+    
 {%- endblock content %}
