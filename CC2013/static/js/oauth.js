@@ -9,7 +9,20 @@ function signinCallback(authResult) {
         // Update the app to reflect a signed in user
         // Hide the sign-in button now that the user is authorized, for example:
         document.getElementById('signinButton').setAttribute('style', 'display: none');
-        console.log('Access token: ' + authResult['access_token']);
+        //console.log('Access token: ' + authResult['access_token']);
+
+        // User has logged in, query for profile information
+        gapi.client.load('plus','v1', function(){
+            var request = gapi.client.plus.people.get({'userId': 'me'});
+            request.execute(function(resp) {
+                var email = resp['emails'].filter(function(v) {
+                    return v.type === 'account';
+                })[0].value;
+                console.log('id:    ' + resp.id);
+                console.log('email: ' + email);
+                console.log('name:  ' + resp.displayName);
+            });
+        });
     } else {
         // Update the app to reflect a signed out user
         // Possible error values:
