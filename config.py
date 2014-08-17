@@ -13,8 +13,9 @@ SECRET_KEY = 'Computing Curricula 2013 Webapp'
 
 # Database config
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',
-                                         # 'postgres://localhost/cc2013')
-                                         'sqlite:///' + os.path.join(basedir, 'app.db'))
+                                         'postgres://localhost/cc2013')
+                                         # 'sqlite:///' + os.path.join(basedir, 'app.db')
+                                        )
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 WHOOSH_BASE = os.path.join(basedir, 'search.db')
 WHOOSH_ENABLED = bool(os.environ.get('HEROKU'))
@@ -38,7 +39,7 @@ MAIL_USERNAME = 'ontoral@gmail.com'
 MAIL_PASSWORD = b64decode(os.environ.get('RANDOMIZER', 'password'))
 
 # administrator list
-ADMINS = ['on.toral@gmail.com']
+ADMINS = ['ontoral@gmail.com']
 
 # Other config
 PROGRAMS_PER_PAGE = 10
